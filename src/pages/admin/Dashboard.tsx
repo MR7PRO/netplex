@@ -45,6 +45,7 @@ interface Submission {
   images: string[];
   status: SubmissionStatus;
   created_at: string | null;
+  category_id: string | null;
   seller: {
     id: string;
     shop_name: string | null;
@@ -131,7 +132,7 @@ const AdminDashboard: React.FC = () => {
       const { data, error } = await supabase
         .from("submissions")
         .select(`
-          id, title, description, price_ils, condition, region, images, status, created_at,
+          id, title, description, price_ils, condition, region, images, status, created_at, category_id,
           seller:sellers(id, shop_name, verified, user:profiles_public(name)),
           category:categories(name_ar)
         `)
@@ -172,7 +173,7 @@ const AdminDashboard: React.FC = () => {
           condition: selectedSubmission.condition as Database["public"]["Enums"]["item_condition"],
           region: selectedSubmission.region,
           images: selectedSubmission.images,
-          category_id: selectedSubmission.category ? undefined : undefined,
+          category_id: selectedSubmission.category_id,
         });
 
         if (listingError) {

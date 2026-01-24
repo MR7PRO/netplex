@@ -88,6 +88,10 @@ const ListingDetailsPage: React.FC = () => {
   const [offerPrice, setOfferPrice] = useState("");
   const [offerMessage, setOfferMessage] = useState("");
   const [submittingOffer, setSubmittingOffer] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
+  const [submittingReport, setSubmittingReport] = useState(false);
 
   // Fetch listing details
   useEffect(() => {
@@ -237,6 +241,45 @@ const ListingDetailsPage: React.FC = () => {
       toast({ title: "تم نسخ الرابط" });
     }
   };
+
+  const handleSubmitReport = async () => {
+    if (!user || !listing) {
+      navigate("/auth");
+      return;
+    }
+
+    if (!reportReason) {
+      toast({ title: "يرجى اختيار سبب الإبلاغ", variant: "destructive" });
+      return;
+    }
+
+    setSubmittingReport(true);
+    const { error } = await supabase.from("reports").insert({
+      listing_id: listing.id,
+      reporter_id: user.id,
+      reason: reportReason,
+      details: reportDetails || null,
+    });
+
+    if (error) {
+      toast({ title: "حدث خطأ", description: "يرجى المحاولة لاحقاً", variant: "destructive" });
+    } else {
+      toast({ title: "تم إرسال البلاغ", description: "شكراً لمساعدتنا في الحفاظ على جودة المنصة" });
+      setReportDialogOpen(false);
+      setReportReason("");
+      setReportDetails("");
+    }
+    setSubmittingReport(false);
+  };
+
+  const REPORT_REASONS = [
+    { value: "fake", label: "منتج مزيف أو مضلل" },
+    { value: "inappropriate", label: "محتوى غير لائق" },
+    { value: "scam", label: "احتيال محتمل" },
+    { value: "duplicate", label: "إعلان مكرر" },
+    { value: "wrong_category", label: "قسم خاطئ" },
+    { value: "other", label: "سبب آخر" },
+  ];
 
   const whatsappLink = seller?.whatsapp
     ? `https://wa.me/${seller.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`مرحباً، أنا مهتم بـ: ${listing?.title}`)}`
@@ -511,10 +554,63 @@ const ListingDetailsPage: React.FC = () => {
             )}
 
             {/* Report */}
-            <Button variant="ghost" className="text-muted-foreground" size="sm">
-              <Flag className="h-4 w-4 ml-2" />
-              إبلاغ عن هذا الإعلان
-            </Button>
+            <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" className="text-muted-foreground" size="sm">
+                  <Flag className="h-4 w-4 ml-2" />
+                  إبلاغ عن هذا الإعلان
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>إبلاغ عن الإعلان</DialogTitle>
+                  <DialogDescription>
+                    ساعدنا في الحفاظ على جودة المنصة بإبلاغنا عن الإعلانات المخالفة
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">سبب الإبلاغ *</label>
+                    <div className="space-y-2">
+                      {REPORT_REASONS.map((reason) => (
+                        <label
+                          key={reason.value}
+                          className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                            reportReason === reason.value ? "border-primary bg-primary/5" : "hover:bg-muted"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="report-reason"
+                            value={reason.value}
+                            checked={reportReason === reason.value}
+                            onChange={(e) => setReportReason(e.target.value)}
+                            className="accent-primary"
+                          />
+                          <span className="text-sm">{reason.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">تفاصيل إضافية (اختياري)</label>
+                    <Textarea
+                      placeholder="أضف تفاصيل تساعدنا في المراجعة..."
+                      value={reportDetails}
+                      onChange={(e) => setReportDetails(e.target.value)}
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleSubmitReport} 
+                    className="w-full"
+                    variant="destructive"
+                    disabled={submittingReport || !reportReason}
+                  >
+                    {submittingReport ? "جاري الإرسال..." : "إرسال البلاغ"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
