@@ -52,9 +52,16 @@ const Header: React.FC = () => {
         {/* Top bar */}
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src={logoImage} alt="NetPlex" className="w-10 h-10 object-contain" />
-            <span className="font-bold text-xl hidden sm:block" dir="ltr">NetPlex</span>
+          <Link to="/" className="flex items-center gap-3 shrink-0 group">
+            <div className="relative">
+              <img 
+                src={logoImage} 
+                alt="NetPlex" 
+                className="w-14 h-14 object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(225,6,0,0.6)]" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+            <span className="font-bold text-2xl hidden sm:block tracking-tight transition-colors duration-300 group-hover:text-primary" dir="ltr">NetPlex</span>
           </Link>
 
           {/* Search - Desktop */}
