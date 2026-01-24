@@ -12,6 +12,7 @@ import Search from "./pages/Search";
 import ListingDetails from "./pages/ListingDetails";
 import SellerSubmission from "./pages/SellerSubmission";
 import SellerDashboard from "./pages/seller/Dashboard";
+import SellerPage from "./pages/Seller";
 import AdminDashboard from "./pages/admin/Dashboard";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
@@ -34,6 +35,7 @@ const App = () => (
                 <Route path="/listing/:id" element={<ListingDetails />} />
                 <Route path="/sell/new" element={<SellerSubmission />} />
                 <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                <Route path="/seller/:id" element={<SellerPage />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="*" element={<NotFound />} />

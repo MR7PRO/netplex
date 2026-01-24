@@ -63,7 +63,8 @@ const Index: React.FC = () => {
               <img 
                 src={heroLogo} 
                 alt="NetPlex" 
-                className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl" 
+                className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl animate-scale-in" 
+                style={{ animation: 'scale-in 0.6s ease-out, float 3s ease-in-out infinite 0.6s' }}
               />
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 animate-fade-in">
