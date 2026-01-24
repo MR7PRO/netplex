@@ -6,7 +6,7 @@ import Layout from "@/components/layout/Layout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ListingCard from "@/components/listings/ListingCard";
-import logoImage from "@/assets/logo.png";
+import heroLogo from "@/assets/hero-logo.png";
 
 const CATEGORIES = [
   { slug: "electronics", name: "إلكترونيات", icon: Smartphone },
@@ -59,8 +59,12 @@ const Index: React.FC = () => {
       <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
-              <img src={logoImage} alt="NetPlex" className="w-20 h-20 md:w-24 md:h-24 object-contain" />
+            <div className="flex justify-center mb-8">
+              <img 
+                src={heroLogo} 
+                alt="NetPlex" 
+                className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl" 
+              />
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 animate-fade-in">
               متجر <span className="text-foreground">نت</span> <span className="text-primary">بلكس</span>
