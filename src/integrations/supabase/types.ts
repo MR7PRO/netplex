@@ -554,6 +554,16 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_listing_rank: {
+        Args: {
+          p_created_at: string
+          p_is_promoted?: boolean
+          p_save_count: number
+          p_trust_score: number
+          p_view_count: number
+        }
+        Returns: number
+      }
       get_seller_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
