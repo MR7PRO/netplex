@@ -9,11 +9,15 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">N</span>
-              </div>
-              <span className="font-bold text-xl">نت بلكس</span>
+            <div className="flex items-center gap-3 mb-4">
+              <img 
+                src="/favicon.png" 
+                alt="NetPlex" 
+                className="w-14 h-14 object-contain" 
+              />
+              <span className="font-bold text-xl" dir="ltr">
+                <span className="text-background">N</span>et<span className="text-primary">P</span>lex
+              </span>
             </div>
             <p className="text-muted-foreground text-sm mb-4">
               سوق فلسطيني موثوق يربط البائعين والمشترين في قطاع غزة

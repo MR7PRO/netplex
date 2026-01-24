@@ -62,11 +62,14 @@ const Index: React.FC = () => {
             <div className="flex justify-center mb-6">
               <img src={logoImage} alt="NetPlex" className="w-20 h-20 md:w-24 md:h-24 object-contain" />
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 animate-fade-in">
-              سوق <span className="gradient-text">غزة</span> الموثوق
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-3 animate-fade-in">
+              متجر <span className="gradient-text">نتبلكس</span>
             </h1>
-            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 animate-fade-in px-4">
-              منصة آمنة وموثوقة لبيع وشراء كل ما تحتاجه في قطاع غزة
+            <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-4 md:mb-6 animate-fade-in">
+              مكانك تلاقي السعر قبل ما تشتري
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 animate-fade-in px-4" dir="ltr">
+              NetPlex يجمع عروض غزة في مكان واحد — بدون لفّ ودوران
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in px-4">
               <Button size="lg" className="btn-brand text-base md:text-lg px-6 md:px-8" asChild>
