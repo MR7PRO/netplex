@@ -1,8 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package } from "lucide-react";
+import { ArrowLeft, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import ListingCard from "@/components/listings/ListingCard";
+import logoImage from "@/assets/logo.png";
 
 const CATEGORIES = [
   { slug: "electronics", name: "إلكترونيات", icon: Smartphone },
@@ -16,26 +20,62 @@ const CATEGORIES = [
 ];
 
 const Index: React.FC = () => {
+  // Fetch featured listings
+  const { data: featuredListings, isLoading: loadingFeatured } = useQuery({
+    queryKey: ["featured-listings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("listings")
+        .select("*")
+        .eq("status", "available")
+        .eq("featured", true)
+        .order("created_at", { ascending: false })
+        .limit(4);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch recent listings
+  const { data: recentListings, isLoading: loadingRecent } = useQuery({
+    queryKey: ["recent-listings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("listings")
+        .select("*")
+        .eq("status", "available")
+        .order("created_at", { ascending: false })
+        .limit(8);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+            <div className="flex justify-center mb-6">
+              <img src={logoImage} alt="NetPlex" className="w-20 h-20 md:w-24 md:h-24 object-contain" />
+            </div>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 animate-fade-in">
               سوق <span className="gradient-text">غزة</span> الموثوق
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-in">
+            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 animate-fade-in px-4">
               منصة آمنة وموثوقة لبيع وشراء كل ما تحتاجه في قطاع غزة
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
-              <Button size="lg" className="btn-brand text-lg px-8" asChild>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in px-4">
+              <Button size="lg" className="btn-brand text-base md:text-lg px-6 md:px-8" asChild>
                 <Link to="/search">
                   تصفح المنتجات
                   <ArrowLeft className="mr-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8" asChild>
+              <Button size="lg" variant="outline" className="text-base md:text-lg px-6 md:px-8" asChild>
                 <Link to="/sell/new">أضف منتجك</Link>
               </Button>
             </div>
@@ -43,25 +83,96 @@ const Index: React.FC = () => {
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-48 md:w-72 h-48 md:h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/5 rounded-full blur-3xl" />
+      </section>
+
+      {/* Featured Listings */}
+      {(featuredListings && featuredListings.length > 0) && (
+        <section className="py-10 md:py-14">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">منتجات مميزة</h2>
+              <Button variant="ghost" asChild>
+                <Link to="/search?featured=true">عرض الكل</Link>
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {featuredListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  id={listing.id}
+                  title={listing.title}
+                  price={listing.price_ils}
+                  image={listing.images?.[0]}
+                  region={listing.region}
+                  condition={listing.condition || undefined}
+                  viewCount={listing.view_count || 0}
+                  featured={listing.featured || false}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recent Listings */}
+      <section className="py-10 md:py-14 bg-secondary/20">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">أحدث المنتجات</h2>
+            <Button variant="ghost" asChild>
+              <Link to="/search">عرض الكل</Link>
+            </Button>
+          </div>
+          
+          {loadingRecent ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : recentListings && recentListings.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {recentListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  id={listing.id}
+                  title={listing.title}
+                  price={listing.price_ils}
+                  image={listing.images?.[0]}
+                  region={listing.region}
+                  condition={listing.condition || undefined}
+                  viewCount={listing.view_count || 0}
+                  featured={listing.featured || false}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>لا توجد منتجات حالياً</p>
+              <Button className="mt-4" asChild>
+                <Link to="/sell/new">كن أول بائع</Link>
+              </Button>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Categories */}
-      <section className="py-12 md:py-16">
+      <section className="py-10 md:py-14">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">تصفح حسب القسم</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 text-center">تصفح حسب القسم</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
-                to={`/category/${cat.slug}`}
-                className="group flex flex-col items-center p-6 rounded-xl bg-card border card-hover"
+                to={`/search?category=${cat.slug}`}
+                className="group flex flex-col items-center p-4 md:p-6 rounded-xl bg-card border card-hover"
               >
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                  <cat.icon className="h-7 w-7 text-primary" />
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mb-2 md:mb-3 group-hover:bg-primary/20 transition-colors">
+                  <cat.icon className="h-6 w-6 md:h-7 md:w-7 text-primary" />
                 </div>
-                <span className="font-medium text-sm text-center">{cat.name}</span>
+                <span className="font-medium text-xs md:text-sm text-center">{cat.name}</span>
               </Link>
             ))}
           </div>
@@ -69,34 +180,34 @@ const Index: React.FC = () => {
       </section>
 
       {/* Trust Features */}
-      <section className="py-12 md:py-16 bg-secondary/30">
+      <section className="py-10 md:py-14 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">لماذا نت بلكس؟</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl bg-card border text-center">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-7 w-7 text-primary" />
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 text-center">لماذا NetPlex؟</h2>
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+            <div className="p-5 md:p-6 rounded-xl bg-card border text-center">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Shield className="h-6 w-6 md:h-7 md:w-7 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">بائعون موثوقون</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="font-semibold text-base md:text-lg mb-2">بائعون موثوقون</h3>
+              <p className="text-muted-foreground text-xs md:text-sm">
                 جميع المنتجات تمر بمراجعة قبل النشر لضمان جودة العروض
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-card border text-center">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Users className="h-7 w-7 text-primary" />
+            <div className="p-5 md:p-6 rounded-xl bg-card border text-center">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Users className="h-6 w-6 md:h-7 md:w-7 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">مجتمع محلي</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="font-semibold text-base md:text-lg mb-2">مجتمع محلي</h3>
+              <p className="text-muted-foreground text-xs md:text-sm">
                 تواصل مباشر مع البائعين في منطقتك عبر واتساب أو الهاتف
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-card border text-center">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Zap className="h-7 w-7 text-primary" />
+            <div className="p-5 md:p-6 rounded-xl bg-card border text-center">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <Zap className="h-6 w-6 md:h-7 md:w-7 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">سريع وسهل</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="font-semibold text-base md:text-lg mb-2">سريع وسهل</h3>
+              <p className="text-muted-foreground text-xs md:text-sm">
                 أضف منتجك في دقائق وابدأ البيع فور الموافقة
               </p>
             </div>
@@ -105,11 +216,11 @@ const Index: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">جاهز للبيع؟</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4">جاهز للبيع؟</h2>
+            <p className="text-muted-foreground mb-5 md:mb-6 text-sm md:text-base">
               أضف منتجاتك الآن وابدأ الوصول لآلاف المشترين في غزة
             </p>
             <Button size="lg" className="btn-brand" asChild>
