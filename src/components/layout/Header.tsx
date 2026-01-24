@@ -60,7 +60,7 @@ const Header: React.FC = () => {
                 className="w-14 h-14 sm:w-16 sm:h-16 object-contain transition-all duration-300 group-hover:scale-110 drop-shadow-lg group-hover:drop-shadow-[0_0_10px_rgba(225,6,0,0.7)]" 
               />
             </div>
-            <span className="font-bold text-sm sm:text-base hidden sm:block tracking-tight transition-colors duration-300" dir="ltr">
+            <span className="font-bold text-lg sm:text-xl md:text-2xl hidden sm:block tracking-tight transition-colors duration-300" dir="ltr">
               <span className="text-foreground">Net</span><span className="text-primary">Plex</span>
             </span>
           </Link>
