@@ -24,6 +24,8 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import logoImage from "@/assets/logo.png";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,10 +53,8 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">N</span>
-            </div>
-            <span className="font-bold text-xl hidden sm:block">نت بلكس</span>
+            <img src={logoImage} alt="NetPlex" className="w-10 h-10 object-contain" />
+            <span className="font-bold text-xl hidden sm:block" dir="ltr">NetPlex</span>
           </Link>
 
           {/* Search - Desktop */}
@@ -72,15 +72,18 @@ const Header: React.FC = () => {
           </form>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
             {/* Sell button */}
             {user && (
               <Button 
                 onClick={() => navigate("/sell/new")} 
                 className="btn-brand hidden sm:flex"
+                size="sm"
               >
                 <Plus className="h-4 w-4 ml-1" />
-                أضف منتج
+                <span className="hidden md:inline">أضف منتج</span>
               </Button>
             )}
 
