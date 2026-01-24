@@ -31,6 +31,7 @@ import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from 
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 
 interface Listing {
   id: string;
@@ -518,39 +519,73 @@ const ListingDetailsPage: React.FC = () => {
 
             {/* Seller Info */}
             {seller && (
-              <div className="p-4 rounded-xl border bg-card">
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                    {seller.shop_name?.[0] || "B"}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{seller.shop_name || "بائع"}</h4>
-                      {seller.verified && (
-                        <span className="trust-badge-verified">
-                          <Shield className="h-3 w-3" />
-                          موثق
-                        </span>
+              <Link to={`/seller/${seller.id}`} className="block">
+                <div className="p-4 rounded-xl border bg-card hover:border-primary/50 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                      {seller.shop_name?.[0] || "B"}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold">{seller.shop_name || "بائع"}</h4>
+                        {seller.verified && (
+                          <span className="trust-badge-verified">
+                            <Shield className="h-3 w-3" />
+                            موثق
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {getRegionLabel(seller.region)}
+                      </p>
+                      {reviews.length > 0 && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <Star className="h-4 w-4 text-warning fill-warning" />
+                          <span className="font-medium">{avgRating.toFixed(1)}</span>
+                          <span className="text-sm text-muted-foreground">
+                            ({reviews.length} تقييم)
+                          </span>
+                        </div>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {getRegionLabel(seller.region)}
-                    </p>
-                    {reviews.length > 0 && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="h-4 w-4 text-warning fill-warning" />
-                        <span className="font-medium">{avgRating.toFixed(1)}</span>
-                        <span className="text-sm text-muted-foreground">
-                          ({reviews.length} تقييم)
-                        </span>
-                      </div>
-                    )}
+                    <ArrowRight className="h-5 w-5 text-muted-foreground rotate-180" />
                   </div>
+                  {seller.bio && (
+                    <p className="mt-3 text-sm text-muted-foreground">{seller.bio}</p>
+                  )}
                 </div>
-                {seller.bio && (
-                  <p className="mt-3 text-sm text-muted-foreground">{seller.bio}</p>
-                )}
-              </div>
+              </Link>
+            )}
+
+            {/* Review Seller Button */}
+            {user && seller && (
+              <ReviewSellerDialog 
+                sellerId={seller.id} 
+                listingId={listing.id}
+                sellerName={seller.shop_name || "البائع"}
+                onReviewSubmitted={() => {
+                  // Refresh reviews
+                  supabase
+                    .from("reviews")
+                    .select("id, rating, comment, created_at")
+                    .eq("seller_id", seller.id)
+                    .order("created_at", { ascending: false })
+                    .limit(5)
+                    .then(({ data }) => {
+                      if (data) {
+                        // Re-fetch with profiles
+                        supabase
+                          .from("profiles_public")
+                          .select("id, name, avatar_url")
+                          .in("id", data.map(r => r.id))
+                          .then(() => {
+                            // Simplified refresh - just reload
+                            window.location.reload();
+                          });
+                      }
+                    });
+                }}
+              />
             )}
 
             {/* Report */}
