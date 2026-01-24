@@ -45,11 +45,13 @@ interface Listing {
     shop_name: string | null;
     verified: boolean | null;
     whatsapp: string | null;
+    trust_score: number | null;
   } | null;
   category: {
     name_ar: string;
     slug: string;
   } | null;
+  rank?: number;
 }
 
 interface Category {
@@ -78,7 +80,7 @@ const SearchPage: React.FC = () => {
     parseInt(searchParams.get("minPrice") || "0"),
     parseInt(searchParams.get("maxPrice") || "50000"),
   ]);
-  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "recommended");
 
   // Fetch categories
   useEffect(() => {
@@ -102,7 +104,7 @@ const SearchPage: React.FC = () => {
         .select(`
           id, title, description, price_ils, condition, region, images, 
           view_count, save_count, featured, created_at,
-          seller:sellers!inner(id, shop_name, verified, whatsapp),
+          seller:sellers!inner(id, shop_name, verified, whatsapp, trust_score),
           category:categories(name_ar, slug)
         `)
         .eq("status", "available");
@@ -135,6 +137,10 @@ const SearchPage: React.FC = () => {
         case "popular":
           queryBuilder = queryBuilder.order("view_count", { ascending: false, nullsFirst: false });
           break;
+        case "recommended":
+          // Will be sorted client-side using ranking algorithm
+          queryBuilder = queryBuilder.order("created_at", { ascending: false });
+          break;
         default:
           queryBuilder = queryBuilder.order("created_at", { ascending: false });
       }
@@ -144,7 +150,36 @@ const SearchPage: React.FC = () => {
       if (error) {
         console.error("Error fetching listings:", error);
       } else {
-        setListings((data || []) as unknown as Listing[]);
+        let processedListings = (data || []) as unknown as Listing[];
+        
+        // Apply client-side ranking for "recommended" sort
+        if (sortBy === "recommended") {
+          processedListings = processedListings.map(listing => {
+            // Calculate rank score
+            const trustScore = (listing.seller?.trust_score || 50) / 100;
+            const viewScore = Math.min(1, Math.log(Math.max(1, (listing.view_count || 0) + 1)) / Math.log(1001));
+            const saveScore = Math.min(1, Math.log(Math.max(1, (listing.save_count || 0) + 1)) / Math.log(101));
+            
+            // Recency: exponential decay over 30 days
+            const createdAt = listing.created_at ? new Date(listing.created_at) : new Date();
+            const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+            const recencyScore = Math.exp(-daysSinceCreation / 30);
+            
+            // Featured bonus
+            const featuredBonus = listing.featured ? 0.15 : 0;
+            
+            // Final rank
+            const rank = (0.35 * trustScore) + (0.20 * viewScore) + (0.15 * recencyScore) + 
+                         (0.20 * 0.5) + (0.10 * saveScore) + featuredBonus;
+            
+            return { ...listing, rank };
+          });
+          
+          // Sort by rank descending
+          processedListings.sort((a, b) => (b.rank || 0) - (a.rank || 0));
+        }
+        
+        setListings(processedListings);
       }
       setLoading(false);
     };
@@ -328,6 +363,7 @@ const SearchPage: React.FC = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="recommended">الموصى بها</SelectItem>
                 <SelectItem value="newest">الأحدث</SelectItem>
                 <SelectItem value="price-low">السعر: الأقل</SelectItem>
                 <SelectItem value="price-high">السعر: الأعلى</SelectItem>
