@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
+import { getAuthErrorMessage } from "@/lib/authErrors";
 
 const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -27,10 +28,10 @@ const Auth: React.FC = () => {
       );
       toast({ title: "تم تسجيل الدخول بنجاح" });
       navigate("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({ 
         title: "خطأ في تسجيل الدخول", 
-        description: error.message,
+        description: getAuthErrorMessage(error),
         variant: "destructive" 
       });
     } finally {
@@ -52,10 +53,10 @@ const Auth: React.FC = () => {
       );
       toast({ title: "تم إنشاء الحساب بنجاح!" });
       navigate("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({ 
         title: "خطأ في إنشاء الحساب", 
-        description: error.message,
+        description: getAuthErrorMessage(error),
         variant: "destructive" 
       });
     } finally {
