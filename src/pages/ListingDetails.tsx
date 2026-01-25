@@ -32,6 +32,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
+import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 
 interface Listing {
   id: string;
@@ -93,6 +94,9 @@ const ListingDetailsPage: React.FC = () => {
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
   const [submittingReport, setSubmittingReport] = useState(false);
+
+  // Get signed URLs for images
+  const { signedUrls: signedImageUrls, loading: imagesLoading } = useSignedImageUrls(listing?.images);
 
   // Fetch listing details
   useEffect(() => {
@@ -322,10 +326,12 @@ const ListingDetailsPage: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Images */}
           <div>
-            {listing.images && listing.images.length > 0 ? (
+            {imagesLoading ? (
+              <Skeleton className="aspect-square rounded-xl" />
+            ) : signedImageUrls && signedImageUrls.length > 0 ? (
               <Carousel className="w-full">
                 <CarouselContent>
-                  {listing.images.map((image, index) => (
+                  {signedImageUrls.map((image, index) => (
                     <CarouselItem key={index}>
                       <div className="aspect-square rounded-xl overflow-hidden bg-muted">
                         <img
@@ -337,7 +343,7 @@ const ListingDetailsPage: React.FC = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                {listing.images.length > 1 && (
+                {signedImageUrls.length > 1 && (
                   <>
                     <CarouselPrevious className="left-2" />
                     <CarouselNext className="right-2" />
@@ -351,9 +357,9 @@ const ListingDetailsPage: React.FC = () => {
             )}
 
             {/* Thumbnail strip */}
-            {listing.images && listing.images.length > 1 && (
+            {signedImageUrls && signedImageUrls.length > 1 && (
               <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-                {listing.images.map((image, index) => (
+                {signedImageUrls.map((image, index) => (
                   <div
                     key={index}
                     className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 border-transparent hover:border-primary cursor-pointer"

@@ -7,6 +7,7 @@ import Layout from "@/components/layout/Layout";
 import { useCart } from "@/contexts/CartContext";
 import { formatPrice } from "@/lib/constants";
 import { useToast } from "@/hooks/use-toast";
+import { SignedImage } from "@/components/SignedImage";
 
 const CartPage: React.FC = () => {
   const { items, removeItem, clearCart, totalPrice } = useCart();
@@ -102,10 +103,15 @@ const CartPage: React.FC = () => {
                     {sellerItems.map((item) => (
                       <div key={item.id} className="flex items-center gap-4 p-4">
                         {item.image ? (
-                          <img
+                          <SignedImage
                             src={item.image}
                             alt={item.title}
                             className="w-16 h-16 rounded-lg object-cover"
+                            fallback={
+                              <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
+                                <ShoppingCart className="h-6 w-6 text-muted-foreground" />
+                              </div>
+                            }
                           />
                         ) : (
                           <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">

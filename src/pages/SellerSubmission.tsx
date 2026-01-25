@@ -226,11 +226,8 @@ const SellerSubmissionPage: React.FC = () => {
           continue;
         }
 
-        const { data: urlData } = supabase.storage
-          .from("listings")
-          .getPublicUrl(fileName);
-
-        imageUrls.push(urlData.publicUrl);
+        // Store the file path (not public URL) since bucket is now private
+        imageUrls.push(fileName);
       }
 
       if (imageUrls.length === 0) {
