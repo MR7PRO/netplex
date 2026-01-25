@@ -67,16 +67,16 @@ const Index: React.FC = () => {
                 style={{ animation: 'scale-in 0.6s ease-out, float 3s ease-in-out infinite 0.6s' }}
               />
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4 animate-fade-in">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">
               متجر <span className="text-foreground">نت</span> <span className="text-primary">بلكس</span>
             </h1>
-            <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-4 md:mb-6 animate-fade-in">
+            <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-4 md:mb-6">
               سوق غزة… بسعره الحقيقي
             </p>
-            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 animate-fade-in px-4">
+            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 px-4">
               بيع واشتري إلكترونياتك بثقة، إعلانات مدققة، وأسعار أقرب للواقع.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in px-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
               <Button size="lg" className="btn-brand text-base md:text-lg px-6 md:px-8" asChild>
                 <Link to="/search">
                   تصفح المنتجات
