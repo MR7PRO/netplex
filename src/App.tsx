@@ -6,18 +6,28 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Search from "./pages/Search";
-import ListingDetails from "./pages/ListingDetails";
-import SellerSubmission from "./pages/SellerSubmission";
-import SellerDashboard from "./pages/seller/Dashboard";
-import SellerPage from "./pages/Seller";
-import AdminDashboard from "./pages/admin/Dashboard";
-import Cart from "./pages/Cart";
-import NotFound from "./pages/NotFound";
+import { lazy, Suspense } from "react";
+
+// Lazy load pages for code splitting
+const Index = lazy(() => import("./pages/Index"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Search = lazy(() => import("./pages/Search"));
+const ListingDetails = lazy(() => import("./pages/ListingDetails"));
+const SellerSubmission = lazy(() => import("./pages/SellerSubmission"));
+const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
+const SellerPage = lazy(() => import("./pages/Seller"));
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const Cart = lazy(() => import("./pages/Cart"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+// Simple loading fallback
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+);
 
 const App = () => (
   <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
@@ -28,18 +38,20 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/listing/:id" element={<ListingDetails />} />
-                <Route path="/sell/new" element={<SellerSubmission />} />
-                <Route path="/seller/dashboard" element={<SellerDashboard />} />
-                <Route path="/seller/:id" element={<SellerPage />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/listing/:id" element={<ListingDetails />} />
+                  <Route path="/sell/new" element={<SellerSubmission />} />
+                  <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                  <Route path="/seller/:id" element={<SellerPage />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </CartProvider>
