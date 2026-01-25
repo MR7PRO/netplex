@@ -152,11 +152,8 @@ const ListingDetailsPage: React.FC = () => {
         setIsSaved(!!savedData);
       }
 
-      // Increment view count
-      await supabase
-        .from("listings")
-        .update({ view_count: (listingData.view_count || 0) + 1 })
-        .eq("id", id);
+      // Increment view count using secure RPC function
+      await supabase.rpc("increment_listing_view", { listing_id: id });
 
       setLoading(false);
     };
