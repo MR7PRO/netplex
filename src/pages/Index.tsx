@@ -7,7 +7,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ListingCard from "@/components/listings/ListingCard";
 import heroLogo from "@/assets/hero-logo.png";
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 const CATEGORIES = [
   { slug: "electronics", name: "إلكترونيات", icon: Smartphone },
   { slug: "fashion", name: "ملابس وأزياء", icon: Shirt },
@@ -95,7 +102,7 @@ const Index: React.FC = () => {
         <div className="absolute bottom-10 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/5 rounded-full blur-3xl" />
       </section>
 
-      {/* Featured Listings */}
+      {/* Featured Listings - Auto-scrolling Carousel */}
       {(featuredListings && featuredListings.length > 0) && (
         <section className="py-10 md:py-14">
           <div className="container mx-auto px-4">
@@ -105,21 +112,40 @@ const Index: React.FC = () => {
                 <Link to="/search?featured=true">عرض الكل</Link>
               </Button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {featuredListings.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  id={listing.id}
-                  title={listing.title}
-                  price={listing.price_ils}
-                  image={listing.images?.[0]}
-                  region={listing.region}
-                  condition={listing.condition || undefined}
-                  viewCount={listing.view_count || 0}
-                  featured={listing.featured || false}
-                />
-              ))}
-            </div>
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+                direction: "rtl",
+              }}
+              plugins={[
+                Autoplay({
+                  delay: 3000,
+                  stopOnInteraction: true,
+                  stopOnMouseEnter: true,
+                }),
+              ]}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {featuredListings.map((listing) => (
+                  <CarouselItem key={listing.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                    <ListingCard
+                      id={listing.id}
+                      title={listing.title}
+                      price={listing.price_ils}
+                      image={listing.images?.[0]}
+                      region={listing.region}
+                      condition={listing.condition || undefined}
+                      viewCount={listing.view_count || 0}
+                      featured={listing.featured || false}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex -right-12 left-auto" />
+              <CarouselNext className="hidden sm:flex -left-12 right-auto" />
+            </Carousel>
           </div>
         </section>
       )}
