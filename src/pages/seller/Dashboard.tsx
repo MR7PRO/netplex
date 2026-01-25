@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRelativeTime } from "@/lib/constants";
+import { SignedImage } from "@/components/SignedImage";
 import type { Database } from "@/integrations/supabase/types";
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"];
@@ -294,7 +295,7 @@ const SellerDashboard: React.FC = () => {
                       className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:border-primary transition-colors"
                     >
                       {listing.images?.[0] && (
-                        <img
+                        <SignedImage
                           src={listing.images[0]}
                           alt=""
                           className="w-16 h-16 rounded-lg object-cover"
@@ -342,7 +343,7 @@ const SellerDashboard: React.FC = () => {
                       className="flex items-center gap-4 p-4 rounded-lg border bg-card"
                     >
                       {submission.images?.[0] && (
-                        <img
+                        <SignedImage
                           src={submission.images[0]}
                           alt=""
                           className="w-16 h-16 rounded-lg object-cover"

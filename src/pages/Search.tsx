@@ -26,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel, REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { SignedImage } from "@/components/SignedImage";
 import type { Database } from "@/integrations/supabase/types";
 
 interface Listing {
@@ -418,10 +419,15 @@ const SearchPage: React.FC = () => {
                 )}
                 <div className="aspect-square bg-muted relative overflow-hidden">
                   {listing.images?.[0] ? (
-                    <img
+                    <SignedImage
                       src={listing.images[0]}
                       alt={listing.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fallback={
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          لا توجد صورة
+                        </div>
+                      }
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground">

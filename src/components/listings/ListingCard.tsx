@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heart, MapPin, Eye } from "lucide-react";
+import { MapPin, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
+import { Skeleton } from "@/components/ui/skeleton";
 interface ListingCardProps {
   id: string;
   title: string;
@@ -36,6 +37,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   featured,
   className,
 }) => {
+  const { signedUrl, loading: imageLoading } = useSignedImageUrl(image);
+
   return (
     <Link to={`/listing/${id}`}>
       <Card
@@ -46,9 +49,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         )}
       >
         <div className="relative aspect-square overflow-hidden bg-muted">
-          {image ? (
+          {imageLoading ? (
+            <Skeleton className="h-full w-full" />
+          ) : signedUrl ? (
             <img
-              src={image}
+              src={signedUrl}
               alt={title}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />

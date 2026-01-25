@@ -31,6 +31,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from "@/lib/constants";
+import { SignedImage } from "@/components/SignedImage";
 import type { Database } from "@/integrations/supabase/types";
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"];
@@ -352,7 +353,7 @@ const AdminDashboard: React.FC = () => {
                             <TableCell>
                               <div className="flex items-center gap-3">
                                 {submission.images?.[0] && (
-                                  <img
+                                  <SignedImage
                                     src={submission.images[0]}
                                     alt=""
                                     className="w-10 h-10 rounded object-cover"
@@ -423,7 +424,7 @@ const AdminDashboard: React.FC = () => {
                   {selectedSubmission.images && selectedSubmission.images.length > 0 && (
                     <div className="flex gap-2 overflow-x-auto pb-2">
                       {selectedSubmission.images.map((img, i) => (
-                        <img
+                        <SignedImage
                           key={i}
                           src={img}
                           alt=""
