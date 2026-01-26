@@ -113,13 +113,7 @@ const Index: React.FC = () => {
               </Button>
             </div>
             <div className="overflow-hidden">
-              <div 
-                className="flex gap-3 md:gap-4 animate-marquee hover:pause-animation"
-                style={{
-                  animation: 'marquee 30s linear infinite',
-                  width: 'max-content',
-                }}
-              >
+              <div className="flex gap-3 md:gap-4 animate-marquee w-max">
                 {/* First set of items */}
                 {featuredListings.map((listing) => (
                   <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
