@@ -244,4 +244,8 @@
   .animate-marquee:hover {
     animation-play-state: paused;
   }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
