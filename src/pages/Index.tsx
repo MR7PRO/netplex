@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,14 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ListingCard from "@/components/listings/ListingCard";
 import heroLogo from "@/assets/hero-logo.png";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 const CATEGORIES = [
   { slug: "electronics", name: "إلكترونيات", icon: Smartphone },
   { slug: "fashion", name: "ملابس وأزياء", icon: Shirt },
@@ -27,6 +19,35 @@ const CATEGORIES = [
 ];
 
 const Index: React.FC = () => {
+  // Drag to scroll state
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!marqueeRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - marqueeRef.current.offsetLeft);
+    setScrollLeft(marqueeRef.current.scrollLeft);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || !marqueeRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - marqueeRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    marqueeRef.current.scrollLeft = scrollLeft - walk;
+  }, [isDragging, startX, scrollLeft]);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   // Fetch featured listings
   const { data: featuredListings, isLoading: loadingFeatured } = useQuery({
     queryKey: ["featured-listings"],
@@ -112,11 +133,19 @@ const Index: React.FC = () => {
                 <Link to="/search?featured=true">عرض الكل</Link>
               </Button>
             </div>
-            <div className="overflow-hidden">
-              <div className="flex gap-3 md:gap-4 animate-marquee w-max">
+            <div 
+              ref={marqueeRef}
+              className={`overflow-x-auto scrollbar-hide cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              <div className={`flex gap-3 md:gap-4 w-max ${!isDragging ? 'animate-marquee' : ''}`}>
                 {/* First set of items */}
                 {featuredListings.map((listing) => (
-                  <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
+                  <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none">
                     <ListingCard
                       id={listing.id}
                       title={listing.title}
@@ -131,7 +160,7 @@ const Index: React.FC = () => {
                 ))}
                 {/* Duplicate set for seamless loop */}
                 {featuredListings.map((listing) => (
-                  <div key={`dup-${listing.id}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
+                  <div key={`dup-${listing.id}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none">
                     <ListingCard
                       id={listing.id}
                       title={listing.title}
