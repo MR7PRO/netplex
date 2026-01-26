@@ -120,8 +120,8 @@ const Index: React.FC = () => {
               }}
               plugins={[
                 Autoplay({
-                  delay: 3000,
-                  stopOnInteraction: true,
+                  delay: 4000,
+                  stopOnInteraction: false,
                   stopOnMouseEnter: true,
                 }),
               ]}
