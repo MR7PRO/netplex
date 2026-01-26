@@ -112,24 +112,17 @@ const Index: React.FC = () => {
                 <Link to="/search?featured=true">عرض الكل</Link>
               </Button>
             </div>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-                direction: "rtl",
-              }}
-              plugins={[
-                Autoplay({
-                  delay: 4000,
-                  stopOnInteraction: false,
-                  stopOnMouseEnter: true,
-                }),
-              ]}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-2 md:-ml-4">
+            <div className="overflow-hidden">
+              <div 
+                className="flex gap-3 md:gap-4 animate-marquee hover:pause-animation"
+                style={{
+                  animation: 'marquee 30s linear infinite',
+                  width: 'max-content',
+                }}
+              >
+                {/* First set of items */}
                 {featuredListings.map((listing) => (
-                  <CarouselItem key={listing.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
                     <ListingCard
                       id={listing.id}
                       title={listing.title}
@@ -140,12 +133,25 @@ const Index: React.FC = () => {
                       viewCount={listing.view_count || 0}
                       featured={listing.featured || false}
                     />
-                  </CarouselItem>
+                  </div>
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden sm:flex -right-12 left-auto" />
-              <CarouselNext className="hidden sm:flex -left-12 right-auto" />
-            </Carousel>
+                {/* Duplicate set for seamless loop */}
+                {featuredListings.map((listing) => (
+                  <div key={`dup-${listing.id}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
+                    <ListingCard
+                      id={listing.id}
+                      title={listing.title}
+                      price={listing.price_ils}
+                      image={listing.images?.[0]}
+                      region={listing.region}
+                      condition={listing.condition || undefined}
+                      viewCount={listing.view_count || 0}
+                      featured={listing.featured || false}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       )}
