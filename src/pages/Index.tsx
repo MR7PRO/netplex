@@ -19,52 +19,27 @@ const CATEGORIES = [
 ];
 
 const Index: React.FC = () => {
-  // Drag to scroll state
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
+  // Drag to scroll state for marquee
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
-  const dragStartRef = useRef({ x: 0, currentOffset: 0 });
+  const dragStart = useRef({ x: 0, scrollLeft: 0 });
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleDragStart = useCallback((clientX: number) => {
+    if (!scrollContainerRef.current) return;
     setIsDragging(true);
-    dragStartRef.current = {
-      x: e.clientX,
-      currentOffset: dragOffset
+    dragStart.current = {
+      x: clientX,
+      scrollLeft: scrollContainerRef.current.scrollLeft
     };
-  }, [dragOffset]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const deltaX = e.clientX - dragStartRef.current.x;
-    setDragOffset(dragStartRef.current.currentOffset + deltaX);
+  const handleDragMove = useCallback((clientX: number) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    const diff = dragStart.current.x - clientX;
+    scrollContainerRef.current.scrollLeft = dragStart.current.scrollLeft + diff;
   }, [isDragging]);
 
-  const handleMouseLeave = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  // Touch support for mobile
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    setIsDragging(true);
-    dragStartRef.current = {
-      x: e.touches[0].clientX,
-      currentOffset: dragOffset
-    };
-  }, [dragOffset]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const deltaX = e.touches[0].clientX - dragStartRef.current.x;
-    setDragOffset(dragStartRef.current.currentOffset + deltaX);
-  }, [isDragging]);
-
-  const handleTouchEnd = useCallback(() => {
+  const handleDragEnd = useCallback(() => {
     setIsDragging(false);
   }, []);
 
@@ -154,37 +129,32 @@ const Index: React.FC = () => {
               </Button>
             </div>
             <div 
-              ref={marqueeRef}
-              className="overflow-hidden marquee-container"
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
+              ref={scrollContainerRef}
+              className={`marquee-wrapper ${isDragging ? 'dragging' : ''}`}
+              onMouseDown={(e) => handleDragStart(e.clientX)}
+              onMouseUp={handleDragEnd}
+              onMouseMove={(e) => { if (isDragging) { e.preventDefault(); handleDragMove(e.clientX); }}}
+              onMouseLeave={handleDragEnd}
+              onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+              onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+              onTouchEnd={handleDragEnd}
             >
-              <div 
-                className={`flex gap-3 md:gap-4 ${!isDragging ? 'animate-marquee' : ''}`}
-                style={{ 
-                  cursor: isDragging ? 'grabbing' : 'grab',
-                  transform: isDragging ? `translateX(${dragOffset}px)` : undefined,
-                  transition: isDragging ? 'none' : undefined
-                }}
-              >
-                {/* Triple set for seamless infinite loop */}
-                {[...featuredListings, ...featuredListings, ...featuredListings].map((listing, index) => (
-                  <div key={`${listing.id}-${index}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none pointer-events-none">
-                    <ListingCard
-                      id={listing.id}
-                      title={listing.title}
-                      price={listing.price_ils}
-                      image={listing.images?.[0]}
-                      region={listing.region}
-                      condition={listing.condition || undefined}
-                      viewCount={listing.view_count || 0}
-                      featured={listing.featured || false}
-                    />
+              <div className={`marquee-track gap-3 md:gap-4 ${isDragging ? 'paused' : ''}`}>
+                {/* Double set for seamless infinite loop */}
+                {[...featuredListings, ...featuredListings].map((listing, index) => (
+                  <div key={`${listing.id}-${index}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none">
+                    <div className="pointer-events-auto">
+                      <ListingCard
+                        id={listing.id}
+                        title={listing.title}
+                        price={listing.price_ils}
+                        image={listing.images?.[0]}
+                        region={listing.region}
+                        condition={listing.condition || undefined}
+                        viewCount={listing.view_count || 0}
+                        featured={listing.featured || false}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
