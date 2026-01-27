@@ -22,14 +22,15 @@ const Index: React.FC = () => {
   // Drag to scroll state
   const marqueeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!marqueeRef.current) return;
     setIsDragging(true);
-    setStartX(e.pageX - marqueeRef.current.offsetLeft);
-    setScrollLeft(marqueeRef.current.scrollLeft);
+    dragStartRef.current = {
+      x: e.clientX,
+      scrollLeft: marqueeRef.current.scrollLeft
+    };
   }, []);
 
   const handleMouseUp = useCallback(() => {
@@ -39,12 +40,32 @@ const Index: React.FC = () => {
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !marqueeRef.current) return;
     e.preventDefault();
-    const x = e.pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    marqueeRef.current.scrollLeft = scrollLeft - walk;
-  }, [isDragging, startX, scrollLeft]);
+    const deltaX = e.clientX - dragStartRef.current.x;
+    // RTL: positive delta means scroll left decreases
+    marqueeRef.current.scrollLeft = dragStartRef.current.scrollLeft - deltaX;
+  }, [isDragging]);
 
   const handleMouseLeave = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Touch support for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!marqueeRef.current) return;
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: e.touches[0].clientX,
+      scrollLeft: marqueeRef.current.scrollLeft
+    };
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || !marqueeRef.current) return;
+    const deltaX = e.touches[0].clientX - dragStartRef.current.x;
+    marqueeRef.current.scrollLeft = dragStartRef.current.scrollLeft - deltaX;
+  }, [isDragging]);
+
+  const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
   }, []);
 
@@ -135,11 +156,14 @@ const Index: React.FC = () => {
             </div>
             <div 
               ref={marqueeRef}
-              className={`overflow-x-auto scrollbar-hide cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+              className={`overflow-x-auto scrollbar-hide marquee-container cursor-grab ${isDragging ? 'dragging cursor-grabbing' : ''}`}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               <div className={`flex gap-3 md:gap-4 w-max ${!isDragging ? 'animate-marquee' : ''}`}>
