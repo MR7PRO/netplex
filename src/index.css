@@ -228,7 +228,7 @@
     }
   }
 
-  @keyframes marquee {
+  @keyframes marquee-rtl {
     0% {
       transform: translateX(0);
     }
@@ -238,11 +238,22 @@
   }
 
   .animate-marquee {
-    animation: marquee 40s linear infinite;
+    animation: marquee-rtl 60s linear infinite;
+    will-change: transform;
   }
 
   .animate-marquee:hover {
     animation-play-state: paused;
+  }
+
+  .marquee-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto;
+  }
+
+  .marquee-container.dragging {
+    cursor: grabbing !important;
+    user-select: none;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
