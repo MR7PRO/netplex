@@ -1,6 +1,6 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -19,28 +19,21 @@ const CATEGORIES = [
 ];
 
 const Index: React.FC = () => {
-  // Drag to scroll state for marquee
+  // Arrow navigation for marquee
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStart = useRef({ x: 0, scrollLeft: 0 });
 
-  const handleDragStart = useCallback((clientX: number) => {
+  const scrollByAmount = useCallback((direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    setIsDragging(true);
-    dragStart.current = {
-      x: clientX,
-      scrollLeft: scrollContainerRef.current.scrollLeft
-    };
-  }, []);
-
-  const handleDragMove = useCallback((clientX: number) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    const diff = dragStart.current.x - clientX;
-    scrollContainerRef.current.scrollLeft = dragStart.current.scrollLeft + diff;
-  }, [isDragging]);
-
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
+    const scrollAmount = 300; // pixels to scroll
+    const currentScroll = scrollContainerRef.current.scrollLeft;
+    // RTL: right means decrease scrollLeft, left means increase
+    const newScroll = direction === 'right' 
+      ? currentScroll - scrollAmount 
+      : currentScroll + scrollAmount;
+    scrollContainerRef.current.scrollTo({
+      left: newScroll,
+      behavior: 'smooth'
+    });
   }, []);
 
   // Fetch featured listings
@@ -118,7 +111,7 @@ const Index: React.FC = () => {
         <div className="absolute bottom-10 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/5 rounded-full blur-3xl" />
       </section>
 
-      {/* Featured Listings - Auto-scrolling Carousel */}
+      {/* Featured Listings - Carousel with Arrows */}
       {(featuredListings && featuredListings.length > 0) && (
         <section className="py-10 md:py-14">
           <div className="container mx-auto px-4">
@@ -128,22 +121,34 @@ const Index: React.FC = () => {
                 <Link to="/search?featured=true">عرض الكل</Link>
               </Button>
             </div>
-            <div 
-              ref={scrollContainerRef}
-              className={`marquee-wrapper ${isDragging ? 'dragging' : ''}`}
-              onMouseDown={(e) => handleDragStart(e.clientX)}
-              onMouseUp={handleDragEnd}
-              onMouseMove={(e) => { if (isDragging) { e.preventDefault(); handleDragMove(e.clientX); }}}
-              onMouseLeave={handleDragEnd}
-              onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
-              onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
-              onTouchEnd={handleDragEnd}
-            >
-              <div className={`marquee-track gap-3 md:gap-4 ${isDragging ? 'paused' : ''}`}>
-                {/* Double set for seamless infinite loop */}
-                {[...featuredListings, ...featuredListings].map((listing, index) => (
-                  <div key={`${listing.id}-${index}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none">
-                    <div className="pointer-events-auto">
+            <div className="relative group">
+              {/* Right Arrow */}
+              <button
+                onClick={() => scrollByAmount('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-background/90 backdrop-blur-sm border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200 opacity-0 group-hover:opacity-100 md:opacity-100"
+                aria-label="التالي"
+              >
+                <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
+              </button>
+              
+              {/* Left Arrow */}
+              <button
+                onClick={() => scrollByAmount('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-background/90 backdrop-blur-sm border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200 opacity-0 group-hover:opacity-100 md:opacity-100"
+                aria-label="السابق"
+              >
+                <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
+              </button>
+              
+              {/* Carousel Container */}
+              <div 
+                ref={scrollContainerRef}
+                className="overflow-x-auto scrollbar-hide scroll-smooth px-6 md:px-8"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <div className="flex gap-3 md:gap-4 w-max py-2">
+                  {featuredListings.map((listing) => (
+                    <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
                       <ListingCard
                         id={listing.id}
                         title={listing.title}
@@ -155,8 +160,8 @@ const Index: React.FC = () => {
                         featured={listing.featured || false}
                       />
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>

@@ -228,41 +228,12 @@
     }
   }
 
-  @keyframes marquee-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(50%);
-    }
-  }
-
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee-scroll 30s linear infinite;
-    will-change: transform;
-  }
-
-  .marquee-track:hover,
-  .marquee-track.paused {
-    animation-play-state: paused;
-  }
-
-  .marquee-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;
-    cursor: grab;
   }
 
-  .marquee-wrapper::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-
-  .marquee-wrapper.dragging {
-    cursor: grabbing;
-    user-select: none;
   }
 }
