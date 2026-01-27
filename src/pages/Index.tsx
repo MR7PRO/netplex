@@ -21,28 +21,28 @@ const CATEGORIES = [
 const Index: React.FC = () => {
   // Drag to scroll state
   const marqueeRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragStartRef = useRef({ x: 0, currentOffset: 0 });
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!marqueeRef.current) return;
     setIsDragging(true);
     dragStartRef.current = {
       x: e.clientX,
-      scrollLeft: marqueeRef.current.scrollLeft
+      currentOffset: dragOffset
     };
-  }, []);
+  }, [dragOffset]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !marqueeRef.current) return;
+    if (!isDragging) return;
     e.preventDefault();
     const deltaX = e.clientX - dragStartRef.current.x;
-    // RTL: positive delta means scroll left decreases
-    marqueeRef.current.scrollLeft = dragStartRef.current.scrollLeft - deltaX;
+    setDragOffset(dragStartRef.current.currentOffset + deltaX);
   }, [isDragging]);
 
   const handleMouseLeave = useCallback(() => {
@@ -51,18 +51,17 @@ const Index: React.FC = () => {
 
   // Touch support for mobile
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (!marqueeRef.current) return;
     setIsDragging(true);
     dragStartRef.current = {
       x: e.touches[0].clientX,
-      scrollLeft: marqueeRef.current.scrollLeft
+      currentOffset: dragOffset
     };
-  }, []);
+  }, [dragOffset]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging || !marqueeRef.current) return;
+    if (!isDragging) return;
     const deltaX = e.touches[0].clientX - dragStartRef.current.x;
-    marqueeRef.current.scrollLeft = dragStartRef.current.scrollLeft - deltaX;
+    setDragOffset(dragStartRef.current.currentOffset + deltaX);
   }, [isDragging]);
 
   const handleTouchEnd = useCallback(() => {
@@ -156,7 +155,7 @@ const Index: React.FC = () => {
             </div>
             <div 
               ref={marqueeRef}
-              className={`overflow-x-auto scrollbar-hide marquee-container cursor-grab ${isDragging ? 'dragging cursor-grabbing' : ''}`}
+              className="overflow-hidden marquee-container"
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
@@ -164,27 +163,18 @@ const Index: React.FC = () => {
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              <div className={`flex gap-3 md:gap-4 w-max ${!isDragging ? 'animate-marquee' : ''}`}>
-                {/* First set of items */}
-                {featuredListings.map((listing) => (
-                  <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none">
-                    <ListingCard
-                      id={listing.id}
-                      title={listing.title}
-                      price={listing.price_ils}
-                      image={listing.images?.[0]}
-                      region={listing.region}
-                      condition={listing.condition || undefined}
-                      viewCount={listing.view_count || 0}
-                      featured={listing.featured || false}
-                    />
-                  </div>
-                ))}
-                {/* Duplicate set for seamless loop */}
-                {featuredListings.map((listing) => (
-                  <div key={`dup-${listing.id}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none">
+              <div 
+                className={`flex gap-3 md:gap-4 ${!isDragging ? 'animate-marquee' : ''}`}
+                style={{ 
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  transform: isDragging ? `translateX(${dragOffset}px)` : undefined,
+                  transition: isDragging ? 'none' : undefined
+                }}
+              >
+                {/* Triple set for seamless infinite loop */}
+                {[...featuredListings, ...featuredListings, ...featuredListings].map((listing, index) => (
+                  <div key={`${listing.id}-${index}`} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0 select-none pointer-events-none">
                     <ListingCard
                       id={listing.id}
                       title={listing.title}
