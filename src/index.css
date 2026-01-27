@@ -233,16 +233,16 @@
       transform: translateX(0);
     }
     100% {
-      transform: translateX(50%);
+      transform: translateX(33.333%);
     }
   }
 
   .animate-marquee {
-    animation: marquee-rtl 60s linear infinite;
+    animation: marquee-rtl 40s linear infinite;
     will-change: transform;
   }
 
-  .animate-marquee:hover {
+  .marquee-container:hover .animate-marquee {
     animation-play-state: paused;
   }
 
