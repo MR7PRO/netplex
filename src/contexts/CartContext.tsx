@@ -6,7 +6,7 @@ interface CartItem {
   price_ils: number;
   image: string | null;
   seller_name: string;
-  seller_whatsapp: string | null;
+  seller_id: string;
 }
 
 interface CartContextType {

@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
@@ -11,17 +11,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Star, 
   MapPin, 
-  Phone, 
   ShieldCheck, 
   Calendar, 
   Package, 
   MessageCircle,
   ArrowLeft,
-  User
+  User,
+  LogIn
 } from "lucide-react";
+import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 
 const SellerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  
+  // Get seller WhatsApp (only for authenticated users)
+  const { whatsapp: sellerWhatsapp, isAuthenticated } = useSellerWhatsapp(id);
 
   // Fetch seller details
   const { data: seller, isLoading: loadingSeller } = useQuery({
@@ -210,16 +215,25 @@ const SellerPage: React.FC = () => {
               </div>
 
               {/* Contact Button */}
-              {seller.whatsapp && (
+              {isAuthenticated && sellerWhatsapp ? (
                 <Button 
                   size="lg"
                   className="btn-brand"
-                  onClick={() => window.open(`https://wa.me/${seller.whatsapp}`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/${sellerWhatsapp.replace(/\D/g, "")}`, '_blank')}
                 >
                   <MessageCircle className="h-5 w-5 ml-2" />
                   تواصل واتساب
                 </Button>
-              )}
+              ) : !isAuthenticated ? (
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate("/auth")}
+                >
+                  <LogIn className="h-5 w-5 ml-2" />
+                  سجل الدخول للتواصل
+                </Button>
+              ) : null}
             </div>
           </div>
 

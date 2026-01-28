@@ -33,6 +33,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
+import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 
 interface Listing {
   id: string;
@@ -59,7 +60,6 @@ interface Seller {
   region: string;
   verified: boolean | null;
   trust_score: number | null;
-  whatsapp: string | null;
   user_id: string;
 }
 
@@ -97,6 +97,9 @@ const ListingDetailsPage: React.FC = () => {
 
   // Get signed URLs for images
   const { signedUrls: signedImageUrls, loading: imagesLoading } = useSignedImageUrls(listing?.images);
+  
+  // Get seller WhatsApp (only for authenticated users)
+  const { whatsapp: sellerWhatsapp, isAuthenticated } = useSellerWhatsapp(seller?.id);
 
   // Fetch listing details
   useEffect(() => {
@@ -196,7 +199,7 @@ const ListingDetailsPage: React.FC = () => {
       price_ils: listing.price_ils,
       image: listing.images?.[0] || null,
       seller_name: seller.shop_name || "بائع",
-      seller_whatsapp: seller.whatsapp,
+      seller_id: seller.id,
     });
     toast({ title: "تمت الإضافة للسلة" });
   };
@@ -283,8 +286,8 @@ const ListingDetailsPage: React.FC = () => {
     { value: "other", label: "سبب آخر" },
   ];
 
-  const whatsappLink = seller?.whatsapp
-    ? `https://wa.me/${seller.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`مرحباً، أنا مهتم بـ: ${listing?.title}`)}`
+  const whatsappLink = sellerWhatsapp
+    ? `https://wa.me/${sellerWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`مرحباً، أنا مهتم بـ: ${listing?.title}`)}`
     : null;
 
   if (loading) {

@@ -135,6 +135,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "listings_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "listings_submission_id_fkey"
             columns: ["submission_id"]
             isOneToOne: false
@@ -336,6 +343,13 @@ export type Database = {
             referencedRelation: "sellers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reviews_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       saved_listings: {
@@ -500,6 +514,13 @@ export type Database = {
             referencedRelation: "sellers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "submissions_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -552,6 +573,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sellers_public: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          id: string | null
+          region: string | null
+          shop_name: string | null
+          trust_score: number | null
+          type: Database["public"]["Enums"]["seller_type"] | null
+          updated_at: string | null
+          user_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          region?: string | null
+          shop_name?: string | null
+          trust_score?: number | null
+          type?: Database["public"]["Enums"]["seller_type"] | null
+          updated_at?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          region?: string | null
+          shop_name?: string | null
+          trust_score?: number | null
+          type?: Database["public"]["Enums"]["seller_type"] | null
+          updated_at?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_listing_rank: {
@@ -565,6 +625,7 @@ export type Database = {
         Returns: number
       }
       get_seller_id: { Args: { _user_id: string }; Returns: string }
+      get_seller_whatsapp: { Args: { p_seller_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

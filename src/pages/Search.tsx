@@ -45,7 +45,6 @@ interface Listing {
     id: string;
     shop_name: string | null;
     verified: boolean | null;
-    whatsapp: string | null;
     trust_score: number | null;
   } | null;
   category: {
@@ -105,7 +104,7 @@ const SearchPage: React.FC = () => {
         .select(`
           id, title, description, price_ils, condition, region, images, 
           view_count, save_count, featured, created_at,
-          seller:sellers!inner(id, shop_name, verified, whatsapp, trust_score),
+          seller:sellers!inner(id, shop_name, verified, trust_score),
           category:categories(name_ar, slug)
         `)
         .eq("status", "available");
@@ -219,7 +218,7 @@ const SearchPage: React.FC = () => {
       price_ils: listing.price_ils,
       image: listing.images?.[0] || null,
       seller_name: listing.seller?.shop_name || "بائع",
-      seller_whatsapp: listing.seller?.whatsapp || null,
+      seller_id: listing.seller?.id || "",
     });
     toast({ title: "تمت الإضافة للسلة" });
   };
