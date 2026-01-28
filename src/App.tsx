@@ -17,9 +17,16 @@ const ListingDetails = lazy(() => import("./pages/ListingDetails"));
 const SellerSubmission = lazy(() => import("./pages/SellerSubmission"));
 const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
 const SellerPage = lazy(() => import("./pages/Seller"));
-const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Cart = lazy(() => import("./pages/Cart"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Admin pages
+const AdminOverview = lazy(() => import("./pages/admin/Overview"));
+const AdminSubmissions = lazy(() => import("./pages/admin/Submissions"));
+const AdminListings = lazy(() => import("./pages/admin/Listings"));
+const AdminSellers = lazy(() => import("./pages/admin/Sellers"));
+const AdminReports = lazy(() => import("./pages/admin/Reports"));
+const AdminAudit = lazy(() => import("./pages/admin/Audit"));
 
 const queryClient = new QueryClient();
 
@@ -49,7 +56,12 @@ const App = () => (
                     <Route path="/sell/new" element={<SellerSubmission />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="/seller/:id" element={<SellerPage />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin" element={<AdminOverview />} />
+                    <Route path="/admin/submissions" element={<AdminSubmissions />} />
+                    <Route path="/admin/listings" element={<AdminListings />} />
+                    <Route path="/admin/sellers" element={<AdminSellers />} />
+                    <Route path="/admin/reports" element={<AdminReports />} />
+                    <Route path="/admin/audit" element={<AdminAudit />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
