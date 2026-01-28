@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { EnvErrorBoundary } from "@/components/EnvErrorBoundary";
 import { lazy, Suspense } from "react";
 
 // Lazy load pages for code splitting
@@ -30,34 +31,36 @@ const PageLoader = () => (
 );
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/listing/:id" element={<ListingDetails />} />
-                  <Route path="/sell/new" element={<SellerSubmission />} />
-                  <Route path="/seller/dashboard" element={<SellerDashboard />} />
-                  <Route path="/seller/:id" element={<SellerPage />} />
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-          </TooltipProvider>
-        </CartProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+  <EnvErrorBoundary>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/listing/:id" element={<ListingDetails />} />
+                    <Route path="/sell/new" element={<SellerSubmission />} />
+                    <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                    <Route path="/seller/:id" element={<SellerPage />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </TooltipProvider>
+          </CartProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  </EnvErrorBoundary>
 );
 
 export default App;
