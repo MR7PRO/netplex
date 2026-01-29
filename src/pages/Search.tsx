@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search as SearchIcon, SlidersHorizontal, X, MapPin, Heart, Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search as SearchIcon, MapPin, Heart, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,22 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
-import { formatPrice, getRegionLabel, getConditionLabel, REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
-import { useCart } from "@/contexts/CartContext";
-import { useToast } from "@/hooks/use-toast";
+import { formatPrice, getRegionLabel, getConditionLabel } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
+import { SearchFiltersSheet, SearchFilters } from "@/components/search/SearchFiltersSheet";
+import { ListingBadges } from "@/components/listings/ListingBadges";
+import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
+import { useMedianPrices } from "@/hooks/useMedianPrices";
 import type { Database } from "@/integrations/supabase/types";
 
 interface Listing {
@@ -39,8 +32,12 @@ interface Listing {
   images: string[];
   view_count: number | null;
   save_count: number | null;
+  whatsapp_click_count: number | null;
   featured: boolean | null;
   created_at: string | null;
+  published_at: string | null;
+  brand: string | null;
+  model: string | null;
   seller: {
     id: string;
     shop_name: string | null;
@@ -51,7 +48,9 @@ interface Listing {
     name_ar: string;
     slug: string;
   } | null;
+  // Computed fields
   rank?: number;
+  rankingResult?: RankingResult;
 }
 
 interface Category {
@@ -60,27 +59,41 @@ interface Category {
   name_ar: string;
 }
 
+const SORT_OPTIONS = [
+  { value: "best-match", label_ar: "الأفضل تطابقاً" },
+  { value: "newest", label_ar: "الأحدث" },
+  { value: "price-low", label_ar: "السعر: الأقل" },
+  { value: "price-high", label_ar: "السعر: الأعلى" },
+];
+
 const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [listings, setListings] = useState<Listing[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
+  const [models, setModels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const { addItem, isInCart } = useCart();
-  const { toast } = useToast();
+  
+  // Median prices for fair price calculation
+  const { data: medianPrices } = useMedianPrices();
 
-  // Filter states
+  // Query state
   const [query, setQuery] = useState(searchParams.get("q") || "");
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
-  const [selectedRegion, setSelectedRegion] = useState(searchParams.get("region") || "");
-  const [selectedConditions, setSelectedConditions] = useState<string[]>(
-    searchParams.get("condition")?.split(",").filter(Boolean) || []
-  );
-  const [priceRange, setPriceRange] = useState<[number, number]>([
-    parseInt(searchParams.get("minPrice") || "0"),
-    parseInt(searchParams.get("maxPrice") || "50000"),
-  ]);
-  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "recommended");
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "best-match");
+  
+  // Filter state
+  const [filters, setFilters] = useState<SearchFilters>({
+    category: searchParams.get("category") || "",
+    region: searchParams.get("region") || "",
+    conditions: searchParams.get("condition")?.split(",").filter(Boolean) || [],
+    priceRange: [
+      parseInt(searchParams.get("minPrice") || "0"),
+      parseInt(searchParams.get("maxPrice") || "50000"),
+    ],
+    brand: searchParams.get("brand") || "",
+    model: searchParams.get("model") || "",
+  });
 
   // Fetch categories
   useEffect(() => {
@@ -94,6 +107,34 @@ const SearchPage: React.FC = () => {
     fetchCategories();
   }, []);
 
+  // Fetch brands and models for filters
+  useEffect(() => {
+    const fetchBrandsModels = async () => {
+      const { data } = await supabase
+        .from("listings")
+        .select("brand, model")
+        .eq("status", "available")
+        .not("brand", "is", null);
+      
+      if (data) {
+        const uniqueBrands = [...new Set(data.map(d => d.brand).filter(Boolean) as string[])].sort();
+        setBrands(uniqueBrands);
+        
+        // If a brand is selected, filter models to that brand
+        if (filters.brand) {
+          const brandModels = data
+            .filter(d => d.brand === filters.brand && d.model)
+            .map(d => d.model as string);
+          setModels([...new Set(brandModels)].sort());
+        } else {
+          const allModels = [...new Set(data.map(d => d.model).filter(Boolean) as string[])].sort();
+          setModels(allModels);
+        }
+      }
+    };
+    fetchBrandsModels();
+  }, [filters.brand]);
+
   // Fetch listings
   useEffect(() => {
     const fetchListings = async () => {
@@ -103,30 +144,39 @@ const SearchPage: React.FC = () => {
         .from("listings")
         .select(`
           id, title, description, price_ils, condition, region, images, 
-          view_count, save_count, featured, created_at,
+          view_count, save_count, whatsapp_click_count, featured, created_at, published_at,
+          brand, model,
           seller:sellers!inner(id, shop_name, verified, trust_score),
           category:categories(name_ar, slug)
         `)
         .eq("status", "available");
 
-      // Apply filters
+      // Apply text search (Arabic/English)
       if (query) {
-        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%`);
+        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,brand.ilike.%${query}%,model.ilike.%${query}%`);
       }
-      if (selectedCategory) {
-        queryBuilder = queryBuilder.eq("category.slug", selectedCategory);
+      
+      // Apply filters
+      if (filters.category) {
+        queryBuilder = queryBuilder.eq("category.slug", filters.category);
       }
-      if (selectedRegion) {
-        queryBuilder = queryBuilder.eq("region", selectedRegion);
+      if (filters.region) {
+        queryBuilder = queryBuilder.eq("region", filters.region);
       }
-      if (selectedConditions.length > 0) {
-        queryBuilder = queryBuilder.in("condition", selectedConditions as Database["public"]["Enums"]["item_condition"][]);
+      if (filters.conditions.length > 0) {
+        queryBuilder = queryBuilder.in("condition", filters.conditions as Database["public"]["Enums"]["item_condition"][]);
+      }
+      if (filters.brand) {
+        queryBuilder = queryBuilder.eq("brand", filters.brand);
+      }
+      if (filters.model) {
+        queryBuilder = queryBuilder.eq("model", filters.model);
       }
       queryBuilder = queryBuilder
-        .gte("price_ils", priceRange[0])
-        .lte("price_ils", priceRange[1]);
+        .gte("price_ils", filters.priceRange[0])
+        .lte("price_ils", filters.priceRange[1]);
 
-      // Apply sorting
+      // Apply DB-level sorting for simple sorts
       switch (sortBy) {
         case "price-low":
           queryBuilder = queryBuilder.order("price_ils", { ascending: true });
@@ -134,101 +184,99 @@ const SearchPage: React.FC = () => {
         case "price-high":
           queryBuilder = queryBuilder.order("price_ils", { ascending: false });
           break;
-        case "popular":
-          queryBuilder = queryBuilder.order("view_count", { ascending: false, nullsFirst: false });
-          break;
-        case "recommended":
-          // Will be sorted client-side using ranking algorithm
-          queryBuilder = queryBuilder.order("created_at", { ascending: false });
+        case "newest":
+          queryBuilder = queryBuilder.order("published_at", { ascending: false, nullsFirst: false });
           break;
         default:
-          queryBuilder = queryBuilder.order("created_at", { ascending: false });
+          // best-match will be sorted client-side
+          queryBuilder = queryBuilder.order("published_at", { ascending: false });
       }
 
       const { data, error } = await queryBuilder.limit(50);
       
       if (error) {
         console.error("Error fetching listings:", error);
+        setListings([]);
       } else {
-        let processedListings = (data || []) as unknown as Listing[];
-        
-        // Apply client-side ranking for "recommended" sort
-        if (sortBy === "recommended") {
-          processedListings = processedListings.map(listing => {
-            // Calculate rank score
-            const trustScore = (listing.seller?.trust_score || 50) / 100;
-            const viewScore = Math.min(1, Math.log(Math.max(1, (listing.view_count || 0) + 1)) / Math.log(1001));
-            const saveScore = Math.min(1, Math.log(Math.max(1, (listing.save_count || 0) + 1)) / Math.log(101));
-            
-            // Recency: exponential decay over 30 days
-            const createdAt = listing.created_at ? new Date(listing.created_at) : new Date();
-            const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
-            const recencyScore = Math.exp(-daysSinceCreation / 30);
-            
-            // Featured bonus
-            const featuredBonus = listing.featured ? 0.15 : 0;
-            
-            // Final rank
-            const rank = (0.35 * trustScore) + (0.20 * viewScore) + (0.15 * recencyScore) + 
-                         (0.20 * 0.5) + (0.10 * saveScore) + featuredBonus;
-            
-            return { ...listing, rank };
-          });
-          
-          // Sort by rank descending
-          processedListings.sort((a, b) => (b.rank || 0) - (a.rank || 0));
-        }
-        
-        setListings(processedListings);
+        setListings((data || []) as unknown as Listing[]);
       }
       setLoading(false);
     };
 
     fetchListings();
-  }, [query, selectedCategory, selectedRegion, selectedConditions, priceRange, sortBy]);
+  }, [query, filters, sortBy]);
+
+  // Apply ranking algorithm
+  const rankedListings = useMemo(() => {
+    if (!listings.length) return [];
+    
+    const withRanking = listings.map(listing => {
+      const medianKey = getMedianPriceKey(listing.brand, listing.model);
+      const medianPrice = medianKey && medianPrices ? medianPrices[medianKey] : null;
+      
+      const rankingResult = calculateListingRank({
+        sellerTrustScore: listing.seller?.trust_score || 50,
+        sellerVerified: listing.seller?.verified || false,
+        title: listing.title,
+        description: listing.description,
+        images: listing.images || [],
+        brand: listing.brand,
+        model: listing.model,
+        condition: listing.condition,
+        publishedAt: listing.published_at,
+        createdAt: listing.created_at,
+        viewCount: listing.view_count || 0,
+        saveCount: listing.save_count || 0,
+        whatsappClickCount: listing.whatsapp_click_count || 0,
+        price: listing.price_ils,
+        medianPrice,
+        featured: listing.featured || false,
+      });
+      
+      return {
+        ...listing,
+        rank: rankingResult.score,
+        rankingResult,
+      };
+    });
+    
+    // Sort by ranking score for "best-match"
+    if (sortBy === "best-match") {
+      withRanking.sort((a, b) => (b.rank || 0) - (a.rank || 0));
+    }
+    
+    return withRanking;
+  }, [listings, medianPrices, sortBy]);
 
   // Update URL params
   const applyFilters = () => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedRegion) params.set("region", selectedRegion);
-    if (selectedConditions.length > 0) params.set("condition", selectedConditions.join(","));
-    if (priceRange[0] > 0) params.set("minPrice", priceRange[0].toString());
-    if (priceRange[1] < 50000) params.set("maxPrice", priceRange[1].toString());
-    if (sortBy !== "newest") params.set("sort", sortBy);
+    if (filters.category) params.set("category", filters.category);
+    if (filters.region) params.set("region", filters.region);
+    if (filters.conditions.length > 0) params.set("condition", filters.conditions.join(","));
+    if (filters.priceRange[0] > 0) params.set("minPrice", filters.priceRange[0].toString());
+    if (filters.priceRange[1] < 50000) params.set("maxPrice", filters.priceRange[1].toString());
+    if (filters.brand) params.set("brand", filters.brand);
+    if (filters.model) params.set("model", filters.model);
+    if (sortBy !== "best-match") params.set("sort", sortBy);
     setSearchParams(params);
     setFiltersOpen(false);
   };
 
   const clearFilters = () => {
     setQuery("");
-    setSelectedCategory("");
-    setSelectedRegion("");
-    setSelectedConditions([]);
-    setPriceRange([0, 50000]);
-    setSortBy("newest");
+    setFilters({
+      category: "",
+      region: "",
+      conditions: [],
+      priceRange: [0, 50000],
+      brand: "",
+      model: "",
+    });
+    setSortBy("best-match");
     setSearchParams(new URLSearchParams());
   };
-
-  const handleAddToCart = (listing: Listing) => {
-    addItem({
-      id: listing.id,
-      title: listing.title,
-      price_ils: listing.price_ils,
-      image: listing.images?.[0] || null,
-      seller_name: listing.seller?.shop_name || "بائع",
-      seller_id: listing.seller?.id || "",
-    });
-    toast({ title: "تمت الإضافة للسلة" });
-  };
-
-  const activeFiltersCount = [
-    selectedCategory,
-    selectedRegion,
-    selectedConditions.length > 0,
-    priceRange[0] > 0 || priceRange[1] < 50000,
-  ].filter(Boolean).length;
 
   return (
     <Layout>
@@ -243,140 +291,47 @@ const SearchPage: React.FC = () => {
               <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="ابحث عن منتجات..."
+                placeholder="ابحث عن منتجات... | Search products..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pr-10"
+                dir="auto"
               />
             </div>
           </form>
 
           <div className="flex gap-2">
-            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="relative">
-                  <SlidersHorizontal className="h-4 w-4 ml-2" />
-                  فلترة
-                  {activeFiltersCount > 0 && (
-                    <Badge className="absolute -top-2 -left-2 h-5 w-5 p-0 flex items-center justify-center">
-                      {activeFiltersCount}
-                    </Badge>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80 overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>فلترة النتائج</SheetTitle>
-                </SheetHeader>
-                <div className="py-4 space-y-6">
-                  {/* Category */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">القسم</label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="جميع الأقسام" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">جميع الأقسام</SelectItem>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.slug}>
-                            {cat.name_ar}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+            <SearchFiltersSheet
+              filters={filters}
+              onFiltersChange={setFilters}
+              onApply={applyFilters}
+              onClear={clearFilters}
+              categories={categories}
+              brands={brands}
+              models={models}
+              open={filtersOpen}
+              onOpenChange={setFiltersOpen}
+            />
 
-                  {/* Region */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">المنطقة</label>
-                    <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="جميع المناطق" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">جميع المناطق</SelectItem>
-                        {REGIONS.map((region) => (
-                          <SelectItem key={region.value} value={region.value}>
-                            {region.label_ar}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Condition */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">الحالة</label>
-                    <div className="space-y-2">
-                      {CONDITION_OPTIONS.map((condition) => (
-                        <div key={condition.value} className="flex items-center gap-2">
-                          <Checkbox
-                            id={condition.value}
-                            checked={selectedConditions.includes(condition.value)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedConditions([...selectedConditions, condition.value]);
-                              } else {
-                                setSelectedConditions(selectedConditions.filter(c => c !== condition.value));
-                              }
-                            }}
-                          />
-                          <label htmlFor={condition.value} className="text-sm cursor-pointer">
-                            {condition.label_ar}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Price Range */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      نطاق السعر: {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
-                    </label>
-                    <Slider
-                      value={priceRange}
-                      onValueChange={(value) => setPriceRange(value as [number, number])}
-                      min={0}
-                      max={50000}
-                      step={100}
-                      className="mt-4"
-                    />
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-4">
-                    <Button onClick={applyFilters} className="flex-1 btn-brand">
-                      تطبيق
-                    </Button>
-                    <Button variant="outline" onClick={clearFilters}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-
-            <Select value={sortBy} onValueChange={(value) => { setSortBy(value); }}>
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="recommended">الموصى بها</SelectItem>
-                <SelectItem value="newest">الأحدث</SelectItem>
-                <SelectItem value="price-low">السعر: الأقل</SelectItem>
-                <SelectItem value="price-high">السعر: الأعلى</SelectItem>
-                <SelectItem value="popular">الأكثر مشاهدة</SelectItem>
+                {SORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label_ar}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* Results */}
+        {/* Results count */}
         <div className="mb-4">
           <p className="text-muted-foreground">
-            {loading ? "جاري البحث..." : `${listings.length} نتيجة`}
+            {loading ? "جاري البحث..." : `${rankedListings.length} نتيجة`}
           </p>
         </div>
 
@@ -394,7 +349,7 @@ const SearchPage: React.FC = () => {
               </div>
             ))}
           </div>
-        ) : listings.length === 0 ? (
+        ) : rankedListings.length === 0 ? (
           <div className="text-center py-16">
             <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">لا توجد نتائج</h3>
@@ -405,7 +360,7 @@ const SearchPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {listings.map((listing) => (
+            {rankedListings.map((listing) => (
               <Link
                 key={listing.id}
                 to={`/listing/${listing.id}`}
@@ -438,6 +393,18 @@ const SearchPage: React.FC = () => {
                   <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
                     {listing.title}
                   </h3>
+                  
+                  {/* Ranking Badges */}
+                  {listing.rankingResult && (
+                    <ListingBadges
+                      verifiedSeller={listing.rankingResult.badges.verifiedSeller}
+                      fairPrice={listing.rankingResult.badges.fairPrice}
+                      hotDeal={listing.rankingResult.badges.hotDeal}
+                      className="mb-2"
+                      compact
+                    />
+                  )}
+                  
                   <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
                     <MapPin className="h-3 w-3" />
                     {getRegionLabel(listing.region)}
