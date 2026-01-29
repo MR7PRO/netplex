@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ListingBadges } from "@/components/listings/ListingBadges";
+
 interface ListingCardProps {
   id: string;
   title: string;
@@ -16,6 +18,10 @@ interface ListingCardProps {
   viewCount?: number;
   featured?: boolean;
   className?: string;
+  // Badge props
+  verifiedSeller?: boolean;
+  fairPrice?: boolean;
+  hotDeal?: boolean;
 }
 
 const conditionLabels: Record<string, string> = {
@@ -36,8 +42,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   viewCount,
   featured,
   className,
+  verifiedSeller,
+  fairPrice,
+  hotDeal,
 }) => {
   const { signedUrl, loading: imageLoading } = useSignedImageUrl(image);
+
+  const hasBadges = verifiedSeller || fairPrice || hotDeal;
 
   return (
     <Link to={`/listing/${id}`}>
@@ -80,6 +91,17 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           <h3 className="font-semibold text-sm line-clamp-2 mb-2 min-h-[2.5rem]">
             {title}
           </h3>
+          
+          {/* Listing Badges */}
+          {hasBadges && (
+            <ListingBadges
+              verifiedSeller={verifiedSeller}
+              fairPrice={fairPrice}
+              hotDeal={hotDeal}
+              className="mb-2"
+              compact
+            />
+          )}
           
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold text-primary">
