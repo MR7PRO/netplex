@@ -103,6 +103,13 @@ const ListingDetailsPage: React.FC = () => {
   // Get seller WhatsApp (only for authenticated users)
   const { whatsapp: sellerWhatsapp, isAuthenticated } = useSellerWhatsapp(seller?.id);
 
+  // Fetch price intelligence
+  const { data: priceStats, isLoading: priceStatsLoading } = usePriceStats(
+    listing?.brand ?? null,
+    listing?.model ?? null,
+    listing?.condition ?? null
+  );
+
   // Fetch listing details
   useEffect(() => {
     const fetchListing = async () => {
