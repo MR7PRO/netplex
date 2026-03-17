@@ -674,6 +674,16 @@ const ListingDetailsPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <AskNetPlexButton
+        listingContext={listing ? {
+          title: listing.title,
+          price: listing.price_ils,
+          brand: listing.brand,
+          model: listing.model,
+          condition: listing.condition,
+          region: listing.region,
+        } : null}
+      />
     </Layout>
   );
 };
