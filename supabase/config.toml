@@ -1,1 +1,4 @@
 project_id = "pqgidznijhsaboqqofhn"
+
+[functions.netplex-ai]
+verify_jwt = false
