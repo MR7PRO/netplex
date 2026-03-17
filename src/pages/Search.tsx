@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { useSearchParams, Link } from "react-router-dom";
 import { Search as SearchIcon, MapPin, Heart, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
