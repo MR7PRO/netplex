@@ -686,6 +686,21 @@ export type Database = {
         }
         Returns: number
       }
+      get_price_stats: {
+        Args: {
+          p_brand: string
+          p_condition?: Database["public"]["Enums"]["item_condition"]
+          p_model: string
+        }
+        Returns: {
+          price_max: number
+          price_median: number
+          price_min: number
+          price_p25: number
+          price_p75: number
+          sample_count: number
+        }[]
+      }
       get_seller_id: { Args: { _user_id: string }; Returns: string }
       get_seller_whatsapp: { Args: { p_seller_id: string }; Returns: string }
       has_role: {
