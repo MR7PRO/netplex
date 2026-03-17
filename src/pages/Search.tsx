@@ -436,6 +436,7 @@ const SearchPage: React.FC = () => {
           </div>
         )}
       </div>
+      <AskNetPlexButton />
     </Layout>
   );
 };

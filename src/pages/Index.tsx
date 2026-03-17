@@ -282,6 +282,7 @@ const Index: React.FC = () => {
           </div>
         </div>
       </section>
+      <AskNetPlexButton />
     </Layout>
   );
 };
