@@ -408,6 +408,15 @@ const ListingDetailsPage: React.FC = () => {
               <p className="text-3xl font-bold text-primary">
                 {formatPrice(listing.price_ils)}
               </p>
+
+              {/* Price Insights */}
+              {priceStats && (
+                <PriceInsightsCard
+                  price={listing.price_ils}
+                  stats={priceStats}
+                  loading={priceStatsLoading}
+                />
+              )}
             </div>
 
             {/* Actions */}
