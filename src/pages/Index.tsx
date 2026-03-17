@@ -1,4 +1,5 @@
 import React, { useRef, useCallback } from "react";
+import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -281,6 +282,7 @@ const Index: React.FC = () => {
           </div>
         </div>
       </section>
+      <AskNetPlexButton />
     </Layout>
   );
 };

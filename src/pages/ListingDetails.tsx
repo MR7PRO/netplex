@@ -36,6 +36,7 @@ import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 import { usePriceStats } from "@/hooks/usePriceStats";
 import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
+import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 
 interface Listing {
   id: string;
@@ -673,6 +674,16 @@ const ListingDetailsPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <AskNetPlexButton
+        listingContext={listing ? {
+          title: listing.title,
+          price: listing.price_ils,
+          brand: listing.brand,
+          model: listing.model,
+          condition: listing.condition,
+          region: listing.region,
+        } : null}
+      />
     </Layout>
   );
 };
