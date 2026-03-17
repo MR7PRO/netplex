@@ -34,6 +34,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
+import { usePriceStats } from "@/hooks/usePriceStats";
+import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
 
 interface Listing {
   id: string;
@@ -100,6 +102,13 @@ const ListingDetailsPage: React.FC = () => {
   
   // Get seller WhatsApp (only for authenticated users)
   const { whatsapp: sellerWhatsapp, isAuthenticated } = useSellerWhatsapp(seller?.id);
+
+  // Fetch price intelligence
+  const { data: priceStats, isLoading: priceStatsLoading } = usePriceStats(
+    listing?.brand ?? null,
+    listing?.model ?? null,
+    listing?.condition ?? null
+  );
 
   // Fetch listing details
   useEffect(() => {
@@ -399,6 +408,15 @@ const ListingDetailsPage: React.FC = () => {
               <p className="text-3xl font-bold text-primary">
                 {formatPrice(listing.price_ils)}
               </p>
+
+              {/* Price Insights */}
+              {priceStats && (
+                <PriceInsightsCard
+                  price={listing.price_ils}
+                  stats={priceStats}
+                  loading={priceStatsLoading}
+                />
+              )}
             </div>
 
             {/* Actions */}
