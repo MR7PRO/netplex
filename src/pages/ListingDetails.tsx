@@ -34,6 +34,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
+import { usePriceStats } from "@/hooks/usePriceStats";
+import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
 
 interface Listing {
   id: string;
