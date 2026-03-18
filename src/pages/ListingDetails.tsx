@@ -36,6 +36,7 @@ import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 import { usePriceStats } from "@/hooks/usePriceStats";
 import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
+import { AIPriceCheckCard } from "@/components/listings/AIPriceCheckCard";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 
 interface Listing {
@@ -409,6 +410,14 @@ const ListingDetailsPage: React.FC = () => {
               <p className="text-3xl font-bold text-primary">
                 {formatPrice(listing.price_ils)}
               </p>
+
+              {/* AI Price Check - instant verdict */}
+              <AIPriceCheckCard
+                price={listing.price_ils}
+                brand={listing.brand}
+                model={listing.model}
+                condition={listing.condition}
+              />
 
               {/* Price Insights */}
               {priceStats && (

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
+import { CompareBar } from "@/components/compare/CompareBar";
+import { useCompare, type CompareListing } from "@/contexts/CompareContext";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search as SearchIcon, MapPin, Heart, Eye } from "lucide-react";
+import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -68,6 +70,7 @@ const SORT_OPTIONS = [
 ];
 
 const SearchPage: React.FC = () => {
+  const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
   const [searchParams, setSearchParams] = useSearchParams();
   const [listings, setListings] = useState<Listing[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -372,6 +375,39 @@ const SearchPage: React.FC = () => {
                     <Badge className="bg-primary text-primary-foreground">مميز</Badge>
                   </div>
                 )}
+                {/* Compare button */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (isComparing(listing.id)) {
+                      removeCompare(listing.id);
+                    } else {
+                      addCompare({
+                        id: listing.id,
+                        title: listing.title,
+                        price_ils: listing.price_ils,
+                        condition: listing.condition,
+                        region: listing.region,
+                        brand: listing.brand,
+                        model: listing.model,
+                        image: listing.images?.[0] || null,
+                        sellerVerified: listing.seller?.verified || false,
+                        sellerTrustScore: listing.seller?.trust_score,
+                        sellerName: listing.seller?.shop_name,
+                      });
+                    }
+                  }}
+                  disabled={compareFull && !isComparing(listing.id)}
+                  className={`absolute top-2 left-2 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
+                    isComparing(listing.id)
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background/80 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                  } ${compareFull && !isComparing(listing.id) ? "opacity-40 cursor-not-allowed" : ""}`}
+                  title="قارن"
+                >
+                  <GitCompareArrows className="h-3.5 w-3.5" />
+                </button>
                 <div className="aspect-square bg-muted relative overflow-hidden">
                   {listing.images?.[0] ? (
                     <SignedImage
@@ -436,6 +472,7 @@ const SearchPage: React.FC = () => {
           </div>
         )}
       </div>
+      <CompareBar />
       <AskNetPlexButton />
     </Layout>
   );
