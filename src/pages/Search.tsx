@@ -70,6 +70,7 @@ const SORT_OPTIONS = [
 ];
 
 const SearchPage: React.FC = () => {
+  const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
   const [searchParams, setSearchParams] = useSearchParams();
   const [listings, setListings] = useState<Listing[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
