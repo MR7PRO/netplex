@@ -36,6 +36,7 @@ import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 import { usePriceStats } from "@/hooks/usePriceStats";
 import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
+import { AIPriceCheckCard } from "@/components/listings/AIPriceCheckCard";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 
 interface Listing {
