@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
+import { PriceVerdictChip, extractVerdict } from "@/components/chat/PriceVerdictChip";
 
 interface Message {
   role: "user" | "assistant";
