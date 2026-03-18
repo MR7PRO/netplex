@@ -222,7 +222,7 @@ const SearchPage: React.FC = () => {
     };
 
     fetchListings();
-  }, [query, filters, sortBy]);
+  }, [query, filters, sortBy, categories]);
 
   // Apply ranking algorithm
   const rankedListings = useMemo(() => {
