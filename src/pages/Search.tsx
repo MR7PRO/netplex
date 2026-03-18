@@ -472,6 +472,7 @@ const SearchPage: React.FC = () => {
           </div>
         )}
       </div>
+      <CompareBar />
       <AskNetPlexButton />
     </Layout>
   );
