@@ -246,8 +246,13 @@ export const NetPlexChatPanel: React.FC<NetPlexChatPanelProps> = ({
                 )}
               >
                 {msg.role === "assistant" ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1.5 [&>ul]:mb-1.5 [&>ol]:mb-1.5">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <div className="space-y-2">
+                    {extractVerdict(msg.content) && (
+                      <PriceVerdictChip verdict={extractVerdict(msg.content)!} />
+                    )}
+                    <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1.5 [&>ul]:mb-1.5 [&>ol]:mb-1.5">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
                   </div>
                 ) : (
                   <p>{msg.content}</p>

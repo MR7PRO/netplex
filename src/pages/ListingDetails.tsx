@@ -411,6 +411,14 @@ const ListingDetailsPage: React.FC = () => {
                 {formatPrice(listing.price_ils)}
               </p>
 
+              {/* AI Price Check - instant verdict */}
+              <AIPriceCheckCard
+                price={listing.price_ils}
+                brand={listing.brand}
+                model={listing.model}
+                condition={listing.condition}
+              />
+
               {/* Price Insights */}
               {priceStats && (
                 <PriceInsightsCard
