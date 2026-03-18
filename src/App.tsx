@@ -70,6 +70,7 @@ const App = () => (
                 </Suspense>
               </BrowserRouter>
             </TooltipProvider>
+            </CompareProvider>
           </CartProvider>
         </AuthProvider>
       </QueryClientProvider>
