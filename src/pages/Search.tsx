@@ -143,6 +143,20 @@ const SearchPage: React.FC = () => {
   useEffect(() => {
     const fetchListings = async () => {
       setLoading(true);
+
+      // Resolve category slug to ID for proper filtering
+      let categoryId: string | null = null;
+      if (filters.category) {
+        const matched = categories.find((c) => c.slug === filters.category);
+        if (matched) {
+          categoryId = matched.id;
+        } else {
+          // slug doesn't match any category — show no results
+          setListings([]);
+          setLoading(false);
+          return;
+        }
+      }
       
       let queryBuilder = supabase
         .from("listings")
@@ -160,9 +174,9 @@ const SearchPage: React.FC = () => {
         queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,brand.ilike.%${query}%,model.ilike.%${query}%`);
       }
       
-      // Apply filters
-      if (filters.category) {
-        queryBuilder = queryBuilder.eq("category.slug", filters.category);
+      // Apply category filter by ID
+      if (categoryId) {
+        queryBuilder = queryBuilder.eq("category_id", categoryId);
       }
       if (filters.region) {
         queryBuilder = queryBuilder.eq("region", filters.region);
