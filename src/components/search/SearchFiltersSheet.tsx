@@ -171,14 +171,14 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">الموديل</label>
             <Select
-              value={filters.model}
-              onValueChange={(v) => updateFilter("model", v)}
+              value={filters.model || "__all__"}
+              onValueChange={(v) => updateFilter("model", v === "__all__" ? "" : v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="جميع الموديلات" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع الموديلات</SelectItem>
+                <SelectItem value="__all__">جميع الموديلات</SelectItem>
                 {models.map((model) => (
                   <SelectItem key={model} value={model}>
                     {model}
