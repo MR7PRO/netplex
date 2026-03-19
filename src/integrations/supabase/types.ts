@@ -44,6 +44,45 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_invites: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          email: string
+          expires_at: string
+          id: string
+          invite_code: string
+          role: Database["public"]["Enums"]["app_role"]
+          used: boolean
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          email: string
+          expires_at: string
+          id?: string
+          invite_code: string
+          role?: Database["public"]["Enums"]["app_role"]
+          used?: boolean
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invite_code?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          used?: boolean
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string | null

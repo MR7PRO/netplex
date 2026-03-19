@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { getAuthErrorMessage } from "@/lib/authErrors";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -59,14 +60,54 @@ const Auth: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
+    const inviteCode = (formData.get("invite_code") as string)?.trim();
     
     try {
+      // If invite code provided, validate it first
+      if (inviteCode) {
+        const { data: invite, error: inviteErr } = await supabase
+          .from("admin_invites")
+          .select("*")
+          .eq("invite_code", inviteCode)
+          .maybeSingle();
+
+        if (inviteErr || !invite) {
+          toast({ title: "كود الدعوة غير صالح", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        if (invite.used) {
+          toast({ title: "كود الدعوة مستخدم بالفعل", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        if (new Date(invite.expires_at) < new Date()) {
+          toast({ title: "كود الدعوة منتهي الصلاحية", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+      }
+
       await signUp(
         formData.get("email") as string,
         formData.get("password") as string,
         formData.get("name") as string,
         formData.get("phone") as string
       );
+
+      // If invite code, redeem it after signup
+      if (inviteCode) {
+        const { data: { user: newUser } } = await supabase.auth.getUser();
+        if (newUser) {
+          const res = await supabase.functions.invoke("redeem-invite", {
+            body: { invite_code: inviteCode, user_id: newUser.id },
+          });
+          if (res.error || res.data?.error) {
+            console.error("Invite redeem error:", res.error || res.data?.error);
+          }
+        }
+      }
+
       toast({ title: "تم إنشاء الحساب بنجاح!" });
       navigate("/");
     } catch (error: unknown) {
@@ -166,6 +207,11 @@ const Auth: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="reg-password">كلمة المرور</Label>
                     <Input id="reg-password" name="password" type="password" required minLength={6} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-invite">كود الدعوة (اختياري)</Label>
+                    <Input id="reg-invite" name="invite_code" placeholder="XXXXXXXX" dir="ltr" />
+                    <p className="text-xs text-muted-foreground">أدخل كود الدعوة إذا كان لديك واحد</p>
                   </div>
                   <Button type="submit" className="w-full btn-brand" disabled={loading}>
                     {loading ? "جاري التحميل..." : "إنشاء حساب"}
