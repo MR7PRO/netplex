@@ -21,6 +21,8 @@ interface Seller {
   whatsapp: string | null;
 }
 
+type AppRole = "admin" | "moderator" | "user" | "sub_admin";
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -29,6 +31,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isSeller: boolean;
   loading: boolean;
+  userRole: AppRole | null;
   signUp: (email: string, password: string, name: string, phone?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
