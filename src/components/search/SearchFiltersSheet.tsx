@@ -144,11 +144,11 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">الماركة</label>
             <Select
-              value={filters.brand}
+              value={filters.brand || "__all__"}
               onValueChange={(v) => {
-                updateFilter("brand", v);
-                // Reset model when brand changes
-                if (v !== filters.brand) {
+                const val = v === "__all__" ? "" : v;
+                updateFilter("brand", val);
+                if (val !== filters.brand) {
                   updateFilter("model", "");
                 }
               }}
@@ -157,7 +157,7 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
                 <SelectValue placeholder="جميع الماركات" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع الماركات</SelectItem>
+                <SelectItem value="__all__">جميع الماركات</SelectItem>
                 {brands.map((brand) => (
                   <SelectItem key={brand} value={brand}>
                     {brand}
