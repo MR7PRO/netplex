@@ -71,15 +71,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(profileData as Profile);
       }
 
-      // Check if admin
+      // Fetch role from user_roles table
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
-        .eq("role", "admin")
         .maybeSingle();
 
-      setIsAdmin(!!roleData);
+      const role = (roleData?.role as AppRole) ?? "user";
+      setUserRole(role);
+      setIsAdmin(role === "admin");
 
       // Check if seller
       const { data: sellerData } = await supabase
