@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { getAuthErrorMessage } from "@/lib/authErrors";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
