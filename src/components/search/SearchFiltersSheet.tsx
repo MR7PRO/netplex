@@ -102,14 +102,14 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">القسم</label>
             <Select
-              value={filters.category}
-              onValueChange={(v) => updateFilter("category", v)}
+              value={filters.category || "__all__"}
+              onValueChange={(v) => updateFilter("category", v === "__all__" ? "" : v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="جميع الأقسام" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع الأقسام</SelectItem>
+                <SelectItem value="__all__">جميع الأقسام</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.slug}>
                     {cat.name_ar}
@@ -123,14 +123,14 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">المنطقة</label>
             <Select
-              value={filters.region}
-              onValueChange={(v) => updateFilter("region", v)}
+              value={filters.region || "__all__"}
+              onValueChange={(v) => updateFilter("region", v === "__all__" ? "" : v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="جميع المناطق" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع المناطق</SelectItem>
+                <SelectItem value="__all__">جميع المناطق</SelectItem>
                 {REGIONS.map((region) => (
                   <SelectItem key={region.value} value={region.value}>
                     {region.label_ar}
@@ -144,11 +144,11 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">الماركة</label>
             <Select
-              value={filters.brand}
+              value={filters.brand || "__all__"}
               onValueChange={(v) => {
-                updateFilter("brand", v);
-                // Reset model when brand changes
-                if (v !== filters.brand) {
+                const val = v === "__all__" ? "" : v;
+                updateFilter("brand", val);
+                if (val !== filters.brand) {
                   updateFilter("model", "");
                 }
               }}
@@ -157,7 +157,7 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
                 <SelectValue placeholder="جميع الماركات" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع الماركات</SelectItem>
+                <SelectItem value="__all__">جميع الماركات</SelectItem>
                 {brands.map((brand) => (
                   <SelectItem key={brand} value={brand}>
                     {brand}
@@ -171,14 +171,14 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">الموديل</label>
             <Select
-              value={filters.model}
-              onValueChange={(v) => updateFilter("model", v)}
+              value={filters.model || "__all__"}
+              onValueChange={(v) => updateFilter("model", v === "__all__" ? "" : v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="جميع الموديلات" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع الموديلات</SelectItem>
+                <SelectItem value="__all__">جميع الموديلات</SelectItem>
                 {models.map((model) => (
                   <SelectItem key={model} value={model}>
                     {model}
