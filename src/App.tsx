@@ -29,6 +29,7 @@ const AdminListings = lazy(() => import("./pages/admin/Listings"));
 const AdminSellers = lazy(() => import("./pages/admin/Sellers"));
 const AdminReports = lazy(() => import("./pages/admin/Reports"));
 const AdminAudit = lazy(() => import("./pages/admin/Audit"));
+const AdminInvites = lazy(() => import("./pages/admin/Invites"));
 
 const queryClient = new QueryClient();
 
