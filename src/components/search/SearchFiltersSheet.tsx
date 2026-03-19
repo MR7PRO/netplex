@@ -102,14 +102,14 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">القسم</label>
             <Select
-              value={filters.category}
-              onValueChange={(v) => updateFilter("category", v)}
+              value={filters.category || "__all__"}
+              onValueChange={(v) => updateFilter("category", v === "__all__" ? "" : v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="جميع الأقسام" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع الأقسام</SelectItem>
+                <SelectItem value="__all__">جميع الأقسام</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.slug}>
                     {cat.name_ar}
