@@ -208,6 +208,11 @@ const Auth: React.FC = () => {
                     <Label htmlFor="reg-password">كلمة المرور</Label>
                     <Input id="reg-password" name="password" type="password" required minLength={6} />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-invite">كود الدعوة (اختياري)</Label>
+                    <Input id="reg-invite" name="invite_code" placeholder="XXXXXXXX" dir="ltr" />
+                    <p className="text-xs text-muted-foreground">أدخل كود الدعوة إذا كان لديك واحد</p>
+                  </div>
                   <Button type="submit" className="w-full btn-brand" disabled={loading}>
                     {loading ? "جاري التحميل..." : "إنشاء حساب"}
                   </Button>
