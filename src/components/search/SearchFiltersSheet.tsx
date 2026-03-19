@@ -123,14 +123,14 @@ export const SearchFiltersSheet: React.FC<SearchFiltersProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">المنطقة</label>
             <Select
-              value={filters.region}
-              onValueChange={(v) => updateFilter("region", v)}
+              value={filters.region || "__all__"}
+              onValueChange={(v) => updateFilter("region", v === "__all__" ? "" : v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="جميع المناطق" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">جميع المناطق</SelectItem>
+                <SelectItem value="__all__">جميع المناطق</SelectItem>
                 {REGIONS.map((region) => (
                   <SelectItem key={region.value} value={region.value}>
                     {region.label_ar}
