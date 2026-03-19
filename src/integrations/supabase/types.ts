@@ -254,6 +254,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          email: string | null
           id: string
           name: string
           phone: string | null
@@ -263,6 +264,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          email?: string | null
           id: string
           name: string
           phone?: string | null
@@ -272,6 +274,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
           name?: string
           phone?: string | null
@@ -715,9 +718,10 @@ export type Database = {
         Returns: undefined
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_sub_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "sub_admin"
       item_condition: "new" | "like_new" | "good" | "fair" | "poor"
       listing_status: "available" | "reserved" | "sold" | "expired"
       offer_status: "pending" | "accepted" | "rejected"
@@ -853,7 +857,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "sub_admin"],
       item_condition: ["new", "like_new", "good", "fair", "poor"],
       listing_status: ["available", "reserved", "sold", "expired"],
       offer_status: ["pending", "accepted", "rejected"],

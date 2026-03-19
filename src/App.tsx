@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { EnvErrorBoundary } from "@/components/EnvErrorBoundary";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { lazy, Suspense } from "react";
 
 // Lazy load pages for code splitting
@@ -56,14 +57,14 @@ const App = () => (
                     <Route path="/search" element={<Search />} />
                     <Route path="/listing/:id" element={<ListingDetails />} />
                     <Route path="/sell/new" element={<SellerSubmission />} />
-                    <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                    <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={["admin", "sub_admin"]}><SellerDashboard /></ProtectedRoute>} />
                     <Route path="/seller/:id" element={<SellerPage />} />
-                    <Route path="/admin" element={<AdminOverview />} />
-                    <Route path="/admin/submissions" element={<AdminSubmissions />} />
-                    <Route path="/admin/listings" element={<AdminListings />} />
-                    <Route path="/admin/sellers" element={<AdminSellers />} />
-                    <Route path="/admin/reports" element={<AdminReports />} />
-                    <Route path="/admin/audit" element={<AdminAudit />} />
+                    <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminOverview /></ProtectedRoute>} />
+                    <Route path="/admin/submissions" element={<ProtectedRoute allowedRoles={["admin"]}><AdminSubmissions /></ProtectedRoute>} />
+                    <Route path="/admin/listings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminListings /></ProtectedRoute>} />
+                    <Route path="/admin/sellers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminSellers /></ProtectedRoute>} />
+                    <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["admin"]}><AdminReports /></ProtectedRoute>} />
+                    <Route path="/admin/audit" element={<ProtectedRoute allowedRoles={["admin"]}><AdminAudit /></ProtectedRoute>} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

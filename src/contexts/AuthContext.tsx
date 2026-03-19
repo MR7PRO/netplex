@@ -21,6 +21,8 @@ interface Seller {
   whatsapp: string | null;
 }
 
+type AppRole = "admin" | "moderator" | "user" | "sub_admin";
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -29,6 +31,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isSeller: boolean;
   loading: boolean;
+  userRole: AppRole | null;
   signUp: (email: string, password: string, name: string, phone?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
@@ -52,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<Profile | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userRole, setUserRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -67,15 +71,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(profileData as Profile);
       }
 
-      // Check if admin
+      // Fetch role from user_roles table
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
-        .eq("role", "admin")
         .maybeSingle();
 
-      setIsAdmin(!!roleData);
+      const role = (roleData?.role as AppRole) ?? "user";
+      setUserRole(role);
+      setIsAdmin(role === "admin");
 
       // Check if seller
       const { data: sellerData } = await supabase
@@ -112,6 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfile(null);
           setSeller(null);
           setIsAdmin(false);
+          setUserRole(null);
         }
         setLoading(false);
       }
@@ -165,6 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(null);
     setSeller(null);
     setIsAdmin(false);
+    setUserRole(null);
   };
 
   return (
@@ -175,6 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         profile,
         seller,
         isAdmin,
+        userRole,
         isSeller: !!seller,
         loading,
         signUp,
