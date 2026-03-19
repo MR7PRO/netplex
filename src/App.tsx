@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { EnvErrorBoundary } from "@/components/EnvErrorBoundary";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { lazy, Suspense } from "react";
 
 // Lazy load pages for code splitting
