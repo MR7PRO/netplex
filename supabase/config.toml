@@ -2,3 +2,6 @@ project_id = "pqgidznijhsaboqqofhn"
 
 [functions.netplex-ai]
 verify_jwt = false
+
+[functions.redeem-invite]
+verify_jwt = false

@@ -36,6 +36,7 @@ const menuItems = [
   { title: "البائعون", url: "/admin/sellers", icon: Users },
   { title: "البلاغات", url: "/admin/reports", icon: AlertTriangle, badge: "pendingReports" },
   { title: "سجل العمليات", url: "/admin/audit", icon: ScrollText },
+  { title: "الدعوات", url: "/admin/invites", icon: TicketCheck },
 ];
 
 export function AdminSidebar({ pendingSubmissions = 0, pendingReports = 0 }: AdminSidebarProps) {
