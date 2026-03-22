@@ -27,6 +27,7 @@ import { useCart } from "@/contexts/CartContext";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logoImage from "@/assets/logo.png";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
