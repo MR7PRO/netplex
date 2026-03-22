@@ -143,6 +143,13 @@ const Header: React.FC = () => {
                       لوحة التحكم
                     </DropdownMenuItem>
                   )}
+
+                  {(userRole === "sub_admin" || isAdmin) && (
+                    <DropdownMenuItem onClick={() => navigate("/seller/my-store")}>
+                      <Store className="ml-2 h-4 w-4" />
+                      متجري
+                    </DropdownMenuItem>
+                  )}
                   
                   {isSeller && (
                     <DropdownMenuItem onClick={() => navigate("/seller/dashboard")}>
