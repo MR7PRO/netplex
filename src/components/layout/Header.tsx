@@ -97,7 +97,9 @@ const Header: React.FC = () => {
               </Button>
             )}
 
-            {/* Cart */}
+            {/* Notifications */}
+            {user && <NotificationBell />}
+
             <Button
               variant="ghost"
               size="icon"
