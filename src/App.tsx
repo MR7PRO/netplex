@@ -18,6 +18,7 @@ const Search = lazy(() => import("./pages/Search"));
 const ListingDetails = lazy(() => import("./pages/ListingDetails"));
 const SellerSubmission = lazy(() => import("./pages/SellerSubmission"));
 const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
+const MyStore = lazy(() => import("./pages/seller/MyStore"));
 const SellerPage = lazy(() => import("./pages/Seller"));
 const Cart = lazy(() => import("./pages/Cart"));
 const NotFound = lazy(() => import("./pages/NotFound"));
