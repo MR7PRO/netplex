@@ -10,7 +10,8 @@ import {
   LogOut,
   Settings,
   Package,
-  LayoutDashboard
+  LayoutDashboard,
+  Store
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
