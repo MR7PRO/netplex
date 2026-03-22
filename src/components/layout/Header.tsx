@@ -27,6 +27,7 @@ import { useCart } from "@/contexts/CartContext";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logoImage from "@/assets/logo.png";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,7 +97,9 @@ const Header: React.FC = () => {
               </Button>
             )}
 
-            {/* Cart */}
+            {/* Notifications */}
+            {user && <NotificationBell />}
+
             <Button
               variant="ghost"
               size="icon"
