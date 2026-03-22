@@ -84,15 +84,15 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Theme Toggle */}
             <ThemeToggle />
-            {/* Sell button */}
-            {user && (
+            {/* Sell button - only for sub_admin/admin */}
+            {user && (userRole === "sub_admin" || isAdmin) && (
               <Button 
-                onClick={() => navigate("/sell/new")} 
+                onClick={() => navigate("/seller/my-store")} 
                 className="btn-brand hidden sm:flex"
                 size="sm"
               >
-                <Plus className="h-4 w-4 ml-1" />
-                <span className="hidden md:inline">أضف منتج</span>
+                <Store className="h-4 w-4 ml-1" />
+                <span className="hidden md:inline">متجري</span>
               </Button>
             )}
 
