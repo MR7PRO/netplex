@@ -31,7 +31,7 @@ import logoImage from "@/assets/logo.png";
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, profile, isAdmin, isSeller, signOut } = useAuth();
+  const { user, profile, isAdmin, isSeller, userRole, signOut } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
 
