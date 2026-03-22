@@ -18,6 +18,7 @@ const Search = lazy(() => import("./pages/Search"));
 const ListingDetails = lazy(() => import("./pages/ListingDetails"));
 const SellerSubmission = lazy(() => import("./pages/SellerSubmission"));
 const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
+const MyStore = lazy(() => import("./pages/seller/MyStore"));
 const SellerPage = lazy(() => import("./pages/Seller"));
 const Cart = lazy(() => import("./pages/Cart"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -59,6 +60,7 @@ const App = () => (
                     <Route path="/listing/:id" element={<ListingDetails />} />
                     <Route path="/sell/new" element={<SellerSubmission />} />
                     <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={["admin", "sub_admin"]}><SellerDashboard /></ProtectedRoute>} />
+                    <Route path="/seller/my-store" element={<ProtectedRoute allowedRoles={["admin", "sub_admin"]}><MyStore /></ProtectedRoute>} />
                     <Route path="/seller/:id" element={<SellerPage />} />
                     <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminOverview /></ProtectedRoute>} />
                     <Route path="/admin/submissions" element={<ProtectedRoute allowedRoles={["admin"]}><AdminSubmissions /></ProtectedRoute>} />

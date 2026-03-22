@@ -10,7 +10,8 @@ import {
   LogOut,
   Settings,
   Package,
-  LayoutDashboard
+  LayoutDashboard,
+  Store
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,7 @@ import logoImage from "@/assets/logo.png";
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, profile, isAdmin, isSeller, signOut } = useAuth();
+  const { user, profile, isAdmin, isSeller, userRole, signOut } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
 
@@ -83,15 +84,15 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Theme Toggle */}
             <ThemeToggle />
-            {/* Sell button */}
-            {user && (
+            {/* Sell button - only for sub_admin/admin */}
+            {user && (userRole === "sub_admin" || isAdmin) && (
               <Button 
-                onClick={() => navigate("/sell/new")} 
+                onClick={() => navigate("/seller/my-store")} 
                 className="btn-brand hidden sm:flex"
                 size="sm"
               >
-                <Plus className="h-4 w-4 ml-1" />
-                <span className="hidden md:inline">أضف منتج</span>
+                <Store className="h-4 w-4 ml-1" />
+                <span className="hidden md:inline">متجري</span>
               </Button>
             )}
 
@@ -140,6 +141,13 @@ const Header: React.FC = () => {
                     <DropdownMenuItem onClick={() => navigate("/admin")}>
                       <LayoutDashboard className="ml-2 h-4 w-4" />
                       لوحة التحكم
+                    </DropdownMenuItem>
+                  )}
+
+                  {(userRole === "sub_admin" || isAdmin) && (
+                    <DropdownMenuItem onClick={() => navigate("/seller/my-store")}>
+                      <Store className="ml-2 h-4 w-4" />
+                      متجري
                     </DropdownMenuItem>
                   )}
                   
