@@ -21,6 +21,7 @@ const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
 const MyStore = lazy(() => import("./pages/seller/MyStore"));
 const SellerPage = lazy(() => import("./pages/Seller"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Profile = lazy(() => import("./pages/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Admin pages
