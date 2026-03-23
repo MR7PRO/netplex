@@ -21,6 +21,7 @@ const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
 const MyStore = lazy(() => import("./pages/seller/MyStore"));
 const SellerPage = lazy(() => import("./pages/Seller"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Profile = lazy(() => import("./pages/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Admin pages
@@ -70,6 +71,7 @@ const App = () => (
                     <Route path="/admin/audit" element={<ProtectedRoute allowedRoles={["admin"]}><AdminAudit /></ProtectedRoute>} />
                     <Route path="/admin/invites" element={<ProtectedRoute allowedRoles={["admin"]}><AdminInvites /></ProtectedRoute>} />
                     <Route path="/cart" element={<Cart />} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
