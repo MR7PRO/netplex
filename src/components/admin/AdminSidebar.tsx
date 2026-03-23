@@ -6,7 +6,8 @@ import {
   AlertTriangle, 
   ScrollText,
   ChevronRight,
-  TicketCheck
+  TicketCheck,
+  Shield
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -37,6 +38,7 @@ const menuItems = [
   { title: "البلاغات", url: "/admin/reports", icon: AlertTriangle, badge: "pendingReports" },
   { title: "سجل العمليات", url: "/admin/audit", icon: ScrollText },
   { title: "الدعوات", url: "/admin/invites", icon: TicketCheck },
+  { title: "الصلاحيات", url: "/admin/permissions", icon: Shield },
 ];
 
 export function AdminSidebar({ pendingSubmissions = 0, pendingReports = 0 }: AdminSidebarProps) {

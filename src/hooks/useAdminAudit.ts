@@ -15,14 +15,16 @@ export type AuditAction =
   | "seller_banned"
   | "seller_warned"
   | "report_reviewed"
-  | "report_closed";
+  | "report_closed"
+  | "grant_sub_admin"
+  | "revoke_sub_admin";
 
 export type EntityType =
   | "submission"
   | "listing"
   | "seller"
-  | "report";
-
+  | "report"
+  | "user";
 interface AuditLogParams {
   action: AuditAction;
   entityType: EntityType;
