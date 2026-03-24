@@ -78,6 +78,10 @@ const App = () => (
                     <Route path="/admin/permissions" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPermissions /></ProtectedRoute>} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/help" element={<Help />} />
+                    <Route path="/safety" element={<Safety />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/privacy" element={<Privacy />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
