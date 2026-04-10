@@ -58,7 +58,6 @@ const Profile: React.FC = () => {
     };
     fetchStats();
   }, [user, isAdmin, userRole]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (profile) {
