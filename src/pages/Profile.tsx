@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store } from "lucide-react";
+import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
@@ -19,6 +20,44 @@ const Profile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingSubmissions, setPendingSubmissions] = useState(0);
+  const [activeListings, setActiveListings] = useState(0);
+  const [pendingReports, setPendingReports] = useState(0);
+
+  // Fetch quick stats for admin/sub_admin
+  useEffect(() => {
+    if (!user || (!isAdmin && userRole !== "sub_admin")) return;
+    
+    const fetchStats = async () => {
+      if (isAdmin) {
+        const [subsRes, reportsRes, listingsRes] = await Promise.all([
+          supabase.from("submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+          supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "pending"),
+          supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "available"),
+        ]);
+        setPendingSubmissions(subsRes.count ?? 0);
+        setPendingReports(reportsRes.count ?? 0);
+        setActiveListings(listingsRes.count ?? 0);
+      } else {
+        // sub_admin: only own listings
+        const { data: seller } = await supabase
+          .from("sellers")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (seller) {
+          const { count } = await supabase
+            .from("listings")
+            .select("id", { count: "exact", head: true })
+            .eq("seller_id", seller.id)
+            .eq("status", "available");
+          setActiveListings(count ?? 0);
+        }
+      }
+    };
+    fetchStats();
+  }, [user, isAdmin, userRole]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
