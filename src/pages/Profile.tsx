@@ -162,9 +162,24 @@ const Profile: React.FC = () => {
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <LayoutDashboard className="h-5 w-5 text-primary" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium">لوحة التحكم</p>
-                    <p className="text-xs text-muted-foreground">إدارة الموقع والمستخدمين</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {pendingSubmissions > 0 && (
+                        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                          <FileText className="h-3 w-3 ml-1" />
+                          {pendingSubmissions} طلب معلق
+                        </Badge>
+                      )}
+                      {pendingReports > 0 && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-destructive text-destructive">
+                          {pendingReports} بلاغ
+                        </Badge>
+                      )}
+                      {pendingSubmissions === 0 && pendingReports === 0 && (
+                        <p className="text-xs text-muted-foreground">لا توجد مهام معلقة</p>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -178,9 +193,14 @@ const Profile: React.FC = () => {
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Store className="h-5 w-5 text-primary" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium">متجري</p>
-                    <p className="text-xs text-muted-foreground">إدارة المنتجات والمبيعات</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        <Package className="h-3 w-3 ml-1" />
+                        {activeListings} منتج نشط
+                      </Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
