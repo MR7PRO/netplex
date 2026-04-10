@@ -85,7 +85,18 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Theme Toggle */}
             <ThemeToggle />
-            {/* Sell button - only for sub_admin/admin */}
+            {/* Admin dashboard button */}
+            {user && isAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/admin")}
+                title="لوحة التحكم"
+              >
+                <LayoutDashboard className="h-5 w-5" />
+              </Button>
+            )}
+            {/* My Store button - only for sub_admin/admin */}
             {user && (userRole === "sub_admin" || isAdmin) && (
               <Button 
                 onClick={() => navigate("/seller/my-store")} 
