@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, Save, Loader2, Camera } from "lucide-react";
+import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile, isAdmin, userRole, refreshProfile } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
@@ -109,6 +111,44 @@ const Profile: React.FC = () => {
     <Layout>
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-2xl font-bold mb-6">الإعدادات</h1>
+
+        {/* Quick access cards for admin/sub_admin */}
+        {(isAdmin || userRole === "sub_admin") && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {isAdmin && (
+              <Card 
+                className="cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group"
+                onClick={() => navigate("/admin")}
+              >
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <LayoutDashboard className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">لوحة التحكم</p>
+                    <p className="text-xs text-muted-foreground">إدارة الموقع والمستخدمين</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {(isAdmin || userRole === "sub_admin") && (
+              <Card 
+                className="cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group"
+                onClick={() => navigate("/seller/my-store")}
+              >
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Store className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">متجري</p>
+                    <p className="text-xs text-muted-foreground">إدارة المنتجات والمبيعات</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
 
         <Card>
           <CardHeader>
