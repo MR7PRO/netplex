@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store } from "lucide-react";
+import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
@@ -20,6 +21,43 @@ const Profile: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingSubmissions, setPendingSubmissions] = useState(0);
+  const [activeListings, setActiveListings] = useState(0);
+  const [pendingReports, setPendingReports] = useState(0);
+
+  // Fetch quick stats for admin/sub_admin
+  useEffect(() => {
+    if (!user || (!isAdmin && userRole !== "sub_admin")) return;
+    
+    const fetchStats = async () => {
+      if (isAdmin) {
+        const [subsRes, reportsRes, listingsRes] = await Promise.all([
+          supabase.from("submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+          supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "pending"),
+          supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "available"),
+        ]);
+        setPendingSubmissions(subsRes.count ?? 0);
+        setPendingReports(reportsRes.count ?? 0);
+        setActiveListings(listingsRes.count ?? 0);
+      } else {
+        // sub_admin: only own listings
+        const { data: seller } = await supabase
+          .from("sellers")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (seller) {
+          const { count } = await supabase
+            .from("listings")
+            .select("id", { count: "exact", head: true })
+            .eq("seller_id", seller.id)
+            .eq("status", "available");
+          setActiveListings(count ?? 0);
+        }
+      }
+    };
+    fetchStats();
+  }, [user, isAdmin, userRole]);
 
   useEffect(() => {
     if (profile) {
@@ -124,9 +162,24 @@ const Profile: React.FC = () => {
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <LayoutDashboard className="h-5 w-5 text-primary" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium">لوحة التحكم</p>
-                    <p className="text-xs text-muted-foreground">إدارة الموقع والمستخدمين</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {pendingSubmissions > 0 && (
+                        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                          <FileText className="h-3 w-3 ml-1" />
+                          {pendingSubmissions} طلب معلق
+                        </Badge>
+                      )}
+                      {pendingReports > 0 && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-destructive text-destructive">
+                          {pendingReports} بلاغ
+                        </Badge>
+                      )}
+                      {pendingSubmissions === 0 && pendingReports === 0 && (
+                        <p className="text-xs text-muted-foreground">لا توجد مهام معلقة</p>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -140,9 +193,14 @@ const Profile: React.FC = () => {
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                     <Store className="h-5 w-5 text-primary" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium">متجري</p>
-                    <p className="text-xs text-muted-foreground">إدارة المنتجات والمبيعات</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        <Package className="h-3 w-3 ml-1" />
+                        {activeListings} منتج نشط
+                      </Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
