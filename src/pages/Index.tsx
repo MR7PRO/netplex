@@ -114,6 +114,13 @@ const Index: React.FC = () => {
         <div className="absolute bottom-10 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/5 rounded-full blur-3xl" />
       </section>
 
+      {/* Quick Category Chips */}
+      <section className="py-6">
+        <div className="container mx-auto px-4">
+          <CategoryChips />
+        </div>
+      </section>
+
       {/* Featured Listings - Carousel with Arrows */}
       {(featuredListings && featuredListings.length > 0) && (
         <section className="py-10 md:py-14">
@@ -284,6 +291,7 @@ const Index: React.FC = () => {
           </div>
         </div>
       </section>
+      <RecentlyViewedSection />
       <AskNetPlexButton />
     </Layout>
   );
