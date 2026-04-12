@@ -380,6 +380,12 @@ export default function AdminSubmissions() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-10">
+                        <Checkbox
+                          checked={filteredSubmissions.filter(s => tab === "all" || s.status === tab).length > 0 && filteredSubmissions.filter(s => tab === "all" || s.status === tab).every(s => selectedIds.has(s.id))}
+                          onCheckedChange={() => toggleSelectAll(tab)}
+                        />
+                      </TableHead>
                       <TableHead>المنتج</TableHead>
                       <TableHead>البائع</TableHead>
                       <TableHead>السعر</TableHead>
