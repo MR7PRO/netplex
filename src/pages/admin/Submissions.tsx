@@ -401,6 +401,12 @@ export default function AdminSubmissions() {
                       .map((submission) => (
                         <TableRow key={submission.id}>
                           <TableCell>
+                            <Checkbox
+                              checked={selectedIds.has(submission.id)}
+                              onCheckedChange={() => toggleSelect(submission.id)}
+                            />
+                          </TableCell>
+                          <TableCell>
                             <div className="flex items-center gap-3">
                               {submission.images?.[0] && (
                                 <SignedImage
