@@ -246,6 +246,62 @@ export default function AdminSubmissions() {
     setProcessing(false);
   };
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (tab: string) => {
+    const tabItems = filteredSubmissions.filter(s => tab === "all" || s.status === tab);
+    const allSelected = tabItems.every(s => selectedIds.has(s.id));
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(tabItems.map(s => s.id)));
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.size === 0 || !user) return;
+    setBulkProcessing(true);
+    const pending = submissions.filter(s => selectedIds.has(s.id) && s.status === "pending");
+    for (const sub of pending) {
+      try {
+        await supabase.from("listings").insert({
+          seller_id: sub.seller_id, submission_id: sub.id, title: sub.title,
+          description: sub.description, price_ils: sub.price_ils, condition: sub.condition,
+          region: sub.region, images: sub.images, category_id: sub.category_id,
+          brand: sub.brand, model: sub.model, published_at: new Date().toISOString(),
+        });
+        await supabase.from("submissions").update({
+          status: "approved", reviewed_at: new Date().toISOString(), reviewed_by: user.id,
+        }).eq("id", sub.id);
+      } catch {}
+    }
+    toast({ title: `تمت الموافقة على ${pending.length} طلب` });
+    setSelectedIds(new Set());
+    setBulkProcessing(false);
+    fetchSubmissions();
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.size === 0 || !user) return;
+    setBulkProcessing(true);
+    const pending = submissions.filter(s => selectedIds.has(s.id) && s.status === "pending");
+    for (const sub of pending) {
+      await supabase.from("submissions").update({
+        status: "rejected", reviewed_at: new Date().toISOString(), reviewed_by: user.id,
+      }).eq("id", sub.id);
+    }
+    toast({ title: `تم رفض ${pending.length} طلب` });
+    setSelectedIds(new Set());
+    setBulkProcessing(false);
+    fetchSubmissions();
+  };
+
   const getStatusBadge = (status: SubmissionStatus) => {
     switch (status) {
       case "pending":
@@ -265,6 +321,7 @@ export default function AdminSubmissions() {
   );
 
   const pendingCount = submissions.filter(s => s.status === "pending").length;
+  const selectedPendingCount = submissions.filter(s => selectedIds.has(s.id) && s.status === "pending").length;
 
   return (
     <AdminLayout title="إدارة الطلبات">
