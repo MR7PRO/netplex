@@ -561,15 +561,54 @@ const SellerSubmissionPage: React.FC = () => {
               </AlertDescription>
             </Alert>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full btn-brand"
-              size="lg"
-            >
-              {isSubmitting && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
-              إرسال للمراجعة
-            </Button>
+            {/* Preview & Submit */}
+            <div className="flex gap-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button type="button" variant="outline" className="flex-1" size="lg">
+                    <Eye className="h-4 w-4 ml-2" />
+                    معاينة قبل الإرسال
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>معاينة المنتج</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    {imagePreviews.length > 0 && (
+                      <div className="aspect-video rounded-lg overflow-hidden bg-muted">
+                        <img src={imagePreviews[0]} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <h3 className="text-lg font-bold">{form.watch("title") || "عنوان المنتج"}</h3>
+                    <p className="text-2xl font-bold text-primary">
+                      ₪{(form.watch("price_ils") || 0).toLocaleString("he-IL")}
+                    </p>
+                    {form.watch("condition") && (
+                      <Badge variant="outline">
+                        {CONDITION_OPTIONS.find(c => c.value === form.watch("condition"))?.label_ar}
+                      </Badge>
+                    )}
+                    {form.watch("description") && (
+                      <p className="text-sm text-muted-foreground">{form.watch("description")}</p>
+                    )}
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      {form.watch("brand") && <div><span className="text-muted-foreground">الماركة: </span>{form.watch("brand")}</div>}
+                      {form.watch("model") && <div><span className="text-muted-foreground">الموديل: </span>{form.watch("model")}</div>}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 btn-brand"
+                size="lg"
+              >
+                {isSubmitting && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
+                إرسال للمراجعة
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
