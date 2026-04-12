@@ -336,6 +336,20 @@ export default function AdminSubmissions() {
             className="pr-9"
           />
         </div>
+        {/* Bulk Actions */}
+        {selectedPendingCount > 0 && (
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">{selectedPendingCount} محدد</Badge>
+            <Button size="sm" className="bg-success hover:bg-success/90" onClick={handleBulkApprove} disabled={bulkProcessing}>
+              {bulkProcessing ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <CheckCircle className="h-4 w-4 ml-1" />}
+              موافقة الكل
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleBulkReject} disabled={bulkProcessing}>
+              {bulkProcessing ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <XCircle className="h-4 w-4 ml-1" />}
+              رفض الكل
+            </Button>
+          </div>
+        )}
       </div>
 
       <Tabs defaultValue="pending" className="space-y-4">
