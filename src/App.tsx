@@ -27,6 +27,7 @@ const Help = lazy(() => import("./pages/Help"));
 const Safety = lazy(() => import("./pages/Safety"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Categories = lazy(() => import("./pages/Categories"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -63,6 +64,7 @@ const App = () => (
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/search" element={<Search />} />
+                    <Route path="/categories" element={<Categories />} />
                     <Route path="/listing/:id" element={<ListingDetails />} />
                     <Route path="/sell/new" element={<SellerSubmission />} />
                     <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={["admin", "sub_admin"]}><SellerDashboard /></ProtectedRoute>} />
