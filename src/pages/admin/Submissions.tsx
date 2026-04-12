@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, Eye, Pencil, Loader2, Search } from "lucide-react";
+import { CheckCircle, XCircle, Eye, Pencil, Loader2, Search, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -65,8 +66,17 @@ export default function AdminSubmissions() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkProcessing, setBulkProcessing] = useState(false);
 
-  // Edit form state
+  const REJECTION_TEMPLATES = [
+    "الصور غير واضحة أو غير كافية",
+    "السعر غير واقعي أو مبالغ فيه",
+    "الوصف ناقص أو غير دقيق",
+    "المنتج مخالف لسياسات المنصة",
+    "إعلان مكرر",
+    "القسم خاطئ",
+  ];
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editPrice, setEditPrice] = useState("");
@@ -77,7 +87,7 @@ export default function AdminSubmissions() {
   useEffect(() => {
     fetchSubmissions();
   }, []);
-
+  // Edit form state
   const fetchSubmissions = async () => {
     setLoading(true);
     const { data, error } = await supabase
