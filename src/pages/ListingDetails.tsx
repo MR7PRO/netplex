@@ -523,7 +523,6 @@ const ListingDetailsPage: React.FC = () => {
             </div>
             {/* WhatsApp Share */}
             <WhatsAppShareButton title={listing.title} price={listing.price_ils} />
-            </div>
 
             <Separator />
 
