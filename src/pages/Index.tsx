@@ -2,6 +2,8 @@ import React, { useRef, useCallback } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
+import { CategoryChips } from "@/components/home/CategoryChips";
+import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -110,6 +112,13 @@ const Index: React.FC = () => {
         {/* Decorative elements */}
         <div className="absolute top-20 left-10 w-48 md:w-72 h-48 md:h-72 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/5 rounded-full blur-3xl" />
+      </section>
+
+      {/* Quick Category Chips */}
+      <section className="py-6">
+        <div className="container mx-auto px-4">
+          <CategoryChips />
+        </div>
       </section>
 
       {/* Featured Listings - Carousel with Arrows */}
@@ -282,6 +291,7 @@ const Index: React.FC = () => {
           </div>
         </div>
       </section>
+      <RecentlyViewedSection />
       <AskNetPlexButton />
     </Layout>
   );

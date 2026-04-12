@@ -38,6 +38,8 @@ import { usePriceStats } from "@/hooks/usePriceStats";
 import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
 import { AIPriceCheckCard } from "@/components/listings/AIPriceCheckCard";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
+import { WhatsAppShareButton } from "@/components/listings/WhatsAppShareButton";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 
 interface Listing {
   id: string;
@@ -84,6 +86,7 @@ const ListingDetailsPage: React.FC = () => {
   const { user } = useAuth();
   const { addItem, isInCart } = useCart();
   const { toast } = useToast();
+  const { addItem: addRecentlyViewed } = useRecentlyViewed();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
@@ -172,6 +175,15 @@ const ListingDetailsPage: React.FC = () => {
 
       // Increment view count using secure RPC function
       await supabase.rpc("increment_listing_view", { listing_id: id });
+
+      // Track recently viewed
+      addRecentlyViewed({
+        id: listingData.id,
+        title: listingData.title,
+        price: listingData.price_ils,
+        image: listingData.images?.[0] || null,
+        region: listingData.region,
+      });
 
       setLoading(false);
     };
@@ -509,6 +521,8 @@ const ListingDetailsPage: React.FC = () => {
                 <Share2 className="h-5 w-5" />
               </Button>
             </div>
+            {/* WhatsApp Share */}
+            <WhatsAppShareButton title={listing.title} price={listing.price_ils} />
 
             <Separator />
 

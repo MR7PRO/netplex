@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, Eye, Pencil, Loader2, Search } from "lucide-react";
+import { CheckCircle, XCircle, Eye, Pencil, Loader2, Search, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -65,8 +66,17 @@ export default function AdminSubmissions() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkProcessing, setBulkProcessing] = useState(false);
 
-  // Edit form state
+  const REJECTION_TEMPLATES = [
+    "الصور غير واضحة أو غير كافية",
+    "السعر غير واقعي أو مبالغ فيه",
+    "الوصف ناقص أو غير دقيق",
+    "المنتج مخالف لسياسات المنصة",
+    "إعلان مكرر",
+    "القسم خاطئ",
+  ];
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editPrice, setEditPrice] = useState("");
@@ -77,7 +87,7 @@ export default function AdminSubmissions() {
   useEffect(() => {
     fetchSubmissions();
   }, []);
-
+  // Edit form state
   const fetchSubmissions = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -236,6 +246,62 @@ export default function AdminSubmissions() {
     setProcessing(false);
   };
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (tab: string) => {
+    const tabItems = filteredSubmissions.filter(s => tab === "all" || s.status === tab);
+    const allSelected = tabItems.every(s => selectedIds.has(s.id));
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(tabItems.map(s => s.id)));
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.size === 0 || !user) return;
+    setBulkProcessing(true);
+    const pending = submissions.filter(s => selectedIds.has(s.id) && s.status === "pending");
+    for (const sub of pending) {
+      try {
+        await supabase.from("listings").insert({
+          seller_id: sub.seller_id, submission_id: sub.id, title: sub.title,
+          description: sub.description, price_ils: sub.price_ils, condition: sub.condition,
+          region: sub.region, images: sub.images, category_id: sub.category_id,
+          brand: sub.brand, model: sub.model, published_at: new Date().toISOString(),
+        });
+        await supabase.from("submissions").update({
+          status: "approved", reviewed_at: new Date().toISOString(), reviewed_by: user.id,
+        }).eq("id", sub.id);
+      } catch {}
+    }
+    toast({ title: `تمت الموافقة على ${pending.length} طلب` });
+    setSelectedIds(new Set());
+    setBulkProcessing(false);
+    fetchSubmissions();
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.size === 0 || !user) return;
+    setBulkProcessing(true);
+    const pending = submissions.filter(s => selectedIds.has(s.id) && s.status === "pending");
+    for (const sub of pending) {
+      await supabase.from("submissions").update({
+        status: "rejected", reviewed_at: new Date().toISOString(), reviewed_by: user.id,
+      }).eq("id", sub.id);
+    }
+    toast({ title: `تم رفض ${pending.length} طلب` });
+    setSelectedIds(new Set());
+    setBulkProcessing(false);
+    fetchSubmissions();
+  };
+
   const getStatusBadge = (status: SubmissionStatus) => {
     switch (status) {
       case "pending":
@@ -255,6 +321,7 @@ export default function AdminSubmissions() {
   );
 
   const pendingCount = submissions.filter(s => s.status === "pending").length;
+  const selectedPendingCount = submissions.filter(s => selectedIds.has(s.id) && s.status === "pending").length;
 
   return (
     <AdminLayout title="إدارة الطلبات">
@@ -269,6 +336,20 @@ export default function AdminSubmissions() {
             className="pr-9"
           />
         </div>
+        {/* Bulk Actions */}
+        {selectedPendingCount > 0 && (
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">{selectedPendingCount} محدد</Badge>
+            <Button size="sm" className="bg-success hover:bg-success/90" onClick={handleBulkApprove} disabled={bulkProcessing}>
+              {bulkProcessing ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <CheckCircle className="h-4 w-4 ml-1" />}
+              موافقة الكل
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleBulkReject} disabled={bulkProcessing}>
+              {bulkProcessing ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <XCircle className="h-4 w-4 ml-1" />}
+              رفض الكل
+            </Button>
+          </div>
+        )}
       </div>
 
       <Tabs defaultValue="pending" className="space-y-4">
@@ -299,6 +380,12 @@ export default function AdminSubmissions() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-10">
+                        <Checkbox
+                          checked={filteredSubmissions.filter(s => tab === "all" || s.status === tab).length > 0 && filteredSubmissions.filter(s => tab === "all" || s.status === tab).every(s => selectedIds.has(s.id))}
+                          onCheckedChange={() => toggleSelectAll(tab)}
+                        />
+                      </TableHead>
                       <TableHead>المنتج</TableHead>
                       <TableHead>البائع</TableHead>
                       <TableHead>السعر</TableHead>
@@ -313,6 +400,12 @@ export default function AdminSubmissions() {
                       .filter((s) => tab === "all" || s.status === tab)
                       .map((submission) => (
                         <TableRow key={submission.id}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedIds.has(submission.id)}
+                              onCheckedChange={() => toggleSelect(submission.id)}
+                            />
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               {submission.images?.[0] && (
@@ -494,9 +587,21 @@ export default function AdminSubmissions() {
                   </div>
                 )}
 
-                {/* Admin Notes */}
+                {/* Admin Notes with Templates */}
                 <div>
                   <label className="text-sm font-medium mb-1 block">ملاحظات المراجعة</label>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {REJECTION_TEMPLATES.map((template) => (
+                      <Badge
+                        key={template}
+                        variant="outline"
+                        className="cursor-pointer hover:bg-destructive/10 hover:border-destructive text-xs"
+                        onClick={() => setAdminNotes(prev => prev ? `${prev}\n${template}` : template)}
+                      >
+                        {template}
+                      </Badge>
+                    ))}
+                  </div>
                   <Textarea
                     placeholder="أضف ملاحظات..."
                     value={adminNotes}
