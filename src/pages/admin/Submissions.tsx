@@ -587,9 +587,21 @@ export default function AdminSubmissions() {
                   </div>
                 )}
 
-                {/* Admin Notes */}
+                {/* Admin Notes with Templates */}
                 <div>
                   <label className="text-sm font-medium mb-1 block">ملاحظات المراجعة</label>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {REJECTION_TEMPLATES.map((template) => (
+                      <Badge
+                        key={template}
+                        variant="outline"
+                        className="cursor-pointer hover:bg-destructive/10 hover:border-destructive text-xs"
+                        onClick={() => setAdminNotes(prev => prev ? `${prev}\n${template}` : template)}
+                      >
+                        {template}
+                      </Badge>
+                    ))}
+                  </div>
                   <Textarea
                     placeholder="أضف ملاحظات..."
                     value={adminNotes}
