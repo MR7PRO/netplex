@@ -27,6 +27,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
+import Layout from "@/components/layout/Layout";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
