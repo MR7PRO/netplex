@@ -320,6 +320,11 @@ const MyStorePage: React.FC = () => {
           <Card className={stats.pendingOffers > 0 ? "border-primary" : ""}><CardHeader className="pb-2"><CardDescription className="flex items-center gap-1"><MessageSquare className="h-4 w-4" />عروض جديدة</CardDescription></CardHeader><CardContent><p className="text-2xl font-bold">{stats.pendingOffers}</p></CardContent></Card>
         </div>
 
+        {/* Stats Charts */}
+        {!loading && listings.length > 0 && (
+          <SellerStatsCharts listings={listings} />
+        )}
+
         {loading ? (
           <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
         ) : (
