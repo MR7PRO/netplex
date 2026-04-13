@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Package, Plus, Eye, Clock, CheckCircle, XCircle,
-  MessageSquare, Store, Edit, Loader2, Trash2
+  MessageSquare, Store, Edit, Loader2, Trash2, Copy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRelativeTime, REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
+import { SellerStatsCharts } from "@/components/seller/SellerStatsCharts";
 import type { Database } from "@/integrations/supabase/types";
 
 type ListingStatus = Database["public"]["Enums"]["listing_status"];
@@ -319,6 +320,11 @@ const MyStorePage: React.FC = () => {
           <Card className={stats.pendingOffers > 0 ? "border-primary" : ""}><CardHeader className="pb-2"><CardDescription className="flex items-center gap-1"><MessageSquare className="h-4 w-4" />عروض جديدة</CardDescription></CardHeader><CardContent><p className="text-2xl font-bold">{stats.pendingOffers}</p></CardContent></Card>
         </div>
 
+        {/* Stats Charts */}
+        {!loading && listings.length > 0 && (
+          <SellerStatsCharts listings={listings} />
+        )}
+
         {loading ? (
           <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
         ) : (
@@ -352,6 +358,22 @@ const MyStorePage: React.FC = () => {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" onClick={() => { setEditListing(listing); setEditForm({ title: listing.title, description: listing.description || "", price_ils: listing.price_ils, condition: listing.condition || "good", status: listing.status }); }}>
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" title="نسخ المنتج" onClick={() => {
+                          setListingForm({
+                            title: listing.title,
+                            description: listing.description || "",
+                            price_ils: listing.price_ils,
+                            category_id: listing.category_id || "",
+                            region: listing.region,
+                            condition: listing.condition || "good",
+                            brand: listing.brand || "",
+                            model: listing.model || "",
+                          });
+                          setAddingListing(true);
+                          toast({ title: "تم نسخ بيانات المنتج — عدّل واحفظ" });
+                        }}>
+                          <Copy className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>

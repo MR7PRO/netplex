@@ -41,6 +41,9 @@ const Footer: React.FC = () => {
               <Link to="/sell/new" className="hover:text-primary transition-colors">
                 بيع منتجك
               </Link>
+              <Link to="/about" className="hover:text-primary transition-colors">
+                عن المتجر
+              </Link>
             </nav>
           </div>
 

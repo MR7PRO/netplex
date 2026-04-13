@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRelativeTime } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
+import { SellerStatsCharts } from "@/components/seller/SellerStatsCharts";
 import type { Database } from "@/integrations/supabase/types";
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"];
@@ -245,6 +246,11 @@ const SellerDashboard: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Stats Charts */}
+        {!loading && listings.length > 0 && (
+          <SellerStatsCharts listings={listings} />
+        )}
 
         {loading ? (
           <div className="space-y-4">
