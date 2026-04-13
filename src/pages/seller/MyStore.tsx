@@ -28,6 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRelativeTime, REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
+import { SellerStatsCharts } from "@/components/seller/SellerStatsCharts";
 import type { Database } from "@/integrations/supabase/types";
 
 type ListingStatus = Database["public"]["Enums"]["listing_status"];
@@ -352,6 +353,22 @@ const MyStorePage: React.FC = () => {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" onClick={() => { setEditListing(listing); setEditForm({ title: listing.title, description: listing.description || "", price_ils: listing.price_ils, condition: listing.condition || "good", status: listing.status }); }}>
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" title="نسخ المنتج" onClick={() => {
+                          setListingForm({
+                            title: listing.title,
+                            description: listing.description || "",
+                            price_ils: listing.price_ils,
+                            category_id: listing.category_id || "",
+                            region: listing.region,
+                            condition: listing.condition || "good",
+                            brand: listing.brand || "",
+                            model: listing.model || "",
+                          });
+                          setAddingListing(true);
+                          toast({ title: "تم نسخ بيانات المنتج — عدّل واحفظ" });
+                        }}>
+                          <Copy className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
