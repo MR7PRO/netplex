@@ -247,6 +247,11 @@ const SellerDashboard: React.FC = () => {
           </Card>
         </div>
 
+        {/* Stats Charts */}
+        {!loading && listings.length > 0 && (
+          <SellerStatsCharts listings={listings} />
+        )}
+
         {loading ? (
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (

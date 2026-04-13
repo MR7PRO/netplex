@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Package, Plus, Eye, Clock, CheckCircle, XCircle,
-  MessageSquare, Store, Edit, Loader2, Trash2
+  MessageSquare, Store, Edit, Loader2, Trash2, Copy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
