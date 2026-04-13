@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Eye } from "lucide-react";
+import { MapPin, Eye, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ interface ListingCardProps {
   viewCount?: number;
   featured?: boolean;
   className?: string;
+  sellerRating?: number;
   // Badge props
   verifiedSeller?: boolean;
   fairPrice?: boolean;
@@ -42,6 +43,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   viewCount,
   featured,
   className,
+  sellerRating,
   verifiedSeller,
   fairPrice,
   hotDeal,
@@ -118,9 +120,17 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           </div>
           
-          <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-            <MapPin className="h-3 w-3" />
-            <span>{region}</span>
+          <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              <span>{region}</span>
+            </div>
+            {sellerRating !== undefined && sellerRating > 0 && (
+              <div className="flex items-center gap-0.5">
+                <Star className="h-3 w-3 fill-primary text-primary" />
+                <span className="text-foreground font-medium">{sellerRating.toFixed(1)}</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
