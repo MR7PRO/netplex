@@ -3,7 +3,7 @@ import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { CompareBar } from "@/components/compare/CompareBar";
 import { useCompare, type CompareListing } from "@/contexts/CompareContext";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows } from "lucide-react";
+import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
 import { SearchFiltersSheet, SearchFilters } from "@/components/search/SearchFiltersSheet";
+import { SmartSearchInput } from "@/components/search/SmartSearchInput";
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
 import { useMedianPrices } from "@/hooks/useMedianPrices";
@@ -67,6 +68,8 @@ const SORT_OPTIONS = [
   { value: "newest", label_ar: "الأحدث" },
   { value: "price-low", label_ar: "السعر: الأقل" },
   { value: "price-high", label_ar: "السعر: الأعلى" },
+  { value: "most-viewed", label_ar: "الأكثر مشاهدة" },
+  { value: "most-saved", label_ar: "الأكثر حفظاً" },
 ];
 
 const SearchPage: React.FC = () => {
@@ -204,6 +207,12 @@ const SearchPage: React.FC = () => {
           break;
         case "newest":
           queryBuilder = queryBuilder.order("published_at", { ascending: false, nullsFirst: false });
+          break;
+        case "most-viewed":
+          queryBuilder = queryBuilder.order("view_count", { ascending: false, nullsFirst: false });
+          break;
+        case "most-saved":
+          queryBuilder = queryBuilder.order("save_count", { ascending: false, nullsFirst: false });
           break;
         default:
           // best-match will be sorted client-side
