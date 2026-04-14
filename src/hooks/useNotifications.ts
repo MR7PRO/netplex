@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { showBrowserNotification, requestNotificationPermission } from "@/lib/browserNotifications";
-import { useAuth } from "@/contexts/AuthContext";
+import { showBrowserNotification } from "@/lib/browserNotifications";
 
 export interface Notification {
   id: string;
