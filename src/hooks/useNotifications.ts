@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { showBrowserNotification } from "@/lib/browserNotifications";
 
 export interface Notification {
   id: string;
@@ -57,6 +58,10 @@ export const useNotifications = () => {
           const newNotif = payload.new as Notification;
           setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
           setUnreadCount((prev) => prev + 1);
+          // Show browser notification
+          showBrowserNotification(newNotif.title, newNotif.body || undefined, () => {
+            if (newNotif.link) window.location.href = newNotif.link;
+          });
         }
       )
       .subscribe();
