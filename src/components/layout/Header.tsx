@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
-  Search, 
   ShoppingCart, 
   User, 
   Menu, 
@@ -14,7 +13,7 @@ import {
   Store
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SmartSearchInput } from "@/components/search/SmartSearchInput";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,8 +35,7 @@ const Header: React.FC = () => {
   const { itemCount } = useCart();
   const navigate = useNavigate();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = () => {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
@@ -68,18 +66,14 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Search - Desktop */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-xl hidden md:flex">
-            <div className="relative w-full">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="ابحث عن منتجات..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10 bg-secondary/50"
-              />
-            </div>
-          </form>
+          <div className="flex-1 max-w-xl hidden md:block">
+            <SmartSearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearch}
+              placeholder="ابحث عن منتجات..."
+            />
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
@@ -205,18 +199,12 @@ const Header: React.FC = () => {
 
         {/* Search - Mobile */}
         <div className="pb-3 md:hidden">
-          <form onSubmit={handleSearch}>
-            <div className="relative">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="ابحث عن منتجات..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10 bg-secondary/50"
-              />
-            </div>
-          </form>
+          <SmartSearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSubmit={handleSearch}
+            placeholder="ابحث عن منتجات..."
+          />
         </div>
 
         {/* Mobile menu */}
