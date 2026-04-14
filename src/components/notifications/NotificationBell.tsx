@@ -1,5 +1,5 @@
-import React from "react";
-import { Bell, MessageSquare, Star, Check, CheckCheck } from "lucide-react";
+import React, { useEffect } from "react";
+import { Bell, MessageSquare, Star, Check, CheckCheck, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,6 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications, type Notification } from "@/hooks/useNotifications";
 import { useNavigate } from "react-router-dom";
+import { requestNotificationPermission, isNotificationSupported, getNotificationPermission } from "@/lib/browserNotifications";
 
 const iconMap: Record<string, React.ReactNode> = {
   new_offer: <MessageSquare className="h-4 w-4 text-primary" />,
