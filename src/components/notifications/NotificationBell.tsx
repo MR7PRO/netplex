@@ -14,9 +14,11 @@ import { requestNotificationPermission, isNotificationSupported, getNotification
 
 const iconMap: Record<string, React.ReactNode> = {
   new_offer: <MessageSquare className="h-4 w-4 text-primary" />,
-  new_review: <Star className="h-4 w-4 text-yellow-500" />,
+  new_review: <Star className="h-4 w-4 fill-primary text-primary" />,
   offer_accepted: <Check className="h-4 w-4 text-success" />,
   offer_rejected: <MessageSquare className="h-4 w-4 text-destructive" />,
+  submission_approved: <Check className="h-4 w-4 text-success" />,
+  submission_rejected: <MessageSquare className="h-4 w-4 text-destructive" />,
 };
 
 function timeAgo(dateStr: string) {
@@ -33,6 +35,15 @@ function timeAgo(dateStr: string) {
 export const NotificationBell: React.FC = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
+
+  // Request browser notification permission on first interaction
+  useEffect(() => {
+    if (isNotificationSupported() && getNotificationPermission() === "default") {
+      // Auto-request after a short delay
+      const timer = setTimeout(() => requestNotificationPermission(), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleClick = (notif: Notification) => {
     if (!notif.read) markAsRead(notif.id);
