@@ -310,22 +310,13 @@ const SearchPage: React.FC = () => {
       <div className="container mx-auto px-4 py-6">
         {/* Search Header */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <form 
-            onSubmit={(e) => { e.preventDefault(); applyFilters(); }}
+          <SmartSearchInput
+            value={query}
+            onChange={setQuery}
+            onSubmit={applyFilters}
+            placeholder="ابحث عن منتجات... | Search products..."
             className="flex-1"
-          >
-            <div className="relative">
-              <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="ابحث عن منتجات... | Search products..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pr-10"
-                dir="auto"
-              />
-            </div>
-          </form>
+          />
 
           <div className="flex gap-2">
             <SearchFiltersSheet
