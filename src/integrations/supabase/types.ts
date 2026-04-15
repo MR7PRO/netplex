@@ -163,6 +163,8 @@ export type Database = {
           condition: Database["public"]["Enums"]["item_condition"] | null
           created_at: string | null
           description: string | null
+          discount_end_at: string | null
+          discount_percent: number | null
           featured: boolean | null
           id: string
           images: string[] | null
@@ -173,6 +175,7 @@ export type Database = {
           save_count: number | null
           seller_id: string
           status: Database["public"]["Enums"]["listing_status"] | null
+          stock_quantity: number | null
           submission_id: string | null
           title: string
           view_count: number | null
@@ -184,6 +187,8 @@ export type Database = {
           condition?: Database["public"]["Enums"]["item_condition"] | null
           created_at?: string | null
           description?: string | null
+          discount_end_at?: string | null
+          discount_percent?: number | null
           featured?: boolean | null
           id?: string
           images?: string[] | null
@@ -194,6 +199,7 @@ export type Database = {
           save_count?: number | null
           seller_id: string
           status?: Database["public"]["Enums"]["listing_status"] | null
+          stock_quantity?: number | null
           submission_id?: string | null
           title: string
           view_count?: number | null
@@ -205,6 +211,8 @@ export type Database = {
           condition?: Database["public"]["Enums"]["item_condition"] | null
           created_at?: string | null
           description?: string | null
+          discount_end_at?: string | null
+          discount_percent?: number | null
           featured?: boolean | null
           id?: string
           images?: string[] | null
@@ -215,6 +223,7 @@ export type Database = {
           save_count?: number | null
           seller_id?: string
           status?: Database["public"]["Enums"]["listing_status"] | null
+          stock_quantity?: number | null
           submission_id?: string | null
           title?: string
           view_count?: number | null
