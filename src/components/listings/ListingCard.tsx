@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Eye, Star } from "lucide-react";
+import { MapPin, Eye, Star, GitCompareArrows } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ListingBadges } from "@/components/listings/ListingBadges";
+import { useCompare } from "@/contexts/CompareContext";
 
 interface ListingCardProps {
   id: string;
@@ -49,7 +50,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   hotDeal,
 }) => {
   const { signedUrl, loading: imageLoading } = useSignedImageUrl(image);
+  const { addItem, removeItem, isComparing, isFull } = useCompare();
 
+  const comparing = isComparing(id);
   const hasBadges = verifiedSeller || fairPrice || hotDeal;
 
   return (
@@ -87,7 +90,40 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               {conditionLabels[condition] || condition}
             </Badge>
           )}
-        </div>
+
+          {/* Compare toggle */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (comparing) {
+                removeItem(id);
+              } else {
+                addItem({
+                  id,
+                  title,
+                  price_ils: price,
+                  condition: condition || null,
+                  region,
+                  brand: null,
+                  model: null,
+                  image: image || null,
+                  sellerVerified: verifiedSeller,
+                });
+              }
+            }}
+            disabled={!comparing && isFull}
+            className={cn(
+              "absolute bottom-2 left-2 p-1.5 rounded-full transition-colors",
+              comparing
+                ? "bg-primary text-primary-foreground"
+                : "bg-background/80 text-muted-foreground hover:bg-background hover:text-foreground",
+              !comparing && isFull && "opacity-50 cursor-not-allowed"
+            )}
+            title={comparing ? "إزالة من المقارنة" : "أضف للمقارنة"}
+          >
+            <GitCompareArrows className="h-3.5 w-3.5" />
+          </button>
         
         <CardContent className="p-3">
           <h3 className="font-semibold text-sm line-clamp-2 mb-2 min-h-[2.5rem]">
