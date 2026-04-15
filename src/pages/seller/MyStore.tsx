@@ -50,6 +50,9 @@ interface Listing {
   save_count: number | null;
   whatsapp_click_count: number | null;
   published_at: string | null;
+  discount_percent: number | null;
+  discount_end_at: string | null;
+  stock_quantity: number | null;
 }
 
 interface Offer {
@@ -104,7 +107,7 @@ const MyStorePage: React.FC = () => {
 
   // Edit listing dialog
   const [editListing, setEditListing] = useState<Listing | null>(null);
-  const [editForm, setEditForm] = useState({ title: "", description: "", price_ils: 0, condition: "", status: "" as string });
+  const [editForm, setEditForm] = useState({ title: "", description: "", price_ils: 0, condition: "", status: "" as string, discount_percent: null as number | null, discount_end_at: "" as string, stock_quantity: null as number | null });
   const [savingEdit, setSavingEdit] = useState(false);
 
   const isSubAdmin = userRole === "sub_admin";
@@ -236,13 +239,26 @@ const MyStorePage: React.FC = () => {
       price_ils: editForm.price_ils,
       condition: editForm.condition as ItemCondition,
       status: editForm.status as ListingStatus,
+      discount_percent: editForm.discount_percent || null,
+      discount_end_at: editForm.discount_end_at || null,
+      stock_quantity: editForm.stock_quantity,
     }).eq("id", editListing.id);
     setSavingEdit(false);
     if (error) {
       toast({ title: "حدث خطأ", variant: "destructive" });
     } else {
       toast({ title: "تم تحديث المنتج" });
-      setListings(prev => prev.map(l => l.id === editListing.id ? { ...l, title: editForm.title, description: editForm.description, price_ils: editForm.price_ils, condition: editForm.condition as ItemCondition, status: editForm.status as ListingStatus } : l));
+      setListings(prev => prev.map(l => l.id === editListing.id ? {
+        ...l,
+        title: editForm.title,
+        description: editForm.description,
+        price_ils: editForm.price_ils,
+        condition: editForm.condition as ItemCondition,
+        status: editForm.status as ListingStatus,
+        discount_percent: editForm.discount_percent,
+        discount_end_at: editForm.discount_end_at || null,
+        stock_quantity: editForm.stock_quantity,
+      } : l));
       setEditListing(null);
     }
   };
@@ -356,7 +372,7 @@ const MyStorePage: React.FC = () => {
                       </Link>
                       {getStatusBadge(listing.status)}
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => { setEditListing(listing); setEditForm({ title: listing.title, description: listing.description || "", price_ils: listing.price_ils, condition: listing.condition || "good", status: listing.status }); }}>
+                        <Button variant="ghost" size="icon" onClick={() => { setEditListing(listing); setEditForm({ title: listing.title, description: listing.description || "", price_ils: listing.price_ils, condition: listing.condition || "good", status: listing.status, discount_percent: listing.discount_percent, discount_end_at: listing.discount_end_at || "", stock_quantity: listing.stock_quantity }); }}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" title="نسخ المنتج" onClick={() => {
@@ -585,6 +601,23 @@ const MyStorePage: React.FC = () => {
                     <SelectItem value="sold">مباع</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              {/* Discount */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">خصم %</label>
+                  <Input type="number" min={0} max={90} placeholder="مثال: 20" value={editForm.discount_percent ?? ""} onChange={e => setEditForm(p => ({ ...p, discount_percent: e.target.value ? Number(e.target.value) : null }))} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">ينتهي في</label>
+                  <Input type="date" value={editForm.discount_end_at ? editForm.discount_end_at.slice(0, 10) : ""} onChange={e => setEditForm(p => ({ ...p, discount_end_at: e.target.value ? new Date(e.target.value).toISOString() : "" }))} />
+                </div>
+              </div>
+              {/* Stock */}
+              <div>
+                <label className="text-sm font-medium mb-1 block">الكمية المتوفرة</label>
+                <Input type="number" min={0} placeholder="غير محدود" value={editForm.stock_quantity ?? ""} onChange={e => setEditForm(p => ({ ...p, stock_quantity: e.target.value ? Number(e.target.value) : null }))} />
+                <p className="text-xs text-muted-foreground mt-1">اتركه فارغاً للكمية غير المحدودة. عند الوصول لـ 0 يتم إخفاء المنتج تلقائياً.</p>
               </div>
             </div>
             <DialogFooter>
