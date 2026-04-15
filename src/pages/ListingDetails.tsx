@@ -366,7 +366,10 @@ const ListingDetailsPage: React.FC = () => {
                 <CarouselContent>
                   {signedImageUrls.map((image, index) => (
                     <CarouselItem key={index}>
-                      <div className="aspect-square rounded-xl overflow-hidden bg-muted">
+                      <div
+                        className="aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
+                        onClick={() => { setZoomIndex(index); setZoomOpen(true); }}
+                      >
                         <img
                           src={image}
                           alt={`${listing.title} - ${index + 1}`}
