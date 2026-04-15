@@ -26,8 +26,6 @@ const COLORS = [
 ];
 
 export const SellerStatsCharts: React.FC<SellerStatsChartsProps> = ({ listings }) => {
-  if (listings.length === 0) return null;
-
   // Per-product chart data
   const productData = listings.slice(0, 10).map((l) => ({
     name: l.title.length > 15 ? l.title.slice(0, 15) + "…" : l.title,
@@ -89,6 +87,8 @@ export const SellerStatsCharts: React.FC<SellerStatsChartsProps> = ({ listings }
     { name: "حفظ", value: totalSaves },
     { name: "واتساب", value: totalWhatsapp },
   ].filter((d) => d.value > 0);
+
+  if (listings.length === 0) return null;
 
   return (
     <Card className="mb-6">
