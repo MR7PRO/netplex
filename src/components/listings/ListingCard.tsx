@@ -124,6 +124,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           >
             <GitCompareArrows className="h-3.5 w-3.5" />
           </button>
+        </div>
         
         <CardContent className="p-3">
           <h3 className="font-semibold text-sm line-clamp-2 mb-2 min-h-[2.5rem]">
