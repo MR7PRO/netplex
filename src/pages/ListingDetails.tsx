@@ -54,6 +54,7 @@ interface Listing {
   images: string[];
   brand: string | null;
   model: string | null;
+  category_id: string | null;
   view_count: number | null;
   save_count: number | null;
   featured: boolean | null;
