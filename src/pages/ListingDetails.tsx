@@ -91,6 +91,7 @@ const ListingDetailsPage: React.FC = () => {
   const { addItem, isInCart } = useCart();
   const { toast } = useToast();
   const { addItem: addRecentlyViewed } = useRecentlyViewed();
+  const { addItem: addToCompare, removeItem: removeFromCompare, isComparing, isFull: compareFull } = useCompare();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
@@ -105,6 +106,8 @@ const ListingDetailsPage: React.FC = () => {
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
   const [submittingReport, setSubmittingReport] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomIndex, setZoomIndex] = useState(0);
 
   // Get signed URLs for images
   const { signedUrls: signedImageUrls, loading: imagesLoading } = useSignedImageUrls(listing?.images);
