@@ -168,6 +168,9 @@ const Index: React.FC = () => {
                         condition={listing.condition || undefined}
                         viewCount={listing.view_count || 0}
                         featured={listing.featured || false}
+                        discountPercent={(listing as any).discount_percent}
+                        discountEndAt={(listing as any).discount_end_at}
+                        stockQuantity={(listing as any).stock_quantity}
                       />
                     </div>
                   ))}
@@ -205,6 +208,9 @@ const Index: React.FC = () => {
                   condition={listing.condition || undefined}
                   viewCount={listing.view_count || 0}
                   featured={listing.featured || false}
+                  discountPercent={(listing as any).discount_percent}
+                  discountEndAt={(listing as any).discount_end_at}
+                  stockQuantity={(listing as any).stock_quantity}
                 />
               ))}
             </div>
