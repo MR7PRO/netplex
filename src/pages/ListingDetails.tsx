@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ArrowRight, MapPin, Calendar, Eye, Heart, Share2, Flag, 
-  Phone, MessageCircle, ShoppingCart, Check, Shield, Star
+  Phone, MessageCircle, ShoppingCart, Check, Shield, Star, GitCompareArrows
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from "@/lib/constants";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { useToast } from "@/hooks/use-toast";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
@@ -40,6 +41,8 @@ import { AIPriceCheckCard } from "@/components/listings/AIPriceCheckCard";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { WhatsAppShareButton } from "@/components/listings/WhatsAppShareButton";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
+import { SimilarProducts } from "@/components/listings/SimilarProducts";
 
 interface Listing {
   id: string;
@@ -51,6 +54,7 @@ interface Listing {
   images: string[];
   brand: string | null;
   model: string | null;
+  category_id: string | null;
   view_count: number | null;
   save_count: number | null;
   featured: boolean | null;
@@ -87,6 +91,7 @@ const ListingDetailsPage: React.FC = () => {
   const { addItem, isInCart } = useCart();
   const { toast } = useToast();
   const { addItem: addRecentlyViewed } = useRecentlyViewed();
+  const { addItem: addToCompare, removeItem: removeFromCompare, isComparing, isFull: compareFull } = useCompare();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
@@ -101,6 +106,8 @@ const ListingDetailsPage: React.FC = () => {
   const [reportReason, setReportReason] = useState("");
   const [reportDetails, setReportDetails] = useState("");
   const [submittingReport, setSubmittingReport] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomIndex, setZoomIndex] = useState(0);
 
   // Get signed URLs for images
   const { signedUrls: signedImageUrls, loading: imagesLoading } = useSignedImageUrls(listing?.images);
@@ -359,7 +366,10 @@ const ListingDetailsPage: React.FC = () => {
                 <CarouselContent>
                   {signedImageUrls.map((image, index) => (
                     <CarouselItem key={index}>
-                      <div className="aspect-square rounded-xl overflow-hidden bg-muted">
+                      <div
+                        className="aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
+                        onClick={() => { setZoomIndex(index); setZoomOpen(true); }}
+                      >
                         <img
                           src={image}
                           alt={`${listing.title} - ${index + 1}`}
@@ -394,6 +404,16 @@ const ListingDetailsPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+            )}
+
+            {/* Zoom Dialog */}
+            {signedImageUrls && signedImageUrls.length > 0 && (
+              <ImageZoomDialog
+                images={signedImageUrls}
+                initialIndex={zoomIndex}
+                open={zoomOpen}
+                onOpenChange={setZoomOpen}
+              />
             )}
           </div>
 
@@ -443,6 +463,35 @@ const ListingDetailsPage: React.FC = () => {
 
             {/* Actions */}
             <div className="flex flex-wrap gap-2">
+              {/* Compare button */}
+              <Button
+                variant={isComparing(listing.id) ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => {
+                  if (isComparing(listing.id)) {
+                    removeFromCompare(listing.id);
+                  } else if (seller) {
+                    addToCompare({
+                      id: listing.id,
+                      title: listing.title,
+                      price_ils: listing.price_ils,
+                      condition: listing.condition,
+                      region: listing.region,
+                      brand: listing.brand,
+                      model: listing.model,
+                      image: listing.images?.[0] || null,
+                      sellerVerified: seller.verified || false,
+                      sellerTrustScore: seller.trust_score,
+                      sellerName: seller.shop_name,
+                    });
+                  }
+                }}
+                disabled={!isComparing(listing.id) && compareFull}
+                className="gap-1"
+              >
+                <GitCompareArrows className="h-4 w-4" />
+                {isComparing(listing.id) ? "في المقارنة" : "قارن"}
+              </Button>
               <Button
                 onClick={handleAddToCart}
                 disabled={isInCart(listing.id)}
@@ -696,6 +745,13 @@ const ListingDetailsPage: React.FC = () => {
             </Dialog>
           </div>
         </div>
+        {/* Similar Products */}
+        <SimilarProducts
+          listingId={listing.id}
+          categoryId={listing.category_id}
+          brand={listing.brand}
+          region={listing.region}
+        />
       </div>
       <AskNetPlexButton
         listingContext={listing ? {

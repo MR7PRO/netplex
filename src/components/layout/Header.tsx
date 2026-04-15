@@ -10,7 +10,8 @@ import {
   Settings,
   Package,
   LayoutDashboard,
-  Store
+  Store,
+  Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SmartSearchInput } from "@/components/search/SmartSearchInput";
@@ -99,6 +100,13 @@ const Header: React.FC = () => {
               >
                 <Store className="h-4 w-4 ml-1" />
                 <span className="hidden md:inline">متجري</span>
+              </Button>
+            )}
+
+            {/* Wishlist */}
+            {user && (
+              <Button variant="ghost" size="icon" onClick={() => navigate("/wishlist")} title="قائمة الأمنيات">
+                <Heart className="h-5 w-5" />
               </Button>
             )}
 
