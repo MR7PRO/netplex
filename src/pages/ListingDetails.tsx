@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ArrowRight, MapPin, Calendar, Eye, Heart, Share2, Flag, 
-  Phone, MessageCircle, ShoppingCart, Check, Shield, Star
+  Phone, MessageCircle, ShoppingCart, Check, Shield, Star, GitCompareArrows
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from "@/lib/constants";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { useToast } from "@/hooks/use-toast";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
@@ -40,6 +41,8 @@ import { AIPriceCheckCard } from "@/components/listings/AIPriceCheckCard";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { WhatsAppShareButton } from "@/components/listings/WhatsAppShareButton";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
+import { SimilarProducts } from "@/components/listings/SimilarProducts";
 
 interface Listing {
   id: string;
