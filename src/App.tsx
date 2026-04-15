@@ -29,6 +29,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Categories = lazy(() => import("./pages/Categories"));
 const About = lazy(() => import("./pages/About"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -81,6 +82,7 @@ const App = () => (
                     <Route path="/admin/invites" element={<ProtectedRoute allowedRoles={["admin"]}><AdminInvites /></ProtectedRoute>} />
                     <Route path="/admin/permissions" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPermissions /></ProtectedRoute>} />
                     <Route path="/cart" element={<Cart />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/safety" element={<Safety />} />
