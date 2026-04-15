@@ -24,6 +24,10 @@ interface ListingCardProps {
   verifiedSeller?: boolean;
   fairPrice?: boolean;
   hotDeal?: boolean;
+  // Discount & stock
+  discountPercent?: number | null;
+  discountEndAt?: string | null;
+  stockQuantity?: number | null;
 }
 
 const conditionLabels: Record<string, string> = {
@@ -48,12 +52,19 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   verifiedSeller,
   fairPrice,
   hotDeal,
+  discountPercent,
+  discountEndAt,
+  stockQuantity,
 }) => {
   const { signedUrl, loading: imageLoading } = useSignedImageUrl(image);
   const { addItem, removeItem, isComparing, isFull } = useCompare();
 
   const comparing = isComparing(id);
   const hasBadges = verifiedSeller || fairPrice || hotDeal;
+
+  // Discount logic
+  const isDiscountActive = discountPercent && discountPercent > 0 && discountEndAt && new Date(discountEndAt) > new Date();
+  const discountedPrice = isDiscountActive ? Math.round(price * (1 - discountPercent / 100)) : price;
 
   return (
     <Link to={`/listing/${id}`}>
@@ -143,11 +154,22 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           )}
           
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-primary">
-              ₪{price.toLocaleString()}
-            </span>
+            <div className="flex items-center gap-1.5">
+              {isDiscountActive && (
+                <span className="text-xs text-muted-foreground line-through">₪{price.toLocaleString()}</span>
+              )}
+              <span className="text-lg font-bold text-primary">
+                ₪{discountedPrice.toLocaleString()}
+              </span>
+              {isDiscountActive && (
+                <Badge variant="destructive" className="text-[10px] px-1 py-0">-{discountPercent}%</Badge>
+              )}
+            </div>
             
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {stockQuantity !== null && stockQuantity !== undefined && stockQuantity <= 3 && stockQuantity > 0 && (
+                <span className="text-destructive font-medium">باقي {stockQuantity}</span>
+              )}
               {viewCount !== undefined && viewCount > 0 && (
                 <span className="flex items-center gap-1">
                   <Eye className="h-3 w-3" />
