@@ -439,9 +439,22 @@ const ListingDetailsPage: React.FC = () => {
                   {listing.view_count || 0}
                 </span>
               </div>
-              <p className="text-3xl font-bold text-primary">
-                {formatPrice(listing.price_ils)}
-              </p>
+              {(() => {
+                const ld = listing as any;
+                const hasDiscount = ld.discount_percent && ld.discount_percent > 0 && ld.discount_end_at && new Date(ld.discount_end_at) > new Date();
+                const discountedPrice = hasDiscount ? Math.round(listing.price_ils * (1 - ld.discount_percent / 100)) : listing.price_ils;
+                return (
+                  <div className="flex items-center gap-3">
+                    {hasDiscount && (
+                      <span className="text-xl text-muted-foreground line-through">{formatPrice(listing.price_ils)}</span>
+                    )}
+                    <p className="text-3xl font-bold text-primary">{formatPrice(discountedPrice)}</p>
+                    {hasDiscount && (
+                      <Badge variant="destructive" className="text-sm">-{ld.discount_percent}%</Badge>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* AI Price Check - instant verdict */}
               <AIPriceCheckCard
