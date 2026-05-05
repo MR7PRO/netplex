@@ -301,6 +301,12 @@ const Profile: React.FC = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {(isAdmin || userRole === "sub_admin") && (
+          <div className="mt-6">
+            <VerificationCard />
+          </div>
+        )}
       </div>
     </Layout>
   );
