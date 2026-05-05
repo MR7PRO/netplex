@@ -7,7 +7,8 @@ import {
   ScrollText,
   ChevronRight,
   TicketCheck,
-  Shield
+  Shield,
+  ShieldCheck
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -36,6 +37,7 @@ const menuItems = [
   { title: "الإعلانات", url: "/admin/listings", icon: Package },
   { title: "البائعون", url: "/admin/sellers", icon: Users },
   { title: "البلاغات", url: "/admin/reports", icon: AlertTriangle, badge: "pendingReports" },
+  { title: "توثيق الهوية", url: "/admin/verifications", icon: ShieldCheck },
   { title: "سجل العمليات", url: "/admin/audit", icon: ScrollText },
   { title: "الدعوات", url: "/admin/invites", icon: TicketCheck },
   { title: "الصلاحيات", url: "/admin/permissions", icon: Shield },

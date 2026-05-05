@@ -57,6 +57,9 @@ const Footer: React.FC = () => {
               <Link to="/safety" className="hover:text-primary transition-colors">
                 نصائح الأمان
               </Link>
+              <Link to="/returns" className="hover:text-primary transition-colors">
+                سياسة الإرجاع
+              </Link>
               <Link to="/terms" className="hover:text-primary transition-colors">
                 الشروط والأحكام
               </Link>

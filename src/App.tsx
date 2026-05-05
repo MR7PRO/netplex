@@ -30,6 +30,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Categories = lazy(() => import("./pages/Categories"));
 const About = lazy(() => import("./pages/About"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
+const Returns = lazy(() => import("./pages/Returns"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -40,6 +41,7 @@ const AdminReports = lazy(() => import("./pages/admin/Reports"));
 const AdminAudit = lazy(() => import("./pages/admin/Audit"));
 const AdminInvites = lazy(() => import("./pages/admin/Invites"));
 const AdminPermissions = lazy(() => import("./pages/admin/Permissions"));
+const AdminVerifications = lazy(() => import("./pages/admin/Verifications"));
 
 const queryClient = new QueryClient();
 
@@ -81,6 +83,7 @@ const App = () => (
                     <Route path="/admin/audit" element={<ProtectedRoute allowedRoles={["admin"]}><AdminAudit /></ProtectedRoute>} />
                     <Route path="/admin/invites" element={<ProtectedRoute allowedRoles={["admin"]}><AdminInvites /></ProtectedRoute>} />
                     <Route path="/admin/permissions" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPermissions /></ProtectedRoute>} />
+                    <Route path="/admin/verifications" element={<ProtectedRoute allowedRoles={["admin"]}><AdminVerifications /></ProtectedRoute>} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />
@@ -88,6 +91,7 @@ const App = () => (
                     <Route path="/safety" element={<Safety />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/returns" element={<Returns />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

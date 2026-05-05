@@ -530,6 +530,51 @@ export type Database = {
           },
         ]
       }
+      seller_verifications: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          id_image_path: string
+          id_number: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["verification_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          id_image_path: string
+          id_number?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["verification_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          id_image_path?: string
+          id_number?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["verification_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sellers: {
         Row: {
           bio: string | null
@@ -814,6 +859,7 @@ export type Database = {
       seller_type: "individual" | "shop"
       submission_status: "pending" | "approved" | "rejected"
       user_role: "buyer" | "seller" | "admin"
+      verification_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -950,6 +996,7 @@ export const Constants = {
       seller_type: ["individual", "shop"],
       submission_status: ["pending", "approved", "rejected"],
       user_role: ["buyer", "seller", "admin"],
+      verification_status: ["pending", "approved", "rejected"],
     },
   },
 } as const

@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import VerificationCard from "@/components/seller/VerificationCard";
 
 const Profile: React.FC = () => {
   const { user, profile, isAdmin, userRole, refreshProfile } = useAuth();
@@ -300,6 +301,12 @@ const Profile: React.FC = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {(isAdmin || userRole === "sub_admin") && (
+          <div className="mt-6">
+            <VerificationCard />
+          </div>
+        )}
       </div>
     </Layout>
   );
