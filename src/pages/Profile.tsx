@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package } from "lucide-react";
+import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import VerificationCard from "@/components/seller/VerificationCard";
