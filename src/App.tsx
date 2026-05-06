@@ -91,6 +91,7 @@ const App = () => (
                     <Route path="/admin/disputes" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDisputes /></ProtectedRoute>} />
                     <Route path="/disputes" element={<Disputes />} />
                     <Route path="/disputes/:id" element={<DisputeDetail />} />
+                    <Route path="/activity" element={<Activity />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />
