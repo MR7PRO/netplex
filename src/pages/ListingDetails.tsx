@@ -756,6 +756,9 @@ const ListingDetailsPage: React.FC = () => {
                 </div>
               </DialogContent>
             </Dialog>
+
+            {/* Open Dispute */}
+            {seller && <OpenDisputeDialog listingId={listing.id} sellerId={seller.id} />}
           </div>
         </div>
         {/* Similar Products */}
