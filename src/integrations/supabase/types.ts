@@ -124,6 +124,89 @@ export type Database = {
           },
         ]
       }
+      dispute_messages: {
+        Row: {
+          body: string
+          created_at: string
+          dispute_id: string
+          id: string
+          is_admin: boolean
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          dispute_id: string
+          id?: string
+          is_admin?: boolean
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          dispute_id?: string
+          id?: string
+          is_admin?: boolean
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_messages_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      disputes: {
+        Row: {
+          admin_notes: string | null
+          amount_ils: number | null
+          buyer_id: string
+          created_at: string
+          description: string
+          id: string
+          listing_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["dispute_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount_ils?: number | null
+          buyer_id: string
+          created_at?: string
+          description: string
+          id?: string
+          listing_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["dispute_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount_ils?: number | null
+          buyer_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          listing_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["dispute_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       listing_events: {
         Row: {
           created_at: string | null
@@ -851,6 +934,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "sub_admin"
+      dispute_status: "pending" | "under_review" | "resolved" | "rejected"
       item_condition: "new" | "like_new" | "good" | "fair" | "poor"
       listing_status: "available" | "reserved" | "sold" | "expired"
       offer_status: "pending" | "accepted" | "rejected"
@@ -988,6 +1072,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "sub_admin"],
+      dispute_status: ["pending", "under_review", "resolved", "rejected"],
       item_condition: ["new", "like_new", "good", "fair", "poor"],
       listing_status: ["available", "reserved", "sold", "expired"],
       offer_status: ["pending", "accepted", "rejected"],
