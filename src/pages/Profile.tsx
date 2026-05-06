@@ -307,6 +307,21 @@ const Profile: React.FC = () => {
             <VerificationCard />
           </div>
         )}
+
+        <Card
+          className="mt-4 cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group"
+          onClick={() => navigate("/disputes")}
+        >
+          <CardContent className="flex items-center gap-3 p-4">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <AlertTriangle className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium">شكاواي والنزاعات</p>
+              <p className="text-xs text-muted-foreground mt-0.5">عرض ومتابعة الشكاوى المفتوحة</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
