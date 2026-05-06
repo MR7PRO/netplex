@@ -19,6 +19,7 @@ import {
   User,
   LogIn
 } from "lucide-react";
+import { ReviewImage } from "@/components/reviews/ReviewImage";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 
 const SellerPage: React.FC = () => {
@@ -353,6 +354,13 @@ const SellerPage: React.FC = () => {
                           <p className="text-sm text-muted-foreground">
                             {review.comment}
                           </p>
+                        )}
+                        {(review as any).images && (review as any).images.length > 0 && (
+                          <div className="flex gap-2 mt-2 flex-wrap">
+                            {((review as any).images as string[]).map((p, i) => (
+                              <ReviewImage key={i} path={p} />
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>

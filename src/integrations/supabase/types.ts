@@ -537,6 +537,7 @@ export type Database = {
           comment: string | null
           created_at: string | null
           id: string
+          images: string[] | null
           listing_id: string | null
           rating: number
           reviewer_id: string
@@ -546,6 +547,7 @@ export type Database = {
           comment?: string | null
           created_at?: string | null
           id?: string
+          images?: string[] | null
           listing_id?: string | null
           rating: number
           reviewer_id: string
@@ -555,6 +557,7 @@ export type Database = {
           comment?: string | null
           created_at?: string | null
           id?: string
+          images?: string[] | null
           listing_id?: string | null
           rating?: number
           reviewer_id?: string

@@ -33,6 +33,7 @@ const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Returns = lazy(() => import("./pages/Returns"));
 const Disputes = lazy(() => import("./pages/Disputes"));
 const DisputeDetail = lazy(() => import("./pages/DisputeDetail"));
+const Activity = lazy(() => import("./pages/Activity"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -90,6 +91,7 @@ const App = () => (
                     <Route path="/admin/disputes" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDisputes /></ProtectedRoute>} />
                     <Route path="/disputes" element={<Disputes />} />
                     <Route path="/disputes/:id" element={<DisputeDetail />} />
+                    <Route path="/activity" element={<Activity />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />
