@@ -33,6 +33,7 @@ const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Returns = lazy(() => import("./pages/Returns"));
 const Disputes = lazy(() => import("./pages/Disputes"));
 const DisputeDetail = lazy(() => import("./pages/DisputeDetail"));
+const Activity = lazy(() => import("./pages/Activity"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
