@@ -43,6 +43,7 @@ import { WhatsAppShareButton } from "@/components/listings/WhatsAppShareButton";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
+import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 
 interface Listing {
   id: string;
@@ -756,6 +757,9 @@ const ListingDetailsPage: React.FC = () => {
                 </div>
               </DialogContent>
             </Dialog>
+
+            {/* Open Dispute */}
+            {seller && <OpenDisputeDialog listingId={listing.id} sellerId={seller.id} />}
           </div>
         </div>
         {/* Similar Products */}
