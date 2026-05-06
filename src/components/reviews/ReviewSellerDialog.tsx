@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Star } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Star, ImagePlus, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,70 +34,94 @@ export const ReviewSellerDialog: React.FC<ReviewSellerDialogProps> = ({
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const allowed = files.slice(0, 4 - imageFiles.length);
+    const valid = allowed.filter(f => f.type.startsWith("image/") && f.size <= 3 * 1024 * 1024);
+    if (valid.length < allowed.length) {
+      toast({ title: "ملاحظة", description: "تم تجاهل صور أكبر من 3MB أو غير مدعومة" });
+    }
+    setImageFiles(prev => [...prev, ...valid]);
+    setPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (idx: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== idx));
+    setPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const uploadImages = async (): Promise<string[]> => {
+    if (!user || imageFiles.length === 0) return [];
+    const paths: string[] = [];
+    for (const file of imageFiles) {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `review-images/${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("listings").upload(path, file, { upsert: false });
+      if (error) throw error;
+      paths.push(path);
+    }
+    return paths;
+  };
 
   const handleSubmit = async () => {
     if (!user) {
       toast({ title: "يجب تسجيل الدخول أولاً", variant: "destructive" });
       return;
     }
-
     if (rating === 0) {
       toast({ title: "يرجى اختيار تقييم", variant: "destructive" });
       return;
     }
 
     setSubmitting(true);
+    try {
+      const uploadedPaths = await uploadImages();
 
-    // Check if user already reviewed this seller for this listing
-    const { data: existingReview } = await supabase
-      .from("reviews")
-      .select("id")
-      .eq("seller_id", sellerId)
-      .eq("reviewer_id", user.id)
-      .eq("listing_id", listingId)
-      .single();
-
-    if (existingReview) {
-      // Update existing review
-      const { error } = await supabase
+      const { data: existing } = await supabase
         .from("reviews")
-        .update({
+        .select("id, images")
+        .eq("seller_id", sellerId)
+        .eq("reviewer_id", user.id)
+        .eq("listing_id", listingId)
+        .maybeSingle();
+
+      if (existing) {
+        const merged = [...(existing.images || []), ...uploadedPaths];
+        const { error } = await supabase
+          .from("reviews")
+          .update({ rating, comment: comment || null, images: merged })
+          .eq("id", existing.id);
+        if (error) throw error;
+        toast({ title: "تم تحديث التقييم بنجاح" });
+      } else {
+        const { error } = await supabase.from("reviews").insert({
+          seller_id: sellerId,
+          reviewer_id: user.id,
+          listing_id: listingId,
           rating,
           comment: comment || null,
-        })
-        .eq("id", existingReview.id);
-
-      if (error) {
-        toast({ title: "حدث خطأ", description: "يرجى المحاولة لاحقاً", variant: "destructive" });
-      } else {
-        toast({ title: "تم تحديث التقييم بنجاح" });
-        setOpen(false);
-        setRating(0);
-        setComment("");
-        onReviewSubmitted?.();
+          images: uploadedPaths,
+        });
+        if (error) throw error;
+        toast({ title: "تم إرسال التقييم", description: "شكراً لمساعدتك في بناء مجتمع موثوق" });
       }
-    } else {
-      // Create new review
-      const { error } = await supabase.from("reviews").insert({
-        seller_id: sellerId,
-        reviewer_id: user.id,
-        listing_id: listingId,
-        rating,
-        comment: comment || null,
-      });
 
-      if (error) {
-        toast({ title: "حدث خطأ", description: "يرجى المحاولة لاحقاً", variant: "destructive" });
-      } else {
-        toast({ title: "تم إرسال التقييم بنجاح", description: "شكراً لمساعدتك في بناء مجتمع موثوق" });
-        setOpen(false);
-        setRating(0);
-        setComment("");
-        onReviewSubmitted?.();
-      }
+      setOpen(false);
+      setRating(0);
+      setComment("");
+      setImageFiles([]);
+      setPreviews([]);
+      onReviewSubmitted?.();
+    } catch (err: any) {
+      toast({ title: "حدث خطأ", description: err.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   return (
@@ -111,11 +135,9 @@ export const ReviewSellerDialog: React.FC<ReviewSellerDialogProps> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>تقييم {sellerName}</DialogTitle>
-          <DialogDescription>
-            شارك تجربتك مع هذا البائع لمساعدة الآخرين
-          </DialogDescription>
+          <DialogDescription>شارك تجربتك مع هذا البائع لمساعدة الآخرين</DialogDescription>
         </DialogHeader>
-        <div className="space-y-6 py-4">
+        <div className="space-y-5 py-4">
           {/* Star Rating */}
           <div className="text-center">
             <label className="text-sm font-medium mb-3 block">تقييمك *</label>
@@ -129,13 +151,9 @@ export const ReviewSellerDialog: React.FC<ReviewSellerDialogProps> = ({
                   onMouseLeave={() => setHoverRating(0)}
                   className="p-1 transition-transform hover:scale-110"
                 >
-                  <Star
-                    className={`h-8 w-8 transition-colors ${
-                      star <= (hoverRating || rating)
-                        ? "text-warning fill-warning"
-                        : "text-muted-foreground"
-                    }`}
-                  />
+                  <Star className={`h-8 w-8 transition-colors ${
+                    star <= (hoverRating || rating) ? "text-warning fill-warning" : "text-muted-foreground"
+                  }`} />
                 </button>
               ))}
             </div>
@@ -155,16 +173,49 @@ export const ReviewSellerDialog: React.FC<ReviewSellerDialogProps> = ({
               placeholder="اكتب تجربتك مع البائع..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              rows={4}
+              rows={3}
             />
           </div>
 
-          <Button
-            onClick={handleSubmit}
-            className="w-full btn-brand"
-            disabled={submitting || rating === 0}
-          >
-            {submitting ? "جاري الإرسال..." : "إرسال التقييم"}
+          {/* Images */}
+          <div>
+            <label className="text-sm font-medium mb-2 block">صور للمراجعة (اختياري — حتى 4)</label>
+            <div className="grid grid-cols-4 gap-2">
+              {previews.map((src, i) => (
+                <div key={i} className="relative aspect-square rounded border overflow-hidden group">
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 left-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              {imageFiles.length < 4 && (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="aspect-square rounded border border-dashed flex items-center justify-center text-muted-foreground hover:bg-muted/50 transition"
+                >
+                  <ImagePlus className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleAddFiles}
+            />
+          </div>
+
+          <Button onClick={handleSubmit} className="w-full btn-brand" disabled={submitting || rating === 0}>
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : null}
+            إرسال التقييم
           </Button>
         </div>
       </DialogContent>
