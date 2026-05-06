@@ -38,6 +38,7 @@ const menuItems = [
   { title: "البائعون", url: "/admin/sellers", icon: Users },
   { title: "البلاغات", url: "/admin/reports", icon: AlertTriangle, badge: "pendingReports" },
   { title: "توثيق الهوية", url: "/admin/verifications", icon: ShieldCheck },
+  { title: "النزاعات", url: "/admin/disputes", icon: AlertTriangle },
   { title: "سجل العمليات", url: "/admin/audit", icon: ScrollText },
   { title: "الدعوات", url: "/admin/invites", icon: TicketCheck },
   { title: "الصلاحيات", url: "/admin/permissions", icon: Shield },
