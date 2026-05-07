@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 
 interface Message {
   id: string;
@@ -149,6 +150,9 @@ const MessageThread: React.FC = () => {
               </Link>
             )}
           </div>
+          {conv?.listing_id && conv.buyer_id === user?.id && (
+            <OpenDisputeDialog listingId={conv.listing_id} sellerId={conv.seller_id} />
+          )}
         </div>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-2 py-2">
