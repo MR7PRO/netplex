@@ -44,6 +44,7 @@ import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
 import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
+import { ChatWithSellerButton } from "@/components/chat/ChatWithSellerButton";
 
 interface Listing {
   id: string;
@@ -568,7 +569,14 @@ const ListingDetailsPage: React.FC = () => {
             </div>
 
             {/* Contact */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              {seller && (
+                <ChatWithSellerButton
+                  sellerId={seller.id}
+                  sellerUserId={seller.user_id}
+                  listingId={listing.id}
+                />
+              )}
               {whatsappLink && (
                 <Button asChild variant="outline" className="flex-1 text-green-600 border-green-600 hover:bg-green-50">
                   <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
