@@ -34,6 +34,8 @@ const Returns = lazy(() => import("./pages/Returns"));
 const Disputes = lazy(() => import("./pages/Disputes"));
 const DisputeDetail = lazy(() => import("./pages/DisputeDetail"));
 const Activity = lazy(() => import("./pages/Activity"));
+const Messages = lazy(() => import("./pages/Messages"));
+const MessageThread = lazy(() => import("./pages/MessageThread"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -92,6 +94,8 @@ const App = () => (
                     <Route path="/disputes" element={<Disputes />} />
                     <Route path="/disputes/:id" element={<DisputeDetail />} />
                     <Route path="/activity" element={<Activity />} />
+                    <Route path="/messages" element={<Messages />} />
+                    <Route path="/messages/:id" element={<MessageThread />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />

@@ -11,7 +11,8 @@ import {
   Package,
   LayoutDashboard,
   Store,
-  Heart
+  Heart,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SmartSearchInput } from "@/components/search/SmartSearchInput";
@@ -107,6 +108,13 @@ const Header: React.FC = () => {
             {user && (
               <Button variant="ghost" size="icon" onClick={() => navigate("/wishlist")} title="قائمة الأمنيات">
                 <Heart className="h-5 w-5" />
+              </Button>
+            )}
+
+            {/* Messages */}
+            {user && (
+              <Button variant="ghost" size="icon" onClick={() => navigate("/messages")} title="الرسائل">
+                <MessageSquare className="h-5 w-5" />
               </Button>
             )}
 
