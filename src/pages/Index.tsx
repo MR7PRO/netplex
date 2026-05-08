@@ -121,6 +121,30 @@ const Index: React.FC = () => {
         </div>
       </section>
 
+      {/* Daily Deals Banner */}
+      <section className="py-6">
+        <div className="container mx-auto px-4">
+          <Link to="/deals" className="block">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-primary/80 p-6 md:p-8 text-primary-foreground hover:shadow-xl transition-shadow">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/20 flex items-center justify-center">
+                    <Flame className="h-7 w-7 md:h-8 md:w-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-bold">صفقات اليوم 🔥</h3>
+                    <p className="text-sm md:text-base opacity-90">أفضل الأسعار وأكبر الخصومات</p>
+                  </div>
+                </div>
+                <ArrowLeft className="h-6 w-6 md:h-8 md:w-8" />
+              </div>
+              <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-white/10" />
+              <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/10" />
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* Featured Listings - Carousel with Arrows */}
       {(featuredListings && featuredListings.length > 0) && (
         <section className="py-10 md:py-14">
