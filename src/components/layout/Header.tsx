@@ -182,6 +182,11 @@ const Header: React.FC = () => {
                     </DropdownMenuItem>
                   )}
 
+                  <DropdownMenuItem onClick={() => navigate("/following")}>
+                    <Heart className="ml-2 h-4 w-4" />
+                    متابعاتي
+                  </DropdownMenuItem>
+
                   <DropdownMenuItem onClick={() => navigate("/profile")}>
                     <Settings className="ml-2 h-4 w-4" />
                     الإعدادات
@@ -234,6 +239,23 @@ const Header: React.FC = () => {
               >
                 الأقسام
               </Link>
+              <Link 
+                to="/deals" 
+                className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                🔥 صفقات اليوم
+              </Link>
+              {user && (
+                <Link 
+                  to="/following" 
+                  className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Heart className="h-4 w-4" />
+                  متابعاتي
+                </Link>
+              )}
               {user && (
                 <Link 
                   to="/sell/new" 

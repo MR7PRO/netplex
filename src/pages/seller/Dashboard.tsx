@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRelativeTime } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
 import { SellerStatsCharts } from "@/components/seller/SellerStatsCharts";
+import { AdvancedDashboardCharts } from "@/components/seller/AdvancedDashboardCharts";
 import type { Database } from "@/integrations/supabase/types";
 
 type SubmissionStatus = Database["public"]["Enums"]["submission_status"];
@@ -248,8 +249,11 @@ const SellerDashboard: React.FC = () => {
         </div>
 
         {/* Stats Charts */}
-        {!loading && listings.length > 0 && (
-          <SellerStatsCharts listings={listings} />
+        {!loading && listings.length > 0 && seller && (
+          <>
+            <AdvancedDashboardCharts sellerId={seller.id} listings={listings as any} />
+            <SellerStatsCharts listings={listings} />
+          </>
         )}
 
         {loading ? (
