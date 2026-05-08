@@ -36,6 +36,8 @@ const DisputeDetail = lazy(() => import("./pages/DisputeDetail"));
 const Activity = lazy(() => import("./pages/Activity"));
 const Messages = lazy(() => import("./pages/Messages"));
 const MessageThread = lazy(() => import("./pages/MessageThread"));
+const DailyDeals = lazy(() => import("./pages/DailyDeals"));
+const FollowingFeed = lazy(() => import("./pages/FollowingFeed"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -96,6 +98,8 @@ const App = () => (
                     <Route path="/activity" element={<Activity />} />
                     <Route path="/messages" element={<Messages />} />
                     <Route path="/messages/:id" element={<MessageThread />} />
+                    <Route path="/deals" element={<DailyDeals />} />
+                    <Route path="/following" element={<FollowingFeed />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/profile" element={<Profile />} />
