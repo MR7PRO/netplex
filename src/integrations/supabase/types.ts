@@ -268,6 +268,8 @@ export type Database = {
       }
       listings: {
         Row: {
+          auto_accept_price: number | null
+          auto_reject_price: number | null
           brand: string | null
           category_id: string | null
           condition: Database["public"]["Enums"]["item_condition"] | null
@@ -292,6 +294,8 @@ export type Database = {
           whatsapp_click_count: number | null
         }
         Insert: {
+          auto_accept_price?: number | null
+          auto_reject_price?: number | null
           brand?: string | null
           category_id?: string | null
           condition?: Database["public"]["Enums"]["item_condition"] | null
@@ -316,6 +320,8 @@ export type Database = {
           whatsapp_click_count?: number | null
         }
         Update: {
+          auto_accept_price?: number | null
+          auto_reject_price?: number | null
           brand?: string | null
           category_id?: string | null
           condition?: Database["public"]["Enums"]["item_condition"] | null
@@ -677,6 +683,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seller_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          id: string
+          seller_id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          id?: string
+          seller_id: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          id?: string
+          seller_id?: string
+        }
+        Relationships: []
       }
       seller_verifications: {
         Row: {
