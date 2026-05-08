@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { ReviewImage } from "@/components/reviews/ReviewImage";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
+import { FollowSellerButton } from "@/components/seller/FollowSellerButton";
 
 const SellerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -215,26 +216,29 @@ const SellerPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Contact Button */}
-              {isAuthenticated && sellerWhatsapp ? (
-                <Button 
-                  size="lg"
-                  className="btn-brand"
-                  onClick={() => window.open(`https://wa.me/${sellerWhatsapp.replace(/\D/g, "")}`, '_blank')}
-                >
-                  <MessageCircle className="h-5 w-5 ml-2" />
-                  تواصل واتساب
-                </Button>
-              ) : !isAuthenticated ? (
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate("/auth")}
-                >
-                  <LogIn className="h-5 w-5 ml-2" />
-                  سجل الدخول للتواصل
-                </Button>
-              ) : null}
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-2">
+                {id && <FollowSellerButton sellerId={id} size="lg" />}
+                {isAuthenticated && sellerWhatsapp ? (
+                  <Button 
+                    size="lg"
+                    className="btn-brand"
+                    onClick={() => window.open(`https://wa.me/${sellerWhatsapp.replace(/\D/g, "")}`, '_blank')}
+                  >
+                    <MessageCircle className="h-5 w-5 ml-2" />
+                    تواصل واتساب
+                  </Button>
+                ) : !isAuthenticated ? (
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    onClick={() => navigate("/auth")}
+                  >
+                    <LogIn className="h-5 w-5 ml-2" />
+                    سجل الدخول للتواصل
+                  </Button>
+                ) : null}
+              </div>
             </div>
           </div>
 

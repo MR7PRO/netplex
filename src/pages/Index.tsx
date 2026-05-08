@@ -1,7 +1,7 @@
 import React, { useRef, useCallback } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2, Flame } from "lucide-react";
 import { CategoryChips } from "@/components/home/CategoryChips";
 import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { Button } from "@/components/ui/button";
