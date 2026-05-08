@@ -29,6 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getRelativeTime, REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
 import { SellerStatsCharts } from "@/components/seller/SellerStatsCharts";
+import { AdvancedDashboardCharts } from "@/components/seller/AdvancedDashboardCharts";
 import type { Database } from "@/integrations/supabase/types";
 
 type ListingStatus = Database["public"]["Enums"]["listing_status"];
@@ -53,6 +54,8 @@ interface Listing {
   discount_percent: number | null;
   discount_end_at: string | null;
   stock_quantity: number | null;
+  auto_accept_price: number | null;
+  auto_reject_price: number | null;
 }
 
 interface Offer {
@@ -107,7 +110,7 @@ const MyStorePage: React.FC = () => {
 
   // Edit listing dialog
   const [editListing, setEditListing] = useState<Listing | null>(null);
-  const [editForm, setEditForm] = useState({ title: "", description: "", price_ils: 0, condition: "", status: "" as string, discount_percent: null as number | null, discount_end_at: "" as string, stock_quantity: null as number | null });
+  const [editForm, setEditForm] = useState({ title: "", description: "", price_ils: 0, condition: "", status: "" as string, discount_percent: null as number | null, discount_end_at: "" as string, stock_quantity: null as number | null, auto_accept_price: null as number | null, auto_reject_price: null as number | null });
   const [savingEdit, setSavingEdit] = useState(false);
 
   const isSubAdmin = userRole === "sub_admin";
@@ -242,6 +245,8 @@ const MyStorePage: React.FC = () => {
       discount_percent: editForm.discount_percent || null,
       discount_end_at: editForm.discount_end_at || null,
       stock_quantity: editForm.stock_quantity,
+      auto_accept_price: editForm.auto_accept_price,
+      auto_reject_price: editForm.auto_reject_price,
     }).eq("id", editListing.id);
     setSavingEdit(false);
     if (error) {
@@ -258,6 +263,8 @@ const MyStorePage: React.FC = () => {
         discount_percent: editForm.discount_percent,
         discount_end_at: editForm.discount_end_at || null,
         stock_quantity: editForm.stock_quantity,
+        auto_accept_price: editForm.auto_accept_price,
+        auto_reject_price: editForm.auto_reject_price,
       } : l));
       setEditListing(null);
     }
@@ -337,8 +344,11 @@ const MyStorePage: React.FC = () => {
         </div>
 
         {/* Stats Charts */}
-        {!loading && listings.length > 0 && (
-          <SellerStatsCharts listings={listings} />
+        {!loading && listings.length > 0 && seller && (
+          <>
+            <AdvancedDashboardCharts sellerId={seller.id} listings={listings as any} />
+            <SellerStatsCharts listings={listings} />
+          </>
         )}
 
         {loading ? (
@@ -372,7 +382,7 @@ const MyStorePage: React.FC = () => {
                       </Link>
                       {getStatusBadge(listing.status)}
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => { setEditListing(listing); setEditForm({ title: listing.title, description: listing.description || "", price_ils: listing.price_ils, condition: listing.condition || "good", status: listing.status, discount_percent: listing.discount_percent, discount_end_at: listing.discount_end_at || "", stock_quantity: listing.stock_quantity }); }}>
+                        <Button variant="ghost" size="icon" onClick={() => { setEditListing(listing); setEditForm({ title: listing.title, description: listing.description || "", price_ils: listing.price_ils, condition: listing.condition || "good", status: listing.status, discount_percent: listing.discount_percent, discount_end_at: listing.discount_end_at || "", stock_quantity: listing.stock_quantity, auto_accept_price: (listing as any).auto_accept_price ?? null, auto_reject_price: (listing as any).auto_reject_price ?? null }); }}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" title="نسخ المنتج" onClick={() => {
@@ -618,6 +628,23 @@ const MyStorePage: React.FC = () => {
                 <label className="text-sm font-medium mb-1 block">الكمية المتوفرة</label>
                 <Input type="number" min={0} placeholder="غير محدود" value={editForm.stock_quantity ?? ""} onChange={e => setEditForm(p => ({ ...p, stock_quantity: e.target.value ? Number(e.target.value) : null }))} />
                 <p className="text-xs text-muted-foreground mt-1">اتركه فارغاً للكمية غير المحدودة. عند الوصول لـ 0 يتم إخفاء المنتج تلقائياً.</p>
+              </div>
+              {/* Auto-Negotiate */}
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-3">
+                <div>
+                  <p className="text-sm font-semibold flex items-center gap-1">⚡ التفاوض التلقائي</p>
+                  <p className="text-xs text-muted-foreground">اضبط حدود لقبول/رفض العروض تلقائياً دون انتظارك</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium mb-1 block">قبول تلقائي ≥ (₪)</label>
+                    <Input type="number" min={0} placeholder="معطّل" value={editForm.auto_accept_price ?? ""} onChange={e => setEditForm(p => ({ ...p, auto_accept_price: e.target.value ? Number(e.target.value) : null }))} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium mb-1 block">رفض تلقائي &lt; (₪)</label>
+                    <Input type="number" min={0} placeholder="معطّل" value={editForm.auto_reject_price ?? ""} onChange={e => setEditForm(p => ({ ...p, auto_reject_price: e.target.value ? Number(e.target.value) : null }))} />
+                  </div>
+                </div>
               </div>
             </div>
             <DialogFooter>
