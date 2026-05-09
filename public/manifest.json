@@ -1,0 +1,28 @@
+{
+  "name": "NetPlex - سوق غزة الموثوق",
+  "short_name": "NetPlex",
+  "description": "منصة آمنة وموثوقة لبيع وشراء كل ما تحتاجه في قطاع غزة",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#E10600",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "business"]
+}
