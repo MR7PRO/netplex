@@ -82,6 +82,8 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Theme Toggle */}
             <ThemeToggle />
+            {/* Install (mobile only, when available) */}
+            <HeaderInstallButton />
             {/* Admin dashboard button */}
             {user && isAdmin && (
               <Button
