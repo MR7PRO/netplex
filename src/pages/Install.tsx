@@ -27,6 +27,10 @@ const Install: React.FC = () => {
       window.navigator.standalone === true);
 
   useEffect(() => {
+    // Reuse a previously-captured prompt (e.g. from header button)
+    const cached = (window as any).__deferredInstallPrompt as BeforeInstallPromptEvent | undefined;
+    if (cached) setDeferred(cached);
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
