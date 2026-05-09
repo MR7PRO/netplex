@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logoImage from "@/assets/logo.png";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import HeaderInstallButton from "@/components/layout/HeaderInstallButton";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,6 +82,8 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Theme Toggle */}
             <ThemeToggle />
+            {/* Install (mobile only, when available) */}
+            <HeaderInstallButton />
             {/* Admin dashboard button */}
             {user && isAdmin && (
               <Button
