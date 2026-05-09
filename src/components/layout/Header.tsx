@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logoImage from "@/assets/logo.png";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import HeaderInstallButton from "@/components/layout/HeaderInstallButton";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
