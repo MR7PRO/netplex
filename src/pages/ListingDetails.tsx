@@ -45,6 +45,8 @@ import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
 import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 import { ChatWithSellerButton } from "@/components/chat/ChatWithSellerButton";
+import { StickyMobileCTA } from "@/components/listings/StickyMobileCTA";
+import type { CarouselApi } from "@/components/ui/carousel";
 
 interface Listing {
   id: string;
@@ -110,6 +112,17 @@ const ListingDetailsPage: React.FC = () => {
   const [submittingReport, setSubmittingReport] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomIndex, setZoomIndex] = useState(0);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Track current slide index for counter/dots
+  useEffect(() => {
+    if (!carouselApi) return;
+    setCurrentSlide(carouselApi.selectedScrollSnap());
+    const onSelect = () => setCurrentSlide(carouselApi.selectedScrollSnap());
+    carouselApi.on("select", onSelect);
+    return () => { carouselApi.off("select", onSelect); };
+  }, [carouselApi]);
 
   // Get signed URLs for images
   const { signedUrls: signedImageUrls, loading: imagesLoading } = useSignedImageUrls(listing?.images);
@@ -348,7 +361,7 @@ const ListingDetailsPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link to="/" className="hover:text-foreground">الرئيسية</Link>
@@ -364,12 +377,12 @@ const ListingDetailsPage: React.FC = () => {
             {imagesLoading ? (
               <Skeleton className="aspect-square rounded-xl" />
             ) : signedImageUrls && signedImageUrls.length > 0 ? (
-              <Carousel className="w-full">
+              <Carousel className="w-full relative" setApi={setCarouselApi}>
                 <CarouselContent>
                   {signedImageUrls.map((image, index) => (
                     <CarouselItem key={index}>
                       <div
-                        className="aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
+                        className="relative aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
                         onClick={() => { setZoomIndex(index); setZoomOpen(true); }}
                       >
                         <img
@@ -377,6 +390,11 @@ const ListingDetailsPage: React.FC = () => {
                           alt={`${listing.title} - ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
+                        {signedImageUrls.length > 1 && (
+                          <div className="absolute top-3 left-3 bg-black/60 text-white text-xs font-medium px-2 py-1 rounded-full backdrop-blur-sm">
+                            {index + 1} / {signedImageUrls.length}
+                          </div>
+                        )}
                       </div>
                     </CarouselItem>
                   ))}
@@ -385,6 +403,20 @@ const ListingDetailsPage: React.FC = () => {
                   <>
                     <CarouselPrevious className="left-2" />
                     <CarouselNext className="right-2" />
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                      {signedImageUrls.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => carouselApi?.scrollTo(i)}
+                          aria-label={`الصورة ${i + 1}`}
+                          className={`h-1.5 rounded-full transition-all ${
+                            currentSlide === i
+                              ? "bg-white w-6"
+                              : "bg-white/60 w-1.5 hover:bg-white/90"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </>
                 )}
               </Carousel>
@@ -778,6 +810,21 @@ const ListingDetailsPage: React.FC = () => {
           region={listing.region}
         />
       </div>
+      {/* Sticky mobile CTA */}
+      {(() => {
+        const ld = listing as any;
+        const hasDiscount = ld.discount_percent && ld.discount_percent > 0 && ld.discount_end_at && new Date(ld.discount_end_at) > new Date();
+        const finalPrice = hasDiscount ? Math.round(listing.price_ils * (1 - ld.discount_percent / 100)) : listing.price_ils;
+        return (
+          <StickyMobileCTA
+            price={finalPrice}
+            originalPrice={hasDiscount ? listing.price_ils : undefined}
+            whatsappLink={whatsappLink}
+            inCart={isInCart(listing.id)}
+            onAddToCart={handleAddToCart}
+          />
+        );
+      })()}
       <AskNetPlexButton
         listingContext={listing ? {
           title: listing.title,

@@ -1,7 +1,9 @@
 import React, { useRef, useCallback } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2, Flame } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Flame, ShoppingBag } from "lucide-react";
+import { ListingCardSkeleton } from "@/components/listings/ListingCardSkeleton";
+import { EmptyState } from "@/components/EmptyState";
 import { CategoryChips } from "@/components/home/CategoryChips";
 import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { Button } from "@/components/ui/button";
@@ -216,8 +218,8 @@ const Index: React.FC = () => {
           </div>
           
           {loadingRecent ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              <ListingCardSkeleton count={8} />
             </div>
           ) : recentListings && recentListings.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
@@ -239,13 +241,13 @@ const Index: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>لا توجد منتجات حالياً</p>
-              <Button className="mt-4" asChild>
-                <Link to="/sell/new">كن أول بائع</Link>
-              </Button>
-            </div>
+            <EmptyState
+              icon={ShoppingBag}
+              title="لا توجد منتجات حالياً"
+              description="كن أول من يضيف منتجاً في NetPlex وابدأ البيع لآلاف المشترين في غزة."
+              actionLabel="أضف أول منتج"
+              actionTo="/sell/new"
+            />
           )}
         </div>
       </section>

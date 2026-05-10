@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel } from "@/lib/constants";
 import { SignedImage } from "@/components/SignedImage";
 import { SearchFiltersSheet, SearchFilters } from "@/components/search/SearchFiltersSheet";
+import { EmptyState } from "@/components/EmptyState";
 import { SmartSearchInput } from "@/components/search/SmartSearchInput";
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
@@ -368,14 +369,13 @@ const SearchPage: React.FC = () => {
             ))}
           </div>
         ) : rankedListings.length === 0 ? (
-          <div className="text-center py-16">
-            <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">لا توجد نتائج</h3>
-            <p className="text-muted-foreground mb-4">جرب تغيير معايير البحث</p>
-            <Button variant="outline" onClick={clearFilters}>
-              مسح الفلاتر
-            </Button>
-          </div>
+          <EmptyState
+            icon={SearchIcon}
+            title="لا توجد نتائج مطابقة"
+            description="جرّب تعديل الفلاتر أو البحث بكلمات مختلفة، أو امسح الفلاتر لعرض كل المنتجات."
+            actionLabel="مسح الفلاتر"
+            onAction={clearFilters}
+          />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {rankedListings.map((listing) => (
