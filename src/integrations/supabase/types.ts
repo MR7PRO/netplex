@@ -684,6 +684,57 @@ export type Database = {
           },
         ]
       }
+      saved_searches: {
+        Row: {
+          alerts_enabled: boolean
+          brand: string | null
+          category_slug: string | null
+          condition: string | null
+          created_at: string
+          id: string
+          max_price: number | null
+          min_price: number | null
+          model: string | null
+          query_text: string | null
+          region: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alerts_enabled?: boolean
+          brand?: string | null
+          category_slug?: string | null
+          condition?: string | null
+          created_at?: string
+          id?: string
+          max_price?: number | null
+          min_price?: number | null
+          model?: string | null
+          query_text?: string | null
+          region?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alerts_enabled?: boolean
+          brand?: string | null
+          category_slug?: string | null
+          condition?: string | null
+          created_at?: string
+          id?: string
+          max_price?: number | null
+          min_price?: number | null
+          model?: string | null
+          query_text?: string | null
+          region?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seller_follows: {
         Row: {
           created_at: string

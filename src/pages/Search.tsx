@@ -22,6 +22,9 @@ import { SignedImage } from "@/components/SignedImage";
 import { SearchFiltersSheet, SearchFilters } from "@/components/search/SearchFiltersSheet";
 import { EmptyState } from "@/components/EmptyState";
 import { SmartSearchInput } from "@/components/search/SmartSearchInput";
+import { FilterChips } from "@/components/search/FilterChips";
+import { SaveSearchButton } from "@/components/search/SaveSearchButton";
+import { ViewModeToggle, type ViewMode } from "@/components/search/ViewModeToggle";
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
 import { useMedianPrices } from "@/hooks/useMedianPrices";
@@ -65,13 +68,15 @@ interface Category {
 }
 
 const SORT_OPTIONS = [
-  { value: "best-match", label_ar: "الأفضل تطابقاً" },
-  { value: "newest", label_ar: "الأحدث" },
-  { value: "price-low", label_ar: "السعر: الأقل" },
-  { value: "price-high", label_ar: "السعر: الأعلى" },
-  { value: "most-viewed", label_ar: "الأكثر مشاهدة" },
-  { value: "most-saved", label_ar: "الأكثر حفظاً" },
+  { value: "best-match", label_ar: "⭐ الأفضل تطابقاً" },
+  { value: "newest", label_ar: "🆕 الأحدث" },
+  { value: "price-low", label_ar: "⬇️ الأرخص أولاً" },
+  { value: "price-high", label_ar: "⬆️ الأغلى أولاً" },
+  { value: "most-viewed", label_ar: "👁️ الأكثر مشاهدة" },
+  { value: "most-saved", label_ar: "❤️ الأكثر حفظاً" },
 ];
+
+const VIEW_MODE_KEY = "netplex_view_mode";
 
 const SearchPage: React.FC = () => {
   const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
@@ -82,7 +87,16 @@ const SearchPage: React.FC = () => {
   const [models, setModels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window === "undefined") return "grid";
+    return (localStorage.getItem(VIEW_MODE_KEY) as ViewMode) || "grid";
+  });
+
+  // Persist view mode
+  useEffect(() => {
+    localStorage.setItem(VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
+
   // Median prices for fair price calculation
   const { data: medianPrices } = useMedianPrices();
 
@@ -310,40 +324,50 @@ const SearchPage: React.FC = () => {
     <Layout>
       <div className="container mx-auto px-4 py-6">
         {/* Search Header */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <SmartSearchInput
-            value={query}
-            onChange={setQuery}
-            onSubmit={applyFilters}
-            placeholder="ابحث عن منتجات... | Search products..."
-            className="flex-1"
-          />
-
-          <div className="flex gap-2">
-            <SearchFiltersSheet
-              filters={filters}
-              onFiltersChange={setFilters}
-              onApply={applyFilters}
-              onClear={clearFilters}
-              categories={categories}
-              brands={brands}
-              models={models}
-              open={filtersOpen}
-              onOpenChange={setFiltersOpen}
+        <div className="space-y-3 mb-4">
+          <div className="flex flex-col md:flex-row gap-3">
+            <SmartSearchInput
+              value={query}
+              onChange={setQuery}
+              onSubmit={applyFilters}
+              placeholder="ابحث عن منتجات... | Search products..."
+              className="flex-1"
             />
 
-            <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label_ar}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <SearchFiltersSheet
+                filters={filters}
+                onFiltersChange={setFilters}
+                onApply={applyFilters}
+                onClear={clearFilters}
+                categories={categories}
+                brands={brands}
+                models={models}
+                open={filtersOpen}
+                onOpenChange={setFiltersOpen}
+              />
+
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label_ar}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            </div>
+          </div>
+
+          {/* Filter chips + Save search */}
+          <div className="flex items-center gap-2">
+            <FilterChips filters={filters} onChange={setFilters} onApply={applyFilters} />
+            <SaveSearchButton query={query} filters={filters} />
           </div>
         </div>
 
@@ -377,12 +401,20 @@ const SearchPage: React.FC = () => {
             onAction={clearFilters}
           />
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className={
+            viewMode === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              : "flex flex-col gap-3"
+          }>
             {rankedListings.map((listing) => (
               <Link
                 key={listing.id}
                 to={`/listing/${listing.id}`}
-                className="group rounded-xl border bg-card overflow-hidden card-hover relative"
+                className={
+                  viewMode === "grid"
+                    ? "group rounded-xl border bg-card overflow-hidden card-hover relative"
+                    : "group rounded-xl border bg-card overflow-hidden card-hover relative flex gap-3"
+                }
               >
                 {listing.featured && (
                   <div className="absolute top-2 right-2 z-10">
@@ -422,25 +454,29 @@ const SearchPage: React.FC = () => {
                 >
                   <GitCompareArrows className="h-3.5 w-3.5" />
                 </button>
-                <div className="aspect-square bg-muted relative overflow-hidden">
+                <div className={
+                  viewMode === "grid"
+                    ? "aspect-square bg-muted relative overflow-hidden"
+                    : "w-28 h-28 sm:w-32 sm:h-32 shrink-0 bg-muted relative overflow-hidden"
+                }>
                   {listing.images?.[0] ? (
                     <SignedImage
                       src={listing.images[0]}
                       alt={listing.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       fallback={
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                           لا توجد صورة
                         </div>
                       }
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                       لا توجد صورة
                     </div>
                   )}
                 </div>
-                <div className="p-3">
+                <div className={viewMode === "grid" ? "p-3" : "p-3 flex-1 min-w-0"}>
                   <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
                     {listing.title}
                   </h3>
