@@ -68,13 +68,15 @@ interface Category {
 }
 
 const SORT_OPTIONS = [
-  { value: "best-match", label_ar: "الأفضل تطابقاً" },
-  { value: "newest", label_ar: "الأحدث" },
-  { value: "price-low", label_ar: "السعر: الأقل" },
-  { value: "price-high", label_ar: "السعر: الأعلى" },
-  { value: "most-viewed", label_ar: "الأكثر مشاهدة" },
-  { value: "most-saved", label_ar: "الأكثر حفظاً" },
+  { value: "best-match", label_ar: "⭐ الأفضل تطابقاً" },
+  { value: "newest", label_ar: "🆕 الأحدث" },
+  { value: "price-low", label_ar: "⬇️ الأرخص أولاً" },
+  { value: "price-high", label_ar: "⬆️ الأغلى أولاً" },
+  { value: "most-viewed", label_ar: "👁️ الأكثر مشاهدة" },
+  { value: "most-saved", label_ar: "❤️ الأكثر حفظاً" },
 ];
+
+const VIEW_MODE_KEY = "netplex_view_mode";
 
 const SearchPage: React.FC = () => {
   const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
