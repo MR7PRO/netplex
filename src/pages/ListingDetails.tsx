@@ -361,7 +361,7 @@ const ListingDetailsPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link to="/" className="hover:text-foreground">الرئيسية</Link>
