@@ -810,6 +810,21 @@ const ListingDetailsPage: React.FC = () => {
           region={listing.region}
         />
       </div>
+      {/* Sticky mobile CTA */}
+      {(() => {
+        const ld = listing as any;
+        const hasDiscount = ld.discount_percent && ld.discount_percent > 0 && ld.discount_end_at && new Date(ld.discount_end_at) > new Date();
+        const finalPrice = hasDiscount ? Math.round(listing.price_ils * (1 - ld.discount_percent / 100)) : listing.price_ils;
+        return (
+          <StickyMobileCTA
+            price={finalPrice}
+            originalPrice={hasDiscount ? listing.price_ils : undefined}
+            whatsappLink={whatsappLink}
+            inCart={isInCart(listing.id)}
+            onAddToCart={handleAddToCart}
+          />
+        );
+      })()}
       <AskNetPlexButton
         listingContext={listing ? {
           title: listing.title,
