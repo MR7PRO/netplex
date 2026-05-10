@@ -45,6 +45,8 @@ import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
 import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 import { ChatWithSellerButton } from "@/components/chat/ChatWithSellerButton";
+import { StickyMobileCTA } from "@/components/listings/StickyMobileCTA";
+import type { CarouselApi } from "@/components/ui/carousel";
 
 interface Listing {
   id: string;
