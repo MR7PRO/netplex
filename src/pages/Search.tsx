@@ -401,12 +401,20 @@ const SearchPage: React.FC = () => {
             onAction={clearFilters}
           />
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className={
+            viewMode === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              : "flex flex-col gap-3"
+          }>
             {rankedListings.map((listing) => (
               <Link
                 key={listing.id}
                 to={`/listing/${listing.id}`}
-                className="group rounded-xl border bg-card overflow-hidden card-hover relative"
+                className={
+                  viewMode === "grid"
+                    ? "group rounded-xl border bg-card overflow-hidden card-hover relative"
+                    : "group rounded-xl border bg-card overflow-hidden card-hover relative flex gap-3"
+                }
               >
                 {listing.featured && (
                   <div className="absolute top-2 right-2 z-10">
