@@ -87,7 +87,16 @@ const SearchPage: React.FC = () => {
   const [models, setModels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window === "undefined") return "grid";
+    return (localStorage.getItem(VIEW_MODE_KEY) as ViewMode) || "grid";
+  });
+
+  // Persist view mode
+  useEffect(() => {
+    localStorage.setItem(VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
+
   // Median prices for fair price calculation
   const { data: medianPrices } = useMedianPrices();
 
