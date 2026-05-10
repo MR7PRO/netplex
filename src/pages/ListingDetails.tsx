@@ -377,12 +377,12 @@ const ListingDetailsPage: React.FC = () => {
             {imagesLoading ? (
               <Skeleton className="aspect-square rounded-xl" />
             ) : signedImageUrls && signedImageUrls.length > 0 ? (
-              <Carousel className="w-full">
+              <Carousel className="w-full relative" setApi={setCarouselApi}>
                 <CarouselContent>
                   {signedImageUrls.map((image, index) => (
                     <CarouselItem key={index}>
                       <div
-                        className="aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
+                        className="relative aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
                         onClick={() => { setZoomIndex(index); setZoomOpen(true); }}
                       >
                         <img
@@ -390,6 +390,11 @@ const ListingDetailsPage: React.FC = () => {
                           alt={`${listing.title} - ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
+                        {signedImageUrls.length > 1 && (
+                          <div className="absolute top-3 left-3 bg-black/60 text-white text-xs font-medium px-2 py-1 rounded-full backdrop-blur-sm">
+                            {index + 1} / {signedImageUrls.length}
+                          </div>
+                        )}
                       </div>
                     </CarouselItem>
                   ))}
@@ -398,6 +403,20 @@ const ListingDetailsPage: React.FC = () => {
                   <>
                     <CarouselPrevious className="left-2" />
                     <CarouselNext className="right-2" />
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                      {signedImageUrls.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => carouselApi?.scrollTo(i)}
+                          aria-label={`الصورة ${i + 1}`}
+                          className={`h-1.5 rounded-full transition-all ${
+                            currentSlide === i
+                              ? "bg-white w-6"
+                              : "bg-white/60 w-1.5 hover:bg-white/90"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </>
                 )}
               </Carousel>
