@@ -454,25 +454,29 @@ const SearchPage: React.FC = () => {
                 >
                   <GitCompareArrows className="h-3.5 w-3.5" />
                 </button>
-                <div className="aspect-square bg-muted relative overflow-hidden">
+                <div className={
+                  viewMode === "grid"
+                    ? "aspect-square bg-muted relative overflow-hidden"
+                    : "w-28 h-28 sm:w-32 sm:h-32 shrink-0 bg-muted relative overflow-hidden"
+                }>
                   {listing.images?.[0] ? (
                     <SignedImage
                       src={listing.images[0]}
                       alt={listing.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       fallback={
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                           لا توجد صورة
                         </div>
                       }
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                       لا توجد صورة
                     </div>
                   )}
                 </div>
-                <div className="p-3">
+                <div className={viewMode === "grid" ? "p-3" : "p-3 flex-1 min-w-0"}>
                   <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
                     {listing.title}
                   </h3>
