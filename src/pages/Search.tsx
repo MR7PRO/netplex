@@ -324,40 +324,50 @@ const SearchPage: React.FC = () => {
     <Layout>
       <div className="container mx-auto px-4 py-6">
         {/* Search Header */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <SmartSearchInput
-            value={query}
-            onChange={setQuery}
-            onSubmit={applyFilters}
-            placeholder="ابحث عن منتجات... | Search products..."
-            className="flex-1"
-          />
-
-          <div className="flex gap-2">
-            <SearchFiltersSheet
-              filters={filters}
-              onFiltersChange={setFilters}
-              onApply={applyFilters}
-              onClear={clearFilters}
-              categories={categories}
-              brands={brands}
-              models={models}
-              open={filtersOpen}
-              onOpenChange={setFiltersOpen}
+        <div className="space-y-3 mb-4">
+          <div className="flex flex-col md:flex-row gap-3">
+            <SmartSearchInput
+              value={query}
+              onChange={setQuery}
+              onSubmit={applyFilters}
+              placeholder="ابحث عن منتجات... | Search products..."
+              className="flex-1"
             />
 
-            <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label_ar}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <SearchFiltersSheet
+                filters={filters}
+                onFiltersChange={setFilters}
+                onApply={applyFilters}
+                onClear={clearFilters}
+                categories={categories}
+                brands={brands}
+                models={models}
+                open={filtersOpen}
+                onOpenChange={setFiltersOpen}
+              />
+
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label_ar}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            </div>
+          </div>
+
+          {/* Filter chips + Save search */}
+          <div className="flex items-center gap-2">
+            <FilterChips filters={filters} onChange={setFilters} onApply={applyFilters} />
+            <SaveSearchButton query={query} filters={filters} />
           </div>
         </div>
 
