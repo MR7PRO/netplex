@@ -112,6 +112,17 @@ const ListingDetailsPage: React.FC = () => {
   const [submittingReport, setSubmittingReport] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomIndex, setZoomIndex] = useState(0);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Track current slide index for counter/dots
+  useEffect(() => {
+    if (!carouselApi) return;
+    setCurrentSlide(carouselApi.selectedScrollSnap());
+    const onSelect = () => setCurrentSlide(carouselApi.selectedScrollSnap());
+    carouselApi.on("select", onSelect);
+    return () => { carouselApi.off("select", onSelect); };
+  }, [carouselApi]);
 
   // Get signed URLs for images
   const { signedUrls: signedImageUrls, loading: imagesLoading } = useSignedImageUrls(listing?.images);
