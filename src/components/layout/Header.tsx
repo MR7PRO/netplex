@@ -59,7 +59,9 @@ const Header: React.FC = () => {
             <div className="relative">
               <img 
                 src={logoImage} 
-                alt="NetPlex" 
+                alt="NetPlex Marketplace - سوق غزة" 
+                width="64"
+                height="64"
                 className="w-14 h-14 sm:w-16 sm:h-16 object-contain transition-all duration-300 group-hover:scale-110 drop-shadow-lg group-hover:drop-shadow-[0_0_10px_rgba(225,6,0,0.7)]" 
               />
             </div>
@@ -129,6 +131,8 @@ const Header: React.FC = () => {
               size="icon"
               className="relative"
               onClick={() => navigate("/cart")}
+              aria-label="عربة التسوق"
+              title="عربة التسوق"
             >
               <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
@@ -145,11 +149,11 @@ const Header: React.FC = () => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="icon" className="rounded-full" aria-label="قائمة الحساب">
                     {profile?.avatar_url ? (
                       <img 
                         src={profile.avatar_url} 
-                        alt={profile.name} 
+                        alt={profile.name ? `صورة ${profile.name}` : "صورة الحساب"} 
                         className="h-8 w-8 rounded-full object-cover"
                       />
                     ) : (
@@ -215,6 +219,8 @@ const Header: React.FC = () => {
               size="icon"
               className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
