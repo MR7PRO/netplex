@@ -46,6 +46,7 @@ import { SimilarProducts } from "@/components/listings/SimilarProducts";
 import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 import { ChatWithSellerButton } from "@/components/chat/ChatWithSellerButton";
 import { StickyMobileCTA } from "@/components/listings/StickyMobileCTA";
+import { SEO } from "@/components/seo/SEO";
 import type { CarouselApi } from "@/components/ui/carousel";
 
 interface Listing {
@@ -359,8 +360,44 @@ const ListingDetailsPage: React.FC = () => {
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0;
 
+  const seoDescription = (listing.description?.replace(/\s+/g, " ").trim().slice(0, 155)) ||
+    `${listing.title} — متاح في NetPlex بسعر ${listing.price_ils} ₪، ${getRegionLabel(listing.region)}.`;
+  const productJsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: listing.title,
+    description: listing.description || listing.title,
+    sku: listing.id,
+    ...(listing.brand ? { brand: { "@type": "Brand", name: listing.brand } } : {}),
+    ...(signedImageUrls && signedImageUrls.length > 0 ? { image: signedImageUrls } : {}),
+    offers: {
+      "@type": "Offer",
+      price: listing.price_ils,
+      priceCurrency: "ILS",
+      availability: "https://schema.org/InStock",
+      url: `https://netplex.lovable.app/listing/${listing.id}`,
+    },
+    ...(avgRating > 0 && reviews.length > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: avgRating.toFixed(1),
+            reviewCount: reviews.length,
+          },
+        }
+      : {}),
+  };
+
   return (
     <Layout>
+      <SEO
+        title={`${listing.title} — ${listing.price_ils} ₪ | NetPlex`}
+        description={seoDescription}
+        path={`/listing/${listing.id}`}
+        ogType="article"
+        ogImage={signedImageUrls?.[0]}
+        jsonLd={productJsonLd}
+      />
       <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
