@@ -28,6 +28,7 @@ import { ViewModeToggle, type ViewMode } from "@/components/search/ViewModeToggl
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
 import { useMedianPrices } from "@/hooks/useMedianPrices";
+import { SEO } from "@/components/seo/SEO";
 import type { Database } from "@/integrations/supabase/types";
 
 interface Listing {
