@@ -6,6 +6,7 @@ import { ListingCardSkeleton } from "@/components/listings/ListingCardSkeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { CategoryChips } from "@/components/home/CategoryChips";
 import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
+import { SEO } from "@/components/seo/SEO";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -76,6 +77,31 @@ const Index: React.FC = () => {
 
   return (
     <Layout>
+      <SEO
+        title="NetPlex — سوق غزة الموثوق لبيع وشراء الإلكترونيات"
+        description="منصة مُدارة لبيع وشراء الإلكترونيات والسلع في قطاع غزة بثقة. إعلانات مُدققة وأسعار واقعية بالشيكل (₪)."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "NetPlex",
+            url: "https://netplex.lovable.app",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: "https://netplex.lovable.app/search?q={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "NetPlex",
+            url: "https://netplex.lovable.app",
+            logo: "https://netplex.lovable.app/favicon.png",
+          },
+        ]}
+      />
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-12 md:py-20">
         <div className="container mx-auto px-4">
@@ -83,7 +109,11 @@ const Index: React.FC = () => {
             <div className="flex justify-center mb-8">
               <img 
                 src={heroLogo} 
-                alt="NetPlex" 
+                alt="NetPlex Marketplace - سوق غزة الموثوق" 
+                width="192"
+                height="192"
+                fetchPriority="high"
+                decoding="async"
                 className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl animate-scale-in" 
                 style={{ animation: 'scale-in 0.6s ease-out, float 3s ease-in-out infinite 0.6s' }}
               />
