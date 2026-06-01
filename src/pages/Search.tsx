@@ -28,6 +28,7 @@ import { ViewModeToggle, type ViewMode } from "@/components/search/ViewModeToggl
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
 import { useMedianPrices } from "@/hooks/useMedianPrices";
+import { SEO } from "@/components/seo/SEO";
 import type { Database } from "@/integrations/supabase/types";
 
 interface Listing {
@@ -322,7 +323,16 @@ const SearchPage: React.FC = () => {
 
   return (
     <Layout>
+      <SEO
+        title={query ? `بحث: ${query} — NetPlex` : "تصفح المنتجات — NetPlex"}
+        description={
+          query
+            ? `نتائج البحث عن "${query}" في NetPlex — تصفح إعلانات مُدققة لبيع وشراء الإلكترونيات في قطاع غزة.`
+            : "تصفح آلاف الإعلانات المُدققة في NetPlex — فلتر حسب القسم، المنطقة، الحالة، والسعر بالشيكل."
+        }
+      />
       <div className="container mx-auto px-4 py-6">
+        <h1 className="sr-only">{query ? `نتائج البحث عن ${query}` : "نتائج البحث في NetPlex"}</h1>
         {/* Search Header */}
         <div className="space-y-3 mb-4">
           <div className="flex flex-col md:flex-row gap-3">

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Loader2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
+import { SEO } from "@/components/seo/SEO";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   electronics: Smartphone,
@@ -44,6 +45,7 @@ const CategoriesPage: React.FC = () => {
 
   return (
     <Layout>
+      <SEO title="جميع الأقسام — تصفح NetPlex" description="تصفح جميع أقسام NetPlex: إلكترونيات، أزياء، منزل وحديقة، سيارات والمزيد في قطاع غزة." path="/categories" />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-2 text-center">تصفح الأقسام</h1>
         <p className="text-muted-foreground text-center mb-8">اختر القسم الذي تبحث فيه</p>

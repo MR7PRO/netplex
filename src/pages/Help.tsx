@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/seo/SEO";
 
 const FAQ_SECTIONS = [
   {
@@ -82,8 +83,25 @@ const FAQ_SECTIONS = [
 ];
 
 const HelpPage: React.FC = () => {
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ_SECTIONS.flatMap((s) =>
+      s.items.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      }))
+    ),
+  };
   return (
     <Layout>
+      <SEO
+        title="مركز المساعدة — أسئلة شائعة | NetPlex"
+        description="إجابات على الأسئلة الشائعة حول الشراء والبيع والحساب والأمان في NetPlex، سوق غزة الموثوق."
+        path="/help"
+        jsonLd={faqJsonLd}
+      />
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-10">

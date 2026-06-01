@@ -1,0 +1,20 @@
+# NetPlex — سوق غزة الموثوق
+
+> NetPlex is a managed Arabic-first marketplace for Gaza, where vetted sellers list electronics and goods priced in ILS (₪). Deals close in-person; payments are never processed in-app.
+
+## Pages
+
+- [Home](/): Featured products, daily deals, and category discovery.
+- [Browse / Search](/search): Search and filter all approved listings by category, region, condition, brand, and price.
+- [Categories](/categories): Browse all marketplace categories.
+- [Daily Deals](/deals): Time-limited discounts and hot offers.
+- [About](/about): What NetPlex is and how the managed marketplace works.
+- [Help Center](/help): FAQ covering buying, selling, accounts, and safety.
+- [Safety Tips](/safety): How to transact safely in person.
+- [Returns Policy](/returns): How returns and disputes are handled.
+- [Install App](/install): Add NetPlex to your phone home screen (PWA).
+
+## Optional
+
+- [Terms](/terms): Terms of service.
+- [Privacy](/privacy): Privacy policy.

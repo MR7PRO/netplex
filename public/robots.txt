@@ -12,3 +12,17 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /auth
+Disallow: /profile
+Disallow: /messages
+Disallow: /cart
+Disallow: /wishlist
+Disallow: /following
+Disallow: /activity
+Disallow: /disputes
+Disallow: /seller/dashboard
+Disallow: /seller/my-store
+
+Sitemap: https://netplex.lovable.app/sitemap.xml
