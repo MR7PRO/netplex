@@ -1,10 +1,12 @@
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import { Lock } from "lucide-react";
+import { SEO } from "@/components/seo/SEO";
 
 const PrivacyPage: React.FC = () => {
   return (
     <Layout>
+      <SEO title="سياسة الخصوصية — NetPlex" description="كيف تجمع NetPlex بياناتك وتحميها كمنصة مُدارة لبيع وشراء المنتجات في قطاع غزة." path="/privacy" />
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl">
         <div className="text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">

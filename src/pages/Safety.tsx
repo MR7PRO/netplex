@@ -2,6 +2,7 @@ import React from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
+import { SEO } from "@/components/seo/SEO";
   Shield, Eye, MapPin, CreditCard, AlertTriangle, 
   CheckCircle, XCircle, Phone, Users
 } from "lucide-react";
@@ -48,6 +49,7 @@ const TIPS = [
 const SafetyPage: React.FC = () => {
   return (
     <Layout>
+      <SEO title="نصائح الأمان — البيع والشراء بأمان | NetPlex" description="إرشادات NetPlex للبيع والشراء بأمان في قطاع غزة وتجنّب الاحتيال خلال المعاملات الشخصية." path="/safety" />
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-10">

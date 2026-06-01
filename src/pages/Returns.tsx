@@ -2,10 +2,12 @@ import React from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, AlertCircle, Clock, MessageCircle, CheckCircle2, XCircle } from "lucide-react";
+import { SEO } from "@/components/seo/SEO";
 
 const Returns: React.FC = () => {
   return (
     <Layout>
+      <SEO title="سياسة الإرجاع — NetPlex" description="كيف تتعامل NetPlex مع الإرجاع والنزاعات بين المشترين والبائعين." path="/returns" />
       <div className="container mx-auto px-4 py-10 max-w-3xl">
         <div className="text-center mb-8">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
