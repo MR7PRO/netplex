@@ -95,7 +95,7 @@ const ListingDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addItem, isInCart } = useCart();
-  const { toast } = useToast();
+  
   const { addItem: addRecentlyViewed } = useRecentlyViewed();
   const { addItem: addToCompare, removeItem: removeFromCompare, isComparing, isFull: compareFull } = useCompare();
 
