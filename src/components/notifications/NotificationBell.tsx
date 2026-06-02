@@ -87,8 +87,8 @@ export const NotificationBell: React.FC = () => {
 
         <ScrollArea className="max-h-80">
           {notifications.length === 0 ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              <Bell className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+            <div className="py-8 text-center text-sm text-foreground">
+              <Bell className="h-8 w-8 mx-auto mb-2 text-muted-foreground" aria-hidden="true" />
               لا توجد إشعارات
             </div>
           ) : (
