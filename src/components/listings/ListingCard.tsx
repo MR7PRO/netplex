@@ -70,7 +70,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     <Link to={`/listing/${id}`}>
       <Card
         className={cn(
-          "group overflow-hidden card-hover border-border/50",
+          "group overflow-hidden card-hover border-border/50 animate-fade-in transition-shadow duration-200 hover:shadow-lg focus-within:ring-2 focus-within:ring-primary/40",
           featured && "ring-2 ring-primary/50",
           className
         )}

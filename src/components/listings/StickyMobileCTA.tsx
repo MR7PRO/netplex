@@ -2,6 +2,7 @@ import React from "react";
 import { ShoppingCart, MessageCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/constants";
+import { haptic } from "@/lib/haptics";
 
 interface Props {
   price: number;
@@ -41,14 +42,22 @@ export const StickyMobileCTA: React.FC<Props> = ({
               size="sm"
               className="flex-1 h-11 text-green-600 border-green-600 hover:bg-green-50 dark:hover:bg-green-950"
             >
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => haptic("medium")}
+              >
                 <MessageCircle className="h-4 w-4 ml-1" />
                 واتساب
               </a>
             </Button>
           )}
           <Button
-            onClick={onAddToCart}
+            onClick={() => {
+              haptic("medium");
+              onAddToCart();
+            }}
             disabled={inCart}
             size="sm"
             className="btn-brand flex-1 h-11"
