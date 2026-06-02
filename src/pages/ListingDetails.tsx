@@ -221,20 +221,35 @@ const ListingDetailsPage: React.FC = () => {
       return;
     }
 
-    if (isSaved) {
-      await supabase
+    // Optimistic flip + haptic — revert on error.
+    const next = !isSaved;
+    setIsSaved(next);
+    haptic("light");
+
+    if (!next) {
+      const { error } = await supabase
         .from("saved_listings")
         .delete()
         .eq("listing_id", id)
         .eq("user_id", user.id);
-      setIsSaved(false);
-      toast({ title: "تمت الإزالة من المحفوظات" });
+      if (error) {
+        setIsSaved(true);
+        haptic("error");
+        brandToast.error("تعذر إزالة المنتج من المحفوظات");
+        return;
+      }
+      brandToast.success("تمت الإزالة من المحفوظات");
     } else {
-      await supabase
+      const { error } = await supabase
         .from("saved_listings")
         .insert({ listing_id: id!, user_id: user.id });
-      setIsSaved(true);
-      toast({ title: "تمت الإضافة للمحفوظات" });
+      if (error) {
+        setIsSaved(false);
+        haptic("error");
+        brandToast.error("تعذر حفظ المنتج");
+        return;
+      }
+      brandToast.success("تمت الإضافة للمحفوظات");
     }
   };
 
@@ -248,7 +263,8 @@ const ListingDetailsPage: React.FC = () => {
       seller_name: seller.shop_name || "بائع",
       seller_id: seller.id,
     });
-    toast({ title: "تمت الإضافة للسلة" });
+    haptic("medium");
+    brandToast.success("تمت الإضافة للسلة");
   };
 
   const handleSubmitOffer = async () => {
@@ -259,7 +275,7 @@ const ListingDetailsPage: React.FC = () => {
 
     const price = parseFloat(offerPrice);
     if (isNaN(price) || price <= 0) {
-      toast({ title: "يرجى إدخال سعر صحيح", variant: "destructive" });
+      brandToast.error("يرجى إدخال سعر صحيح");
       return;
     }
 
@@ -272,9 +288,10 @@ const ListingDetailsPage: React.FC = () => {
     });
 
     if (error) {
-      toast({ title: "حدث خطأ", description: "يرجى المحاولة لاحقاً", variant: "destructive" });
+      brandToast.error("حدث خطأ", { description: "يرجى المحاولة لاحقاً" });
     } else {
-      toast({ title: "تم إرسال العرض بنجاح" });
+      brandToast.success("تم إرسال العرض بنجاح");
+      haptic("success");
       setOfferDialogOpen(false);
       setOfferPrice("");
       setOfferMessage("");
@@ -290,7 +307,7 @@ const ListingDetailsPage: React.FC = () => {
       });
     } else {
       await navigator.clipboard.writeText(window.location.href);
-      toast({ title: "تم نسخ الرابط" });
+      brandToast.success("تم نسخ الرابط");
     }
   };
 
@@ -301,7 +318,7 @@ const ListingDetailsPage: React.FC = () => {
     }
 
     if (!reportReason) {
-      toast({ title: "يرجى اختيار سبب الإبلاغ", variant: "destructive" });
+      brandToast.error("يرجى اختيار سبب الإبلاغ");
       return;
     }
 
@@ -314,9 +331,9 @@ const ListingDetailsPage: React.FC = () => {
     });
 
     if (error) {
-      toast({ title: "حدث خطأ", description: "يرجى المحاولة لاحقاً", variant: "destructive" });
+      brandToast.error("حدث خطأ", { description: "يرجى المحاولة لاحقاً" });
     } else {
-      toast({ title: "تم إرسال البلاغ", description: "شكراً لمساعدتنا في الحفاظ على جودة المنصة" });
+      brandToast.success("تم إرسال البلاغ", { description: "شكراً لمساعدتنا في الحفاظ على جودة المنصة" });
       setReportDialogOpen(false);
       setReportReason("");
       setReportDetails("");
