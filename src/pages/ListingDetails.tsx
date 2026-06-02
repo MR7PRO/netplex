@@ -31,7 +31,8 @@ import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from 
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCompare } from "@/contexts/CompareContext";
-import { useToast } from "@/hooks/use-toast";
+import { brandToast } from "@/lib/brandToast";
+import { haptic } from "@/lib/haptics";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
