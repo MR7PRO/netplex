@@ -106,9 +106,9 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 10%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 0 100% 50%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 0 100% 55%;
 
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 95%;
@@ -140,9 +140,21 @@
     @apply bg-background text-foreground font-cairo antialiased;
   }
 
-  /* LTR override for English text when needed */
   [dir="ltr"] {
     direction: ltr;
+  }
+
+  /* Unified, visible focus rings for keyboard users */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Ensure minimum 44px tap targets on mobile */
+  @media (max-width: 768px) {
+    button:not([data-no-min-tap]),
+    [role="button"]:not([data-no-min-tap]) {
+      min-height: 44px;
+    }
   }
 }
 
@@ -164,6 +176,14 @@
   .card-hover:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
+  }
+
+  .card-hover:active {
+    transform: translateY(-1px);
+  }
+
+  .dark .card-hover:hover {
+    box-shadow: 0 10px 30px -10px hsl(0 0% 0% / 0.7);
   }
 
   .glass {

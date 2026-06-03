@@ -92,6 +92,7 @@ const Header: React.FC = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate("/admin")}
+                aria-label="لوحة التحكم"
                 title="لوحة التحكم"
               >
                 <LayoutDashboard className="h-5 w-5" />
@@ -111,14 +112,14 @@ const Header: React.FC = () => {
 
             {/* Wishlist */}
             {user && (
-              <Button variant="ghost" size="icon" onClick={() => navigate("/wishlist")} title="قائمة الأمنيات">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/wishlist")} aria-label="قائمة الأمنيات" title="قائمة الأمنيات">
                 <Heart className="h-5 w-5" />
               </Button>
             )}
 
             {/* Messages */}
             {user && (
-              <Button variant="ghost" size="icon" onClick={() => navigate("/messages")} title="الرسائل">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/messages")} aria-label="الرسائل" title="الرسائل">
                 <MessageSquare className="h-5 w-5" />
               </Button>
             )}
