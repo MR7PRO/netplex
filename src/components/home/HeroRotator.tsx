@@ -47,7 +47,7 @@ export const HeroRotator: React.FC = () => {
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % SLIDES.length), 5000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % SLIDES.length), 8000);
     return () => clearInterval(t);
   }, []);
 
