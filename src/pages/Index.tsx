@@ -38,8 +38,8 @@ const Index: React.FC = () => {
     const half = halfWidthRef.current;
     if (!half) return;
     // Keep offset within [-half, 0] so duplicated track loops seamlessly
-    if (offsetRef.current <= -half) offsetRef.current += half;
-    if (offsetRef.current > 0) offsetRef.current -= half;
+    while (offsetRef.current <= -half) offsetRef.current += half;
+    while (offsetRef.current > 0) offsetRef.current -= half;
   }, []);
 
   const applyTransform = useCallback(() => {
@@ -119,7 +119,14 @@ const Index: React.FC = () => {
     const el = trackRef.current;
     if (!el) return;
     const measure = () => {
-      halfWidthRef.current = el.scrollWidth / 2;
+      const nextHalfWidth = el.scrollWidth / 2;
+      if (!nextHalfWidth) return;
+      halfWidthRef.current = nextHalfWidth;
+      if (offsetRef.current === 0) {
+        offsetRef.current = -nextHalfWidth;
+      }
+      normalize();
+      applyTransform();
     };
     measure();
     const t1 = window.setTimeout(measure, 200);
@@ -136,7 +143,7 @@ const Index: React.FC = () => {
       window.removeEventListener('resize', measure);
       imgs.forEach((img) => img.removeEventListener('load', measure));
     };
-  }, [featuredListings]);
+  }, [featuredListings, normalize, applyTransform]);
 
   return (
     <Layout>
@@ -175,7 +182,6 @@ const Index: React.FC = () => {
                 alt="NetPlex Marketplace - سوق غزة الموثوق" 
                 width="192"
                 height="192"
-                fetchPriority="high"
                 decoding="async"
                 className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl animate-scale-in" 
                 style={{ animation: 'scale-in 0.6s ease-out, float 3s ease-in-out infinite 0.6s' }}
@@ -260,7 +266,7 @@ const Index: React.FC = () => {
               </button>
 
               {/* Marquee Viewport */}
-              <div className="overflow-hidden px-6 md:px-8">
+              <div className="overflow-hidden px-6 md:px-8" dir="ltr">
                 <div
                   ref={trackRef}
                   className="flex gap-3 md:gap-4 w-max py-2 will-change-transform"
@@ -270,6 +276,7 @@ const Index: React.FC = () => {
                     <div
                       key={`${listing.id}-${idx}`}
                       className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0"
+                      dir="rtl"
                     >
                       <ListingCard
                         id={listing.id}
