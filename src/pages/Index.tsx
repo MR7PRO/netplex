@@ -182,7 +182,6 @@ const Index: React.FC = () => {
                 alt="NetPlex Marketplace - سوق غزة الموثوق" 
                 width="192"
                 height="192"
-                fetchpriority="high"
                 decoding="async"
                 className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl animate-scale-in" 
                 style={{ animation: 'scale-in 0.6s ease-out, float 3s ease-in-out infinite 0.6s' }}
