@@ -68,19 +68,30 @@ const Index: React.FC = () => {
     return () => cancelAnimationFrame(raf);
   }, [normalize, applyTransform]);
 
-  // Measure track width on mount and on resize
+  // Measure track width whenever items render/resize (images, fonts, viewport)
   useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
     const measure = () => {
-      if (trackRef.current) halfWidthRef.current = trackRef.current.scrollWidth / 2;
+      halfWidthRef.current = el.scrollWidth / 2;
     };
     measure();
-    const id = window.setTimeout(measure, 100);
+    const t1 = window.setTimeout(measure, 200);
+    const t2 = window.setTimeout(measure, 800);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
     window.addEventListener('resize', measure);
+    // Re-measure as images inside load
+    const imgs = Array.from(el.querySelectorAll('img'));
+    imgs.forEach((img) => img.addEventListener('load', measure));
     return () => {
-      window.clearTimeout(id);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      ro.disconnect();
       window.removeEventListener('resize', measure);
+      imgs.forEach((img) => img.removeEventListener('load', measure));
     };
-  }, []);
+  }, [featuredListings]);
 
 
   const nudge = useCallback((direction: 'left' | 'right') => {
