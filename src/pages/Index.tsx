@@ -32,7 +32,7 @@ const Index: React.FC = () => {
   const offsetRef = useRef(0); // current translateX (negative = items shifted left visually)
   const halfWidthRef = useRef(0);
   const pausedRef = useRef(false);
-  const [, forceTick] = useState(0);
+  
 
   const normalize = useCallback(() => {
     const half = halfWidthRef.current;
