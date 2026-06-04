@@ -32,7 +32,7 @@ const Index: React.FC = () => {
   const offsetRef = useRef(0); // current translateX (negative = items shifted left visually)
   const halfWidthRef = useRef(0);
   const pausedRef = useRef(false);
-  const [, forceTick] = useState(0);
+  
 
   const normalize = useCallback(() => {
     const half = halfWidthRef.current;
@@ -68,13 +68,20 @@ const Index: React.FC = () => {
     return () => cancelAnimationFrame(raf);
   }, [normalize, applyTransform]);
 
-  // Measure track width when items mount/change
-  const measureTrack = useCallback(() => {
-    if (trackRef.current) {
-      halfWidthRef.current = trackRef.current.scrollWidth / 2;
-      forceTick((n) => n + 1);
-    }
+  // Measure track width on mount and on resize
+  useEffect(() => {
+    const measure = () => {
+      if (trackRef.current) halfWidthRef.current = trackRef.current.scrollWidth / 2;
+    };
+    measure();
+    const id = window.setTimeout(measure, 100);
+    window.addEventListener('resize', measure);
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener('resize', measure);
+    };
   }, []);
+
 
   const nudge = useCallback((direction: 'left' | 'right') => {
     const amount = 300;
@@ -252,7 +259,6 @@ const Index: React.FC = () => {
                     <div
                       key={`${listing.id}-${idx}`}
                       className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0"
-                      ref={idx === featuredListings.length - 1 ? () => measureTrack() : undefined}
                     >
                       <ListingCard
                         id={listing.id}
