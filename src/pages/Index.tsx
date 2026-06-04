@@ -218,34 +218,42 @@ const Index: React.FC = () => {
                 <Link to="/search?featured=true">عرض الكل</Link>
               </Button>
             </div>
-            <div className="relative group">
-              {/* Right Arrow */}
+            <div
+              className="relative group"
+              onMouseEnter={() => { pausedRef.current = true; }}
+              onMouseLeave={() => { pausedRef.current = false; }}
+            >
+              {/* Right Arrow — moves products to the right */}
               <button
-                onClick={() => scrollByAmount('right')}
+                onClick={() => nudge('right')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-background/90 backdrop-blur-sm border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200 opacity-0 group-hover:opacity-100 md:opacity-100"
                 aria-label="التالي"
               >
                 <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
               </button>
-              
+
               {/* Left Arrow */}
               <button
-                onClick={() => scrollByAmount('left')}
+                onClick={() => nudge('left')}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-background/90 backdrop-blur-sm border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200 opacity-0 group-hover:opacity-100 md:opacity-100"
                 aria-label="السابق"
               >
                 <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
               </button>
-              
-              {/* Carousel Container */}
-              <div 
-                ref={scrollContainerRef}
-                className="overflow-x-auto scrollbar-hide scroll-smooth px-6 md:px-8"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                <div className="flex gap-3 md:gap-4 w-max py-2">
-                  {featuredListings.map((listing) => (
-                    <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
+
+              {/* Marquee Viewport */}
+              <div className="overflow-hidden px-6 md:px-8">
+                <div
+                  ref={trackRef}
+                  className="flex gap-3 md:gap-4 w-max py-2 will-change-transform"
+                  style={{ transform: 'translateX(0px)' }}
+                >
+                  {[...featuredListings, ...featuredListings].map((listing, idx) => (
+                    <div
+                      key={`${listing.id}-${idx}`}
+                      className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0"
+                      ref={idx === featuredListings.length - 1 ? () => measureTrack() : undefined}
+                    >
                       <ListingCard
                         id={listing.id}
                         title={listing.title}
@@ -264,6 +272,7 @@ const Index: React.FC = () => {
                 </div>
               </div>
             </div>
+
           </div>
         </section>
       )}
