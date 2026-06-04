@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Flame, ShoppingBag } from "lucide-react";
