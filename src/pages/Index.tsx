@@ -114,6 +114,30 @@ const Index: React.FC = () => {
     },
   });
 
+  // Measure track width whenever items render/resize (images, fonts, viewport)
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const measure = () => {
+      halfWidthRef.current = el.scrollWidth / 2;
+    };
+    measure();
+    const t1 = window.setTimeout(measure, 200);
+    const t2 = window.setTimeout(measure, 800);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener('resize', measure);
+    const imgs = Array.from(el.querySelectorAll('img'));
+    imgs.forEach((img) => img.addEventListener('load', measure));
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+      imgs.forEach((img) => img.removeEventListener('load', measure));
+    };
+  }, [featuredListings]);
+
   return (
     <Layout>
       <SEO
