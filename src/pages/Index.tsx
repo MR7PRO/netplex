@@ -68,13 +68,20 @@ const Index: React.FC = () => {
     return () => cancelAnimationFrame(raf);
   }, [normalize, applyTransform]);
 
-  // Measure track width when items mount/change
-  const measureTrack = useCallback(() => {
-    if (trackRef.current) {
-      halfWidthRef.current = trackRef.current.scrollWidth / 2;
-      forceTick((n) => n + 1);
-    }
+  // Measure track width on mount and on resize
+  useEffect(() => {
+    const measure = () => {
+      if (trackRef.current) halfWidthRef.current = trackRef.current.scrollWidth / 2;
+    };
+    measure();
+    const id = window.setTimeout(measure, 100);
+    window.addEventListener('resize', measure);
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener('resize', measure);
+    };
   }, []);
+
 
   const nudge = useCallback((direction: 'left' | 'right') => {
     const amount = 300;
