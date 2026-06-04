@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Shield, Users, Zap, Smartphone, Home, Car, Shirt, Dumbbell, BookOpen, Briefcase, Package, Flame, ShoppingBag } from "lucide-react";
@@ -27,22 +27,65 @@ const CATEGORIES = [
 ];
 
 const Index: React.FC = () => {
-  // Arrow navigation for marquee
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // Infinite marquee for featured carousel
+  const trackRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0); // current translateX (negative = items shifted left visually)
+  const halfWidthRef = useRef(0);
+  const pausedRef = useRef(false);
+  const [, forceTick] = useState(0);
 
-  const scrollByAmount = useCallback((direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return;
-    const scrollAmount = 300; // pixels to scroll
-    const currentScroll = scrollContainerRef.current.scrollLeft;
-    // RTL: right means decrease scrollLeft, left means increase
-    const newScroll = direction === 'right' 
-      ? currentScroll - scrollAmount 
-      : currentScroll + scrollAmount;
-    scrollContainerRef.current.scrollTo({
-      left: newScroll,
-      behavior: 'smooth'
-    });
+  const normalize = useCallback(() => {
+    const half = halfWidthRef.current;
+    if (!half) return;
+    // Keep offset within [-half, 0] so duplicated track loops seamlessly
+    if (offsetRef.current <= -half) offsetRef.current += half;
+    if (offsetRef.current > 0) offsetRef.current -= half;
   }, []);
+
+  const applyTransform = useCallback(() => {
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translateX(${offsetRef.current}px)`;
+    }
+  }, []);
+
+  // Auto-scroll loop
+  useEffect(() => {
+    let raf = 0;
+    let last = performance.now();
+    const speed = 40; // px per second
+    const step = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      if (!pausedRef.current && halfWidthRef.current > 0) {
+        // Move items to the right visually in RTL: increase translateX
+        offsetRef.current += speed * dt;
+        normalize();
+        applyTransform();
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [normalize, applyTransform]);
+
+  // Measure track width when items mount/change
+  const measureTrack = useCallback(() => {
+    if (trackRef.current) {
+      halfWidthRef.current = trackRef.current.scrollWidth / 2;
+      forceTick((n) => n + 1);
+    }
+  }, []);
+
+  const nudge = useCallback((direction: 'left' | 'right') => {
+    const amount = 300;
+    // Right arrow: items should move to the right (positive translateX)
+    offsetRef.current += direction === 'right' ? amount : -amount;
+    normalize();
+    applyTransform();
+    pausedRef.current = true;
+    window.setTimeout(() => { pausedRef.current = false; }, 1500);
+  }, [normalize, applyTransform]);
+
 
   // Fetch featured listings
   const { data: featuredListings, isLoading: loadingFeatured } = useQuery({
@@ -175,34 +218,42 @@ const Index: React.FC = () => {
                 <Link to="/search?featured=true">عرض الكل</Link>
               </Button>
             </div>
-            <div className="relative group">
-              {/* Right Arrow */}
+            <div
+              className="relative group"
+              onMouseEnter={() => { pausedRef.current = true; }}
+              onMouseLeave={() => { pausedRef.current = false; }}
+            >
+              {/* Right Arrow — moves products to the right */}
               <button
-                onClick={() => scrollByAmount('right')}
+                onClick={() => nudge('right')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-background/90 backdrop-blur-sm border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200 opacity-0 group-hover:opacity-100 md:opacity-100"
                 aria-label="التالي"
               >
                 <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
               </button>
-              
+
               {/* Left Arrow */}
               <button
-                onClick={() => scrollByAmount('left')}
+                onClick={() => nudge('left')}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-background/90 backdrop-blur-sm border border-border rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200 opacity-0 group-hover:opacity-100 md:opacity-100"
                 aria-label="السابق"
               >
                 <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
               </button>
-              
-              {/* Carousel Container */}
-              <div 
-                ref={scrollContainerRef}
-                className="overflow-x-auto scrollbar-hide scroll-smooth px-6 md:px-8"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                <div className="flex gap-3 md:gap-4 w-max py-2">
-                  {featuredListings.map((listing) => (
-                    <div key={listing.id} className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0">
+
+              {/* Marquee Viewport */}
+              <div className="overflow-hidden px-6 md:px-8">
+                <div
+                  ref={trackRef}
+                  className="flex gap-3 md:gap-4 w-max py-2 will-change-transform"
+                  style={{ transform: 'translateX(0px)' }}
+                >
+                  {[...featuredListings, ...featuredListings].map((listing, idx) => (
+                    <div
+                      key={`${listing.id}-${idx}`}
+                      className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0"
+                      ref={idx === featuredListings.length - 1 ? () => measureTrack() : undefined}
+                    >
                       <ListingCard
                         id={listing.id}
                         title={listing.title}
@@ -221,6 +272,7 @@ const Index: React.FC = () => {
                 </div>
               </div>
             </div>
+
           </div>
         </section>
       )}
