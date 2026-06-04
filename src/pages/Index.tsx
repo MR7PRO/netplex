@@ -259,7 +259,6 @@ const Index: React.FC = () => {
                     <div
                       key={`${listing.id}-${idx}`}
                       className="w-[160px] md:w-[220px] lg:w-[260px] flex-shrink-0"
-                      ref={idx === featuredListings.length - 1 ? () => measureTrack() : undefined}
                     >
                       <ListingCard
                         id={listing.id}
