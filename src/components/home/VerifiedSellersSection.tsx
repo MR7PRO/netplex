@@ -11,10 +11,10 @@ export const VerifiedSellersSection: React.FC = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("sellers_public")
-        .select("id, user_id, shop_name, region, trust_score, verified")
+        .select("id, user_id, shop_name, region, trust_score, verified, logo_url")
         .eq("verified", true)
         .order("trust_score", { ascending: false, nullsFirst: false })
-        .limit(8);
+        .limit(12);
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
