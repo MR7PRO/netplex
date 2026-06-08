@@ -804,8 +804,10 @@ export type Database = {
       sellers: {
         Row: {
           bio: string | null
+          cover_url: string | null
           created_at: string | null
           id: string
+          logo_url: string | null
           region: string
           shop_name: string | null
           trust_score: number | null
@@ -817,8 +819,10 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          cover_url?: string | null
           created_at?: string | null
           id?: string
+          logo_url?: string | null
           region: string
           shop_name?: string | null
           trust_score?: number | null
@@ -830,8 +834,10 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          cover_url?: string | null
           created_at?: string | null
           id?: string
+          logo_url?: string | null
           region?: string
           shop_name?: string | null
           trust_score?: number | null
@@ -996,8 +1002,10 @@ export type Database = {
       sellers_public: {
         Row: {
           bio: string | null
+          cover_url: string | null
           created_at: string | null
           id: string | null
+          logo_url: string | null
           region: string | null
           shop_name: string | null
           trust_score: number | null
@@ -1008,8 +1016,10 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          cover_url?: string | null
           created_at?: string | null
           id?: string | null
+          logo_url?: string | null
           region?: string | null
           shop_name?: string | null
           trust_score?: number | null
@@ -1020,8 +1030,10 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          cover_url?: string | null
           created_at?: string | null
           id?: string | null
+          logo_url?: string | null
           region?: string | null
           shop_name?: string | null
           trust_score?: number | null

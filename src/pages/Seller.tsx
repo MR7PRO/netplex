@@ -153,15 +153,25 @@ const SellerPage: React.FC = () => {
       <div className="container mx-auto px-4 py-6 md:py-8">
         {/* Seller Header */}
         <Card className="mb-8 overflow-hidden">
+          {(seller as any).cover_url && (
+            <div
+              className="w-full h-32 md:h-48 bg-muted"
+              style={{
+                backgroundImage: `url(${(seller as any).cover_url})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+          )}
           <div className="bg-gradient-to-l from-primary/10 to-transparent p-6 md:p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {/* Avatar */}
               <div className="relative">
-                {profile?.avatar_url ? (
+                {((seller as any).logo_url || profile?.avatar_url) ? (
                   <img 
-                    src={profile.avatar_url} 
-                    alt={profile.name || seller.shop_name || "البائع"}
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-background shadow-lg"
+                    src={(seller as any).logo_url || profile?.avatar_url} 
+                    alt={profile?.name || seller.shop_name || "البائع"}
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-background shadow-lg bg-background"
                   />
                 ) : (
                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-background shadow-lg">

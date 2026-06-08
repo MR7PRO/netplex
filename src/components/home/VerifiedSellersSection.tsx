@@ -11,10 +11,10 @@ export const VerifiedSellersSection: React.FC = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("sellers_public")
-        .select("id, user_id, shop_name, region, trust_score, verified")
+        .select("id, user_id, shop_name, region, trust_score, verified, logo_url")
         .eq("verified", true)
         .order("trust_score", { ascending: false, nullsFirst: false })
-        .limit(8);
+        .limit(12);
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
@@ -48,7 +48,16 @@ export const VerifiedSellersSection: React.FC = () => {
                 >
                   <div className="relative">
                     <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-primary/10 to-secondary border-2 border-border group-hover:border-primary transition-all duration-300 group-hover:scale-105 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md">
-                      <Store className="h-8 w-8 md:h-10 md:w-10 text-primary/70" />
+                      {(s as any).logo_url ? (
+                        <img
+                          src={(s as any).logo_url}
+                          alt={s.shop_name || "متجر"}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Store className="h-8 w-8 md:h-10 md:w-10 text-primary/70" />
+                      )}
                     </div>
                     <div className="absolute -bottom-1 -left-1 bg-background rounded-full p-0.5">
                       <BadgeCheck className="h-5 w-5 text-primary fill-primary/20" />
