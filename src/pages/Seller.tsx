@@ -22,6 +22,8 @@ import {
 import { ReviewImage } from "@/components/reviews/ReviewImage";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 import { FollowSellerButton } from "@/components/seller/FollowSellerButton";
+import { WriteSellerReviewButton } from "@/components/reviews/WriteSellerReviewButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SellerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

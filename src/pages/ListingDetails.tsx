@@ -34,6 +34,7 @@ import { useCompare } from "@/contexts/CompareContext";
 import { brandToast } from "@/lib/brandToast";
 import { haptic } from "@/lib/haptics";
 import { ReviewSellerDialog } from "@/components/reviews/ReviewSellerDialog";
+import { ListingReviewsSection } from "@/components/reviews/ListingReviewsSection";
 import { useSignedImageUrls } from "@/hooks/useSignedImageUrl";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 import { usePriceStats } from "@/hooks/usePriceStats";
@@ -857,6 +858,10 @@ const ListingDetailsPage: React.FC = () => {
             {seller && <OpenDisputeDialog listingId={listing.id} sellerId={seller.id} />}
           </div>
         </div>
+        {/* Customer Reviews */}
+        {seller && (
+          <ListingReviewsSection listingId={listing.id} sellerId={seller.id} />
+        )}
         {/* Similar Products */}
         <SimilarProducts
           listingId={listing.id}
