@@ -28,6 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 const SellerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
   // Get seller WhatsApp (only for authenticated users)
   const { whatsapp: sellerWhatsapp, isAuthenticated } = useSellerWhatsapp(id);
@@ -231,6 +232,15 @@ const SellerPage: React.FC = () => {
               {/* Action Buttons */}
               <div className="flex flex-col gap-2">
                 {id && <FollowSellerButton sellerId={id} size="lg" />}
+                {id && (
+                  <WriteSellerReviewButton
+                    sellerId={id}
+                    sellerName={seller.shop_name || profile?.name || "البائع"}
+                    onSubmitted={() =>
+                      queryClient.invalidateQueries({ queryKey: ["seller-reviews", id] })
+                    }
+                  />
+                )}
                 {isAuthenticated && sellerWhatsapp ? (
                   <Button 
                     size="lg"
