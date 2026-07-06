@@ -43,7 +43,7 @@ export const VerifiedSellersSection: React.FC = () => {
             : sellers!.map((s) => (
                 <Link
                   key={s.id || s.user_id}
-                  to={`/seller/${s.user_id}`}
+                  to={`/seller/${s.id}`}
                   className="group flex flex-col items-center gap-2 shrink-0 w-[88px] md:w-[104px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-1"
                 >
                   <div className="relative">
