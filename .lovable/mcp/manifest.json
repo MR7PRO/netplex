@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "netplex-mcp",
+      "version": "0.1.0",
+      "title": "NetPlex Marketplace"
+    },
+    "tools": [
+      {
+        "name": "search_listings",
+        "title": "Search listings",
+        "description": "Search available NetPlex marketplace listings by keyword, category slug, region, brand, or price range. Returns up to 20 results ordered by newest.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Free-text search on title/brand/model."
+            },
+            "category_slug": {
+              "type": "string",
+              "description": "Category slug filter, e.g. 'phones'."
+            },
+            "region": {
+              "type": "string",
+              "description": "Region filter (Arabic name)."
+            },
+            "brand": {
+              "type": "string"
+            },
+            "min_price_ils": {
+              "type": "number",
+              "minimum": 0
+            },
+            "max_price_ils": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max results, default 20."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_listing",
+        "title": "Get listing details",
+        "description": "Fetch full details for a single NetPlex listing by its ID.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "listing_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Listing UUID."
+            }
+          },
+          "required": [
+            "listing_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_categories",
+        "title": "List categories",
+        "description": "List all NetPlex marketplace categories with their slugs and names.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_verified_sellers",
+        "title": "List verified sellers",
+        "description": "List verified NetPlex sellers ordered by trust score. Optionally filter by region.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "region": {
+              "type": "string"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
