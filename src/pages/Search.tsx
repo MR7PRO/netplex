@@ -25,6 +25,8 @@ import { SmartSearchInput } from "@/components/search/SmartSearchInput";
 import { FilterChips } from "@/components/search/FilterChips";
 import { SaveSearchButton } from "@/components/search/SaveSearchButton";
 import { ViewModeToggle, type ViewMode } from "@/components/search/ViewModeToggle";
+import { NearMeChip } from "@/components/search/NearMeChip";
+import { useUserRegion } from "@/hooks/useUserRegion";
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
 import { useMedianPrices } from "@/hooks/useMedianPrices";
@@ -82,6 +84,7 @@ const VIEW_MODE_KEY = "netplex_view_mode";
 const SearchPage: React.FC = () => {
   const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { region: userRegion } = useUserRegion();
   const [listings, setListings] = useState<Listing[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
@@ -375,7 +378,17 @@ const SearchPage: React.FC = () => {
           </div>
 
           {/* Filter chips + Save search */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <NearMeChip
+              active={!!filters.region && filters.region === userRegion}
+              onToggle={(r) => {
+                setFilters({ ...filters, region: r });
+                const params = new URLSearchParams(searchParams);
+                if (r) params.set("region", r);
+                else params.delete("region");
+                setSearchParams(params);
+              }}
+            />
             <FilterChips filters={filters} onChange={setFilters} onApply={applyFilters} />
             <SaveSearchButton query={query} filters={filters} />
           </div>

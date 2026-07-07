@@ -8,6 +8,7 @@ import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ListingBadges } from "@/components/listings/ListingBadges";
 import { useCompare } from "@/contexts/CompareContext";
+import { QuickFavoriteButton } from "@/components/listings/QuickFavoriteButton";
 
 interface ListingCardProps {
   id: string;
@@ -135,6 +136,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           >
             <GitCompareArrows className="h-3.5 w-3.5" />
           </button>
+
+          {/* Quick favorite */}
+          <QuickFavoriteButton listingId={id} className="top-auto left-auto bottom-2 right-2" />
         </div>
         
         <CardContent className="p-3">
