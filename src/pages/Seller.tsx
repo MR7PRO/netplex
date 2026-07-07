@@ -23,6 +23,7 @@ import { ReviewImage } from "@/components/reviews/ReviewImage";
 import { useSellerWhatsapp } from "@/hooks/useSellerWhatsapp";
 import { FollowSellerButton } from "@/components/seller/FollowSellerButton";
 import { WriteSellerReviewButton } from "@/components/reviews/WriteSellerReviewButton";
+import { SellerAchievements } from "@/components/seller/SellerAchievements";
 import { useQueryClient } from "@tanstack/react-query";
 
 const SellerPage: React.FC = () => {
@@ -288,6 +289,15 @@ const SellerPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Seller Achievements */}
+        {id && (
+          <SellerAchievements
+            sellerId={id}
+            verified={seller.verified}
+            createdAt={seller.created_at}
+          />
+        )}
 
         {/* Seller's Listings */}
         <section className="mb-8">
