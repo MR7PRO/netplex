@@ -84,6 +84,7 @@ const VIEW_MODE_KEY = "netplex_view_mode";
 const SearchPage: React.FC = () => {
   const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { region: userRegion } = useUserRegion();
   const [listings, setListings] = useState<Listing[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
@@ -379,7 +380,7 @@ const SearchPage: React.FC = () => {
           {/* Filter chips + Save search */}
           <div className="flex items-center gap-2 flex-wrap">
             <NearMeChip
-              active={!!filters.region && filters.region === (typeof window !== "undefined" ? localStorage.getItem("netplex_user_region") : "")}
+              active={!!filters.region && filters.region === userRegion}
               onToggle={(r) => {
                 setFilters({ ...filters, region: r });
                 const params = new URLSearchParams(searchParams);
