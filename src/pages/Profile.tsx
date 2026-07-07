@@ -12,6 +12,7 @@ import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileT
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import VerificationCard from "@/components/seller/VerificationCard";
+import { PushOptInCard } from "@/components/notifications/PushOptInCard";
 
 const Profile: React.FC = () => {
   const { user, profile, isAdmin, userRole, refreshProfile } = useAuth();
@@ -307,6 +308,11 @@ const Profile: React.FC = () => {
             <VerificationCard />
           </div>
         )}
+
+        <div className="mt-4">
+          <PushOptInCard />
+        </div>
+
 
         <Card
           className="mt-4 cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group"
