@@ -34,7 +34,7 @@ export function useSavedListing(listingId?: string) {
 
   const toggle = useCallback(async () => {
     if (!user) {
-      brandToast.info?.("سجّل الدخول لحفظ المنتجات") ?? brandToast.error("سجّل الدخول لحفظ المنتجات");
+      brandToast.info("سجّل الدخول لحفظ المنتجات");
       return;
     }
     if (!listingId || loading) return;
