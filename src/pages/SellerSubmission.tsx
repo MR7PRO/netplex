@@ -34,6 +34,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
 import type { Database } from "@/integrations/supabase/types";
+import PriceSuggestionButton from "@/components/seller/PriceSuggestionButton";
+import AIDescriptionButton from "@/components/seller/AIDescriptionButton";
 
 type ItemCondition = Database["public"]["Enums"]["item_condition"];
 
@@ -469,10 +471,19 @@ const SellerSubmissionPage: React.FC = () => {
                     <FormControl>
                       <Input type="number" placeholder="0" {...field} />
                     </FormControl>
+                    <div className="mt-2">
+                      <PriceSuggestionButton
+                        brand={form.watch("brand")}
+                        model={form.watch("model")}
+                        condition={form.watch("condition")}
+                        onSuggest={(price) => form.setValue("price_ils", price, { shouldValidate: true })}
+                      />
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
 
               <FormField
                 control={form.control}
@@ -537,7 +548,17 @@ const SellerSubmissionPage: React.FC = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>الوصف (اختياري)</FormLabel>
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <FormLabel>الوصف (اختياري)</FormLabel>
+                    <AIDescriptionButton
+                      title={form.watch("title")}
+                      brand={form.watch("brand")}
+                      model={form.watch("model")}
+                      condition={form.watch("condition")}
+                      imageFile={images[0] || null}
+                      onGenerated={(desc) => form.setValue("description", desc, { shouldValidate: true })}
+                    />
+                  </div>
                   <FormControl>
                     <Textarea
                       placeholder="أضف تفاصيل إضافية عن المنتج..."
@@ -552,6 +573,7 @@ const SellerSubmissionPage: React.FC = () => {
                 </FormItem>
               )}
             />
+
 
             <Alert>
               <AlertCircle className="h-4 w-4" />
