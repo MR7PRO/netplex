@@ -39,6 +39,7 @@ const MessageThread = lazy(() => import("./pages/MessageThread"));
 const DailyDeals = lazy(() => import("./pages/DailyDeals"));
 const FollowingFeed = lazy(() => import("./pages/FollowingFeed"));
 const Install = lazy(() => import("./pages/Install"));
+const ImageSearch = lazy(() => import("./pages/ImageSearch"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -110,6 +111,7 @@ const App = () => (
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/install" element={<Install />} />
+                    <Route path="/image-search" element={<ImageSearch />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
