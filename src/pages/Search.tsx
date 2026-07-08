@@ -3,7 +3,7 @@ import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { CompareBar } from "@/components/compare/CompareBar";
 import { useCompare, type CompareListing } from "@/contexts/CompareContext";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Star } from "lucide-react";
+import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Star, Camera } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -346,6 +346,11 @@ const SearchPage: React.FC = () => {
               placeholder="ابحث عن منتجات... | Search products..."
               className="flex-1"
             />
+
+            <Button asChild variant="outline" size="icon" title="بحث بالصورة" className="shrink-0">
+              <Link to="/image-search"><Camera className="h-4 w-4" /></Link>
+            </Button>
+
 
             <div className="flex gap-2">
               <SearchFiltersSheet

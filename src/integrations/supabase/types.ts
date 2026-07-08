@@ -493,6 +493,9 @@ export type Database = {
           id: string
           name: string
           phone: string | null
+          promo_points: number
+          referral_code: string | null
+          referred_by: string | null
           role: Database["public"]["Enums"]["user_role"] | null
           updated_at: string | null
         }
@@ -503,6 +506,9 @@ export type Database = {
           id: string
           name: string
           phone?: string | null
+          promo_points?: number
+          referral_code?: string | null
+          referred_by?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
           updated_at?: string | null
         }
@@ -513,10 +519,28 @@ export type Database = {
           id?: string
           name?: string
           phone?: string | null
+          promo_points?: number
+          referral_code?: string | null
+          referred_by?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       promotions: {
         Row: {
@@ -1116,6 +1140,7 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_sub_admin: { Args: { _user_id: string }; Returns: boolean }
+      redeem_referral_code: { Args: { p_code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "sub_admin"

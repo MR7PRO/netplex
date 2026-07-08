@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import VerificationCard from "@/components/seller/VerificationCard";
 import { PushOptInCard } from "@/components/notifications/PushOptInCard";
+import ReferralCard from "@/components/profile/ReferralCard";
 
 const Profile: React.FC = () => {
   const { user, profile, isAdmin, userRole, refreshProfile } = useAuth();
@@ -311,6 +312,10 @@ const Profile: React.FC = () => {
 
         <div className="mt-4">
           <PushOptInCard />
+        </div>
+
+        <div className="mt-4">
+          <ReferralCard />
         </div>
 
 
