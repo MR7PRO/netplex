@@ -26,3 +26,4 @@ Disallow: /seller/dashboard
 Disallow: /seller/my-store
 
 Sitemap: https://netplex.lovable.app/sitemap.xml
+Sitemap: https://pqgidznijhsaboqqofhn.supabase.co/functions/v1/sitemap
