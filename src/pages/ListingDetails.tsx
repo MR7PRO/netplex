@@ -45,6 +45,8 @@ import { WhatsAppShareButton } from "@/components/listings/WhatsAppShareButton";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
+import { CheaperAlternatives } from "@/components/listings/CheaperAlternatives";
+import { LiveViewers } from "@/components/listings/LiveViewers";
 import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 import { ChatWithSellerButton } from "@/components/chat/ChatWithSellerButton";
 import { StickyMobileCTA } from "@/components/listings/StickyMobileCTA";
@@ -529,6 +531,9 @@ const ListingDetailsPage: React.FC = () => {
                   {listing.view_count || 0}
                 </span>
               </div>
+              <div className="mb-3">
+                <LiveViewers listingId={listing.id} />
+              </div>
               {(() => {
                 const ld = listing as any;
                 const hasDiscount = ld.discount_percent && ld.discount_percent > 0 && ld.discount_end_at && new Date(ld.discount_end_at) > new Date();
@@ -862,6 +867,14 @@ const ListingDetailsPage: React.FC = () => {
         {seller && (
           <ListingReviewsSection listingId={listing.id} sellerId={seller.id} />
         )}
+        {/* Cheaper Alternatives */}
+        <CheaperAlternatives
+          listingId={listing.id}
+          currentPrice={listing.price_ils}
+          categoryId={listing.category_id}
+          brand={listing.brand}
+          model={listing.model}
+        />
         {/* Similar Products */}
         <SimilarProducts
           listingId={listing.id}
