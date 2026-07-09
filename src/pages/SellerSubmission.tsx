@@ -36,6 +36,7 @@ import { REGIONS, CONDITION_OPTIONS } from "@/lib/constants";
 import type { Database } from "@/integrations/supabase/types";
 import PriceSuggestionButton from "@/components/seller/PriceSuggestionButton";
 import AIDescriptionButton from "@/components/seller/AIDescriptionButton";
+import { convertToWebP } from "@/lib/imageCompress";
 
 type ItemCondition = Database["public"]["Enums"]["item_condition"];
 
@@ -219,13 +220,15 @@ const SellerSubmissionPage: React.FC = () => {
     try {
       // Upload images
       const imageUrls: string[] = [];
-      for (const file of images) {
+      for (const original of images) {
+        // Compress & convert to WebP client-side before upload for perf/SEO.
+        const file = await convertToWebP(original);
         const fileExt = file.name.split(".").pop();
         const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from("listings")
-          .upload(fileName, file);
+          .upload(fileName, file, { contentType: file.type });
 
         if (uploadError) {
           console.error("Upload error:", uploadError);
