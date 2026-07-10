@@ -496,6 +496,16 @@ const SellerSubmissionPage: React.FC = () => {
                         onSuggest={(price) => form.setValue("price_ils", price, { shouldValidate: true })}
                       />
                     </div>
+                    {idGate.requiresVerification(Number(form.watch("price_ils") || 0)) && (
+                      <Alert variant="destructive" className="mt-2">
+                        <ShieldAlert className="h-4 w-4" />
+                        <AlertTitle>توثيق هوية مطلوب</AlertTitle>
+                        <AlertDescription>
+                          لبيع منتجات بسعر ₪{idGate.threshold} فأكثر يجب توثيق هويتك.{" "}
+                          <Link to="/profile" className="underline font-semibold">وثّق حسابك</Link>
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
