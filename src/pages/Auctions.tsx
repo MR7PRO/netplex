@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Gavel, Clock } from "lucide-react";
 import { SEO } from "@/components/seo/SEO";
-import SignedImage from "@/components/SignedImage";
+import { SignedImage } from "@/components/SignedImage";
 
 interface Row {
   id: string;
@@ -63,7 +63,7 @@ const Auctions: React.FC = () => {
               <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="aspect-square bg-muted relative">
                   {r.listings?.images?.[0] && (
-                    <SignedImage path={r.listings.images[0]} alt={r.listings.title} className="w-full h-full object-cover" />
+                    <SignedImage src={r.listings.images[0]} alt={r.listings.title} className="w-full h-full object-cover" />
                   )}
                   <Badge className="absolute top-2 right-2 bg-primary">
                     <Clock className="h-3 w-3 ml-1" /> {timeLeft(r.ends_at)}
