@@ -40,6 +40,8 @@ const DailyDeals = lazy(() => import("./pages/DailyDeals"));
 const FollowingFeed = lazy(() => import("./pages/FollowingFeed"));
 const Install = lazy(() => import("./pages/Install"));
 const ImageSearch = lazy(() => import("./pages/ImageSearch"));
+const Auctions = lazy(() => import("./pages/Auctions"));
+const Deals = lazy(() => import("./pages/Deals"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -112,6 +114,8 @@ const App = () => (
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/image-search" element={<ImageSearch />} />
+                    <Route path="/auctions" element={<Auctions />} />
+                    <Route path="/deals" element={<Deals />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
