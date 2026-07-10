@@ -83,6 +83,108 @@ export type Database = {
         }
         Relationships: []
       }
+      auctions: {
+        Row: {
+          bid_count: number
+          created_at: string
+          current_bid_ils: number | null
+          ends_at: string
+          id: string
+          listing_id: string
+          min_increment_ils: number
+          seller_id: string
+          starting_price_ils: number
+          starts_at: string
+          status: Database["public"]["Enums"]["auction_status"]
+          updated_at: string
+          winner_user_id: string | null
+        }
+        Insert: {
+          bid_count?: number
+          created_at?: string
+          current_bid_ils?: number | null
+          ends_at: string
+          id?: string
+          listing_id: string
+          min_increment_ils?: number
+          seller_id: string
+          starting_price_ils: number
+          starts_at?: string
+          status?: Database["public"]["Enums"]["auction_status"]
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Update: {
+          bid_count?: number
+          created_at?: string
+          current_bid_ils?: number | null
+          ends_at?: string
+          id?: string
+          listing_id?: string
+          min_increment_ils?: number
+          seller_id?: string
+          starting_price_ils?: number
+          starts_at?: string
+          status?: Database["public"]["Enums"]["auction_status"]
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auctions_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auctions_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auctions_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bids: {
+        Row: {
+          amount_ils: number
+          auction_id: string
+          bidder_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          amount_ils: number
+          auction_id: string
+          bidder_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          amount_ils?: number
+          auction_id?: string
+          bidder_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string | null
@@ -150,6 +252,73 @@ export type Database = {
           seller_id?: string
         }
         Relationships: []
+      }
+      deals: {
+        Row: {
+          agreed_price_ils: number
+          buyer_confirmed_received_at: string | null
+          buyer_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          notes: string | null
+          seller_confirmed_shipped_at: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["deal_status"]
+          updated_at: string
+        }
+        Insert: {
+          agreed_price_ils: number
+          buyer_confirmed_received_at?: string | null
+          buyer_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          notes?: string | null
+          seller_confirmed_shipped_at?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["deal_status"]
+          updated_at?: string
+        }
+        Update: {
+          agreed_price_ils?: number
+          buyer_confirmed_received_at?: string | null
+          buyer_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          notes?: string | null
+          seller_confirmed_shipped_at?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["deal_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dispute_messages: {
         Row: {
@@ -484,6 +653,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -1140,10 +1327,22 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_sub_admin: { Args: { _user_id: string }; Returns: boolean }
+      place_bid: {
+        Args: { p_amount: number; p_auction_id: string }
+        Returns: Json
+      }
       redeem_referral_code: { Args: { p_code: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "sub_admin"
+      auction_status: "scheduled" | "active" | "ended" | "cancelled"
+      deal_status:
+        | "pending"
+        | "shipped"
+        | "delivered"
+        | "completed"
+        | "cancelled"
+        | "disputed"
       dispute_status: "pending" | "under_review" | "resolved" | "rejected"
       item_condition: "new" | "like_new" | "good" | "fair" | "poor"
       listing_status: "available" | "reserved" | "sold" | "expired"
@@ -1282,6 +1481,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "sub_admin"],
+      auction_status: ["scheduled", "active", "ended", "cancelled"],
+      deal_status: [
+        "pending",
+        "shipped",
+        "delivered",
+        "completed",
+        "cancelled",
+        "disputed",
+      ],
       dispute_status: ["pending", "under_review", "resolved", "rejected"],
       item_condition: ["new", "like_new", "good", "fair", "poor"],
       listing_status: ["available", "reserved", "sold", "expired"],

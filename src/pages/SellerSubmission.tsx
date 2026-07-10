@@ -37,6 +37,9 @@ import type { Database } from "@/integrations/supabase/types";
 import PriceSuggestionButton from "@/components/seller/PriceSuggestionButton";
 import AIDescriptionButton from "@/components/seller/AIDescriptionButton";
 import { convertToWebP } from "@/lib/imageCompress";
+import { useIdVerificationGate } from "@/hooks/useIdVerificationGate";
+import { Link } from "react-router-dom";
+import { ShieldAlert } from "lucide-react";
 
 type ItemCondition = Database["public"]["Enums"]["item_condition"];
 
@@ -204,8 +207,19 @@ const SellerSubmissionPage: React.FC = () => {
     setCreatingProfile(false);
   };
 
+  const idGate = useIdVerificationGate();
+
   const onSubmit = async (data: SubmissionFormData) => {
     if (!user || !seller) return;
+
+    if (idGate.requiresVerification(data.price_ils)) {
+      toast({
+        title: "توثيق مطلوب",
+        description: `لبيع منتجات فوق ₪${idGate.threshold} يجب توثيق الهوية أولاً.`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (images.length === 0) {
       toast({
@@ -482,6 +496,16 @@ const SellerSubmissionPage: React.FC = () => {
                         onSuggest={(price) => form.setValue("price_ils", price, { shouldValidate: true })}
                       />
                     </div>
+                    {idGate.requiresVerification(Number(form.watch("price_ils") || 0)) && (
+                      <Alert variant="destructive" className="mt-2">
+                        <ShieldAlert className="h-4 w-4" />
+                        <AlertTitle>توثيق هوية مطلوب</AlertTitle>
+                        <AlertDescription>
+                          لبيع منتجات بسعر ₪{idGate.threshold} فأكثر يجب توثيق هويتك.{" "}
+                          <Link to="/profile" className="underline font-semibold">وثّق حسابك</Link>
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

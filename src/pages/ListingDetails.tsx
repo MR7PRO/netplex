@@ -41,7 +41,9 @@ import { usePriceStats } from "@/hooks/usePriceStats";
 import { PriceInsightsCard } from "@/components/listings/PriceInsightsCard";
 import { AIPriceCheckCard } from "@/components/listings/AIPriceCheckCard";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
-import { WhatsAppShareButton } from "@/components/listings/WhatsAppShareButton";
+import { SocialShareButtons } from "@/components/listings/SocialShareButtons";
+import AuctionSection from "@/components/listings/AuctionSection";
+import DealActions from "@/components/listings/DealActions";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
@@ -685,8 +687,26 @@ const ListingDetailsPage: React.FC = () => {
                 <Share2 className="h-5 w-5" />
               </Button>
             </div>
-            {/* WhatsApp Share */}
-            <WhatsAppShareButton title={listing.title} price={listing.price_ils} />
+            {/* Share */}
+            <SocialShareButtons title={listing.title} price={listing.price_ils} />
+
+            {seller && (
+              <AuctionSection
+                listingId={listing.id}
+                sellerId={seller.id}
+                fallbackPrice={listing.price_ils}
+                ownerUserId={seller.user_id}
+              />
+            )}
+
+            {seller && (
+              <DealActions
+                listingId={listing.id}
+                sellerId={seller.id}
+                sellerUserId={seller.user_id}
+                price={listing.price_ils}
+              />
+            )}
 
             <Separator />
 
