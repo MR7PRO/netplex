@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package, AlertTriangle } from "lucide-react";
+import { User, Mail, Phone, Save, Loader2, Camera, LayoutDashboard, Store, FileText, Package, AlertTriangle, ShieldCheck, Gavel, ImageIcon, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import VerificationCard from "@/components/seller/VerificationCard";
@@ -348,6 +348,35 @@ const Profile: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Quick access to newer features */}
+        <div className="mt-6">
+          <h2 className="text-sm font-semibold text-muted-foreground mb-3">اكتشف مزايا المنصة</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { to: "/deals", label: "صفقاتي", desc: "ضمان الاستلام", icon: ShieldCheck },
+              { to: "/auctions", label: "المزادات", desc: "زايد واربح", icon: Gavel },
+              { to: "/image-search", label: "بحث بالصورة", desc: "AI Vision", icon: ImageIcon },
+              { to: "/install", label: "تثبيت التطبيق", desc: "PWA", icon: Download },
+            ].map((f) => (
+              <Card
+                key={f.to}
+                className="cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group"
+                onClick={() => navigate(f.to)}
+              >
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <f.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{f.label}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{f.desc}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     </Layout>
   );

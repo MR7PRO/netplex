@@ -12,7 +12,10 @@ import {
   LayoutDashboard,
   Store,
   Heart,
-  MessageSquare
+  MessageSquare,
+  ShieldCheck,
+  Gavel,
+  ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SmartSearchInput } from "@/components/search/SmartSearchInput";
@@ -195,6 +198,21 @@ const Header: React.FC = () => {
                     متابعاتي
                   </DropdownMenuItem>
 
+                  <DropdownMenuItem onClick={() => navigate("/deals")}>
+                    <ShieldCheck className="ml-2 h-4 w-4" />
+                    صفقاتي (ضمان الاستلام)
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={() => navigate("/auctions")}>
+                    <Gavel className="ml-2 h-4 w-4" />
+                    المزادات
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={() => navigate("/image-search")}>
+                    <ImageIcon className="ml-2 h-4 w-4" />
+                    بحث بالصورة
+                  </DropdownMenuItem>
+
                   <DropdownMenuItem onClick={() => navigate("/profile")}>
                     <Settings className="ml-2 h-4 w-4" />
                     الإعدادات
@@ -256,6 +274,32 @@ const Header: React.FC = () => {
               >
                 🔥 صفقات اليوم
               </Link>
+              <Link
+                to="/auctions"
+                className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Gavel className="h-4 w-4" />
+                المزادات
+              </Link>
+              <Link
+                to="/image-search"
+                className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ImageIcon className="h-4 w-4" />
+                بحث بالصورة
+              </Link>
+              {user && (
+                <Link
+                  to="/deals"
+                  className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  صفقاتي
+                </Link>
+              )}
               {user && (
                 <Link 
                   to="/following" 
