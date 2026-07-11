@@ -8,6 +8,7 @@ import { CategoryChips } from "@/components/home/CategoryChips";
 import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { HeroRotator } from "@/components/home/HeroRotator";
 import { VerifiedSellersSection } from "@/components/home/VerifiedSellersSection";
+import { FeatureShortcuts } from "@/components/home/FeatureShortcuts";
 import { SEO } from "@/components/seo/SEO";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
@@ -219,6 +220,13 @@ const Index: React.FC = () => {
       <section className="py-6">
         <div className="container mx-auto px-4">
           <CategoryChips />
+        </div>
+      </section>
+
+      {/* Feature Shortcuts — quick access to newer features */}
+      <section className="pb-2">
+        <div className="container mx-auto px-4">
+          <FeatureShortcuts />
         </div>
       </section>
 
