@@ -17,7 +17,7 @@ export const ListingBreadcrumb: React.FC<Props> = ({ categoryId, title }) => {
     queryFn: async () => {
       const { data } = await supabase
         .from("categories")
-        .select("name, slug")
+        .select("name_ar, slug")
         .eq("id", categoryId!)
         .maybeSingle();
       return data;
@@ -42,7 +42,7 @@ export const ListingBreadcrumb: React.FC<Props> = ({ categoryId, title }) => {
                 to={`/search?category=${category.slug}`}
                 className="hover:text-foreground transition-colors"
               >
-                {category.name}
+                {category.name_ar}
               </Link>
             </li>
           </>
