@@ -268,7 +268,7 @@ const Header: React.FC = () => {
                 الأقسام
               </Link>
               <Link 
-                to="/deals" 
+                to="/daily-deals" 
                 className="px-4 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2"
                 onClick={() => setMobileMenuOpen(false)}
               >

@@ -19,7 +19,7 @@ const SLIDES: Slide[] = [
     title: "صفقات اليوم 🔥",
     subtitle: "أفضل الأسعار وأكبر الخصومات لفترة محدودة",
     cta: "اكتشف الصفقات",
-    to: "/deals",
+    to: "/daily-deals",
     icon: Flame,
     gradient: "from-primary to-primary/70",
   },

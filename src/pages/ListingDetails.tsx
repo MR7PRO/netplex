@@ -45,6 +45,7 @@ import { SocialShareButtons } from "@/components/listings/SocialShareButtons";
 import AuctionSection from "@/components/listings/AuctionSection";
 import DealActions from "@/components/listings/DealActions";
 import QuickFeatureJump from "@/components/listings/QuickFeatureJump";
+import ListingBreadcrumb from "@/components/listings/ListingBreadcrumb";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
@@ -423,14 +424,7 @@ const ListingDetailsPage: React.FC = () => {
         jsonLd={productJsonLd}
       />
       <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground">الرئيسية</Link>
-          <ArrowRight className="h-3 w-3" />
-          <Link to="/search" className="hover:text-foreground">تصفح</Link>
-          <ArrowRight className="h-3 w-3" />
-          <span className="text-foreground line-clamp-1">{listing.title}</span>
-        </div>
+        <ListingBreadcrumb categoryId={listing.category_id} title={listing.title} />
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Images */}
