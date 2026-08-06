@@ -45,6 +45,7 @@ import { SocialShareButtons } from "@/components/listings/SocialShareButtons";
 import AuctionSection from "@/components/listings/AuctionSection";
 import DealActions from "@/components/listings/DealActions";
 import QuickFeatureJump from "@/components/listings/QuickFeatureJump";
+import ListingBreadcrumb from "@/components/listings/ListingBreadcrumb";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
