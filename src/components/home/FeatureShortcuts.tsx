@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Gavel, ImageIcon, ShieldCheck, Flame, Heart, Download, MoreHorizontal, ChevronUp } from "lucide-react";
 
 const PRIMARY = [
-  { to: "/search", label: "المزادات", icon: Gavel, tone: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", href: "/auctions" },
+  { to: "/auctions", label: "المزادات", icon: Gavel, tone: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
   { to: "/image-search", label: "بحث بالصورة", icon: ImageIcon, tone: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10" },
   { to: "/deals", label: "صفقاتي", icon: ShieldCheck, tone: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10" },
   { to: "/daily-deals", label: "صفقات اليوم", icon: Flame, tone: "text-primary", bg: "bg-primary/10" },
@@ -42,7 +42,7 @@ export const FeatureShortcuts: React.FC = () => {
       aria-label="اختصارات المزايا"
     >
       {PRIMARY.map((s) => (
-        <Shortcut key={s.label} {...s} to={(s as any).href || s.to} />
+        <Shortcut key={s.label} {...s} />
       ))}
 
       {expanded &&
