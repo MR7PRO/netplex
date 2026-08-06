@@ -9,6 +9,7 @@ import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { HeroRotator } from "@/components/home/HeroRotator";
 import { VerifiedSellersSection } from "@/components/home/VerifiedSellersSection";
 import { FeatureShortcuts } from "@/components/home/FeatureShortcuts";
+import { HomeSearchBar } from "@/components/home/HomeSearchBar";
 import { SEO } from "@/components/seo/SEO";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
@@ -197,6 +198,9 @@ const Index: React.FC = () => {
             <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 px-4">
               بيع واشتري إلكترونياتك بثقة، إعلانات مدققة، وأسعار أقرب للواقع.
             </p>
+            <div className="px-4 mb-5">
+              <HomeSearchBar />
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
               <Button size="lg" className="btn-brand text-base md:text-lg px-6 md:px-8" asChild>
                 <Link to="/search">
