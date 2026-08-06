@@ -46,7 +46,7 @@ const DailyDealsPage: React.FC = () => {
 
   return (
     <Layout>
-      <SEO title="صفقات اليوم 🔥 — أفضل الأسعار | NetPlex" description="صفقات اليوم في NetPlex: خصومات حصرية وأسعار محدودة على الإلكترونيات والسلع في قطاع غزة." path="/deals" />
+      <SEO title="صفقات اليوم 🔥 — أفضل الأسعار | NetPlex" description="صفقات اليوم في NetPlex: خصومات حصرية وأسعار محدودة على الإلكترونيات والسلع في قطاع غزة." path="/daily-deals" />
       <div className="container mx-auto px-4 py-8" dir="rtl">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-3">
