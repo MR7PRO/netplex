@@ -44,6 +44,7 @@ import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { SocialShareButtons } from "@/components/listings/SocialShareButtons";
 import AuctionSection from "@/components/listings/AuctionSection";
 import DealActions from "@/components/listings/DealActions";
+import QuickFeatureJump from "@/components/listings/QuickFeatureJump";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ImageZoomDialog } from "@/components/listings/ImageZoomDialog";
 import { SimilarProducts } from "@/components/listings/SimilarProducts";
@@ -690,22 +691,28 @@ const ListingDetailsPage: React.FC = () => {
             {/* Share */}
             <SocialShareButtons title={listing.title} price={listing.price_ils} />
 
+            <QuickFeatureJump listingId={listing.id} />
+
             {seller && (
-              <AuctionSection
-                listingId={listing.id}
-                sellerId={seller.id}
-                fallbackPrice={listing.price_ils}
-                ownerUserId={seller.user_id}
-              />
+              <div id="auction-section" className="transition-shadow">
+                <AuctionSection
+                  listingId={listing.id}
+                  sellerId={seller.id}
+                  fallbackPrice={listing.price_ils}
+                  ownerUserId={seller.user_id}
+                />
+              </div>
             )}
 
             {seller && (
-              <DealActions
-                listingId={listing.id}
-                sellerId={seller.id}
-                sellerUserId={seller.user_id}
-                price={listing.price_ils}
-              />
+              <div id="deal-section" className="transition-shadow">
+                <DealActions
+                  listingId={listing.id}
+                  sellerId={seller.id}
+                  sellerUserId={seller.user_id}
+                  price={listing.price_ils}
+                />
+              </div>
             )}
 
             <Separator />
