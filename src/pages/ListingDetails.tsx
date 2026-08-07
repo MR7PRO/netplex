@@ -425,7 +425,7 @@ const ListingDetailsPage: React.FC = () => {
         ogImage={signedImageUrls?.[0]}
         jsonLd={productJsonLd}
       />
-      <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
+      <div className="container mx-auto px-4 py-6 pb-32 md:pb-28">
         <ListingBreadcrumb categoryId={listing.category_id} title={listing.title} />
 
         <div className="grid md:grid-cols-2 gap-8 items-start">
