@@ -428,9 +428,10 @@ const ListingDetailsPage: React.FC = () => {
       <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
         <ListingBreadcrumb categoryId={listing.category_id} title={listing.title} />
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 items-start">
           {/* Images */}
-          <div>
+          <div className="md:sticky md:top-20">
+
             {imagesLoading ? (
               <Skeleton className="aspect-square rounded-xl" />
             ) : signedImageUrls && signedImageUrls.length > 0 ? (
