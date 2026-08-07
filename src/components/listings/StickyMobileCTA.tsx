@@ -12,6 +12,10 @@ interface Props {
   onAddToCart: () => void;
 }
 
+/**
+ * Always-visible price bar with ONE primary action (WhatsApp).
+ * Cart stays as a compact secondary icon button to keep the decision simple.
+ */
 export const StickyMobileCTA: React.FC<Props> = ({
   price,
   originalPrice,
@@ -21,53 +25,74 @@ export const StickyMobileCTA: React.FC<Props> = ({
 }) => {
   return (
     <div
-      className="md:hidden fixed bottom-14 inset-x-0 z-30 border-t bg-background/95 backdrop-blur-md shadow-lg pb-[env(safe-area-inset-bottom)]"
+      className="fixed bottom-14 md:bottom-0 inset-x-0 z-30 border-t bg-background/95 backdrop-blur-md shadow-lg pb-[env(safe-area-inset-bottom)]"
       role="region"
-      aria-label="إجراءات سريعة"
+      aria-label="السعر والإجراء الأساسي"
     >
-      <div className="flex items-center gap-2 px-3 py-2">
-        <div className="flex flex-col leading-tight shrink-0">
-          {originalPrice && originalPrice > price && (
-            <span className="text-xs text-muted-foreground line-through">
-              {formatPrice(originalPrice)}
-            </span>
-          )}
-          <span className="text-base font-bold text-primary">{formatPrice(price)}</span>
-        </div>
-        <div className="flex-1 flex gap-2">
-          {whatsappLink && (
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="flex-1 h-11 text-green-600 border-green-600 hover:bg-green-50 dark:hover:bg-green-950"
-            >
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => haptic("medium")}
-              >
-                <MessageCircle className="h-4 w-4 ml-1" />
-                واتساب
-              </a>
-            </Button>
-          )}
-          <Button
-            onClick={() => {
-              haptic("medium");
-              onAddToCart();
-            }}
-            disabled={inCart}
-            size="sm"
-            className="btn-brand flex-1 h-11"
-          >
-            {inCart ? (
-              <><Check className="h-4 w-4 ml-1" />في السلة</>
-            ) : (
-              <><ShoppingCart className="h-4 w-4 ml-1" />أضف للسلة</>
+      <div className="container mx-auto px-3 md:px-4">
+        <div className="flex items-center gap-3 py-2 md:py-3">
+          <div className="flex flex-col leading-tight shrink-0">
+            {originalPrice && originalPrice > price && (
+              <span className="text-xs text-muted-foreground line-through">
+                {formatPrice(originalPrice)}
+              </span>
             )}
-          </Button>
+            <span className="text-base md:text-xl font-bold text-primary">
+              {formatPrice(price)}
+            </span>
+          </div>
+
+          <div className="flex-1 flex items-center gap-2 justify-end">
+            {whatsappLink ? (
+              <Button
+                asChild
+                size="lg"
+                className="flex-1 md:flex-none md:min-w-[240px] h-12 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => haptic("medium")}
+                >
+                  <MessageCircle className="h-5 w-5 ml-2" />
+                  تواصل عبر واتساب
+                </a>
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  haptic("medium");
+                  onAddToCart();
+                }}
+                disabled={inCart}
+                size="lg"
+                className="btn-brand flex-1 md:flex-none md:min-w-[240px] h-12"
+              >
+                {inCart ? (
+                  <><Check className="h-5 w-5 ml-2" />في السلة</>
+                ) : (
+                  <><ShoppingCart className="h-5 w-5 ml-2" />أضف للسلة</>
+                )}
+              </Button>
+            )}
+
+            {whatsappLink && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 shrink-0"
+                aria-label={inCart ? "في السلة" : "أضف للسلة"}
+                disabled={inCart}
+                onClick={() => {
+                  haptic("light");
+                  onAddToCart();
+                }}
+              >
+                {inCart ? <Check className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
