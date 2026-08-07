@@ -25,6 +25,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from "@/lib/constants";
@@ -426,9 +428,10 @@ const ListingDetailsPage: React.FC = () => {
       <div className="container mx-auto px-4 py-6 pb-32 md:pb-6">
         <ListingBreadcrumb categoryId={listing.category_id} title={listing.title} />
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 items-start">
           {/* Images */}
-          <div>
+          <div className="md:sticky md:top-20">
+
             {imagesLoading ? (
               <Skeleton className="aspect-square rounded-xl" />
             ) : signedImageUrls && signedImageUrls.length > 0 ? (
@@ -485,15 +488,22 @@ const ListingDetailsPage: React.FC = () => {
             {signedImageUrls && signedImageUrls.length > 1 && (
               <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
                 {signedImageUrls.map((image, index) => (
-                  <div
+                  <button
                     key={index}
-                    className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 border-transparent hover:border-primary cursor-pointer"
+                    type="button"
+                    onClick={() => carouselApi?.scrollTo(index)}
+                    aria-label={`عرض الصورة ${index + 1}`}
+                    aria-current={currentSlide === index}
+                    className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-colors ${
+                      currentSlide === index ? "border-primary" : "border-transparent hover:border-primary/50"
+                    }`}
                   >
                     <img src={image} alt="" className="w-full h-full object-cover" />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
+
 
             {/* Zoom Dialog */}
             {signedImageUrls && signedImageUrls.length > 0 && (
@@ -547,23 +557,6 @@ const ListingDetailsPage: React.FC = () => {
                   </div>
                 );
               })()}
-
-              {/* AI Price Check - instant verdict */}
-              <AIPriceCheckCard
-                price={listing.price_ils}
-                brand={listing.brand}
-                model={listing.model}
-                condition={listing.condition}
-              />
-
-              {/* Price Insights */}
-              {priceStats && (
-                <PriceInsightsCard
-                  price={listing.price_ils}
-                  stats={priceStats}
-                  loading={priceStatsLoading}
-                />
-              )}
             </div>
 
             {/* Actions */}
@@ -711,42 +704,74 @@ const ListingDetailsPage: React.FC = () => {
 
             <Separator />
 
-            {/* Details */}
-            <div className="space-y-3">
-              <h3 className="font-semibold">التفاصيل</h3>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                {listing.condition && (
-                  <div className="flex justify-between p-2 bg-muted rounded-lg">
-                    <span className="text-muted-foreground">الحالة</span>
-                    <span className="font-medium">{getConditionLabel(listing.condition)}</span>
-                  </div>
-                )}
-                {listing.brand && (
-                  <div className="flex justify-between p-2 bg-muted rounded-lg">
-                    <span className="text-muted-foreground">الماركة</span>
-                    <span className="font-medium">{listing.brand}</span>
-                  </div>
-                )}
-                {listing.model && (
-                  <div className="flex justify-between p-2 bg-muted rounded-lg">
-                    <span className="text-muted-foreground">الموديل</span>
-                    <span className="font-medium">{listing.model}</span>
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* Tabbed info — keeps the page short */}
+            <Tabs defaultValue={listing.description ? "description" : "details"} dir="rtl">
+              <TabsList className="w-full grid grid-cols-3">
+                <TabsTrigger value="description">الوصف</TabsTrigger>
+                <TabsTrigger value="details">التفاصيل</TabsTrigger>
+                <TabsTrigger value="price">تحليل السعر</TabsTrigger>
+              </TabsList>
 
-            {listing.description && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="font-semibold mb-2">الوصف</h3>
-                  <p className="text-muted-foreground whitespace-pre-line">
+              <TabsContent value="description" className="pt-4">
+                {listing.description ? (
+                  <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
                     {listing.description}
                   </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">لا يوجد وصف لهذا المنتج.</p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="details" className="pt-4">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="flex justify-between p-2 bg-muted rounded-lg">
+                    <span className="text-muted-foreground">المنطقة</span>
+                    <span className="font-medium">{getRegionLabel(listing.region)}</span>
+                  </div>
+                  {listing.condition && (
+                    <div className="flex justify-between p-2 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">الحالة</span>
+                      <span className="font-medium">{getConditionLabel(listing.condition)}</span>
+                    </div>
+                  )}
+                  {listing.brand && (
+                    <div className="flex justify-between p-2 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">الماركة</span>
+                      <span className="font-medium">{listing.brand}</span>
+                    </div>
+                  )}
+                  {listing.model && (
+                    <div className="flex justify-between p-2 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">الموديل</span>
+                      <span className="font-medium">{listing.model}</span>
+                    </div>
+                  )}
                 </div>
-              </>
-            )}
+              </TabsContent>
+
+              <TabsContent value="price" className="pt-4 space-y-3">
+                <AIPriceCheckCard
+                  price={listing.price_ils}
+                  brand={listing.brand}
+                  model={listing.model}
+                  condition={listing.condition}
+                />
+                {priceStats ? (
+                  <PriceInsightsCard
+                    price={listing.price_ils}
+                    stats={priceStats}
+                    loading={priceStatsLoading}
+                  />
+                ) : (
+                  !priceStatsLoading && (
+                    <p className="text-sm text-muted-foreground">
+                      ما في بيانات أسعار كافية لهذا المنتج حالياً.
+                    </p>
+                  )
+                )}
+              </TabsContent>
+            </Tabs>
+
 
             <Separator />
 
