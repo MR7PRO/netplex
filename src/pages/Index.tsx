@@ -174,6 +174,13 @@ const Index: React.FC = () => {
           },
         ]}
       />
+      {/* Sticky search — first thing on screen */}
+      <section className="sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b py-3">
+        <div className="container mx-auto px-4">
+          <HomeSearchBar />
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-12 md:py-20">
         <div className="container mx-auto px-4">
@@ -198,9 +205,7 @@ const Index: React.FC = () => {
             <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 px-4">
               بيع واشتري إلكترونياتك بثقة، إعلانات مدققة، وأسعار أقرب للواقع.
             </p>
-            <div className="px-4 mb-5">
-              <HomeSearchBar />
-            </div>
+
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
               <Button size="lg" className="btn-brand text-base md:text-lg px-6 md:px-8" asChild>
                 <Link to="/search">
