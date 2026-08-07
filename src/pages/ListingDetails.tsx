@@ -666,14 +666,8 @@ const ListingDetailsPage: React.FC = () => {
                   listingId={listing.id}
                 />
               )}
-              {whatsappLink && (
-                <Button asChild variant="outline" className="flex-1 text-green-600 border-green-600 hover:bg-green-50">
-                  <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="h-4 w-4 ml-2" />
-                    واتساب
-                  </a>
-                </Button>
-              )}
+              {/* WhatsApp lives in the always-visible price bar to avoid duplicate CTAs */}
+
               <Button variant="ghost" size="icon" onClick={handleSave}>
                 <Heart className={`h-5 w-5 ${isSaved ? "fill-primary text-primary" : ""}`} />
               </Button>
