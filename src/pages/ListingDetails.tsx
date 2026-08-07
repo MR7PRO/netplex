@@ -487,15 +487,22 @@ const ListingDetailsPage: React.FC = () => {
             {signedImageUrls && signedImageUrls.length > 1 && (
               <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
                 {signedImageUrls.map((image, index) => (
-                  <div
+                  <button
                     key={index}
-                    className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 border-transparent hover:border-primary cursor-pointer"
+                    type="button"
+                    onClick={() => carouselApi?.scrollTo(index)}
+                    aria-label={`عرض الصورة ${index + 1}`}
+                    aria-current={currentSlide === index}
+                    className={`w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-colors ${
+                      currentSlide === index ? "border-primary" : "border-transparent hover:border-primary/50"
+                    }`}
                   >
                     <img src={image} alt="" className="w-full h-full object-cover" />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
+
 
             {/* Zoom Dialog */}
             {signedImageUrls && signedImageUrls.length > 0 && (
