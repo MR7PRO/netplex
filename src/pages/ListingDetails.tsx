@@ -459,24 +459,30 @@ const ListingDetailsPage: React.FC = () => {
                 </CarouselContent>
                 {signedImageUrls.length > 1 && (
                   <>
-                    <CarouselPrevious className="left-2" />
-                    <CarouselNext className="right-2" />
+                    {/* Arrows on desktop only — mobile relies on swipe */}
+                    <CarouselPrevious className="left-2 hidden md:flex" />
+                    <CarouselNext className="right-2 hidden md:flex" />
                     <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                       {signedImageUrls.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => carouselApi?.scrollTo(i)}
                           aria-label={`الصورة ${i + 1}`}
-                          className={`h-1.5 rounded-full transition-all ${
+                          className={`h-2 rounded-full transition-all ${
                             currentSlide === i
                               ? "bg-white w-6"
-                              : "bg-white/60 w-1.5 hover:bg-white/90"
+                              : "bg-white/60 w-2 hover:bg-white/90"
                           }`}
                         />
                       ))}
                     </div>
+                    <div className="md:hidden absolute top-3 right-3 z-10 flex items-center gap-1 bg-black/50 text-white text-[10px] px-2 py-1 rounded-full backdrop-blur-sm">
+                      <MoveHorizontal className="h-3 w-3" />
+                      اسحب للتنقل
+                    </div>
                   </>
                 )}
+
               </Carousel>
             ) : (
               <div className="aspect-square rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
