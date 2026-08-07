@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ArrowRight, MapPin, Calendar, Eye, Heart, Share2, Flag, 
-  Phone, MessageCircle, ShoppingCart, Check, Shield, Star, GitCompareArrows
+  Phone, MessageCircle, ShoppingCart, Check, Shield, Star, GitCompareArrows, MoveHorizontal
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
