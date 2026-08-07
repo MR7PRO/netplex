@@ -549,23 +549,6 @@ const ListingDetailsPage: React.FC = () => {
                   </div>
                 );
               })()}
-
-              {/* AI Price Check - instant verdict */}
-              <AIPriceCheckCard
-                price={listing.price_ils}
-                brand={listing.brand}
-                model={listing.model}
-                condition={listing.condition}
-              />
-
-              {/* Price Insights */}
-              {priceStats && (
-                <PriceInsightsCard
-                  price={listing.price_ils}
-                  stats={priceStats}
-                  loading={priceStatsLoading}
-                />
-              )}
             </div>
 
             {/* Actions */}
