@@ -25,6 +25,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getRegionLabel, getConditionLabel, getRelativeTime } from "@/lib/constants";
