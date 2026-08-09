@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Gavel, Clock } from "lucide-react";
 import { SEO } from "@/components/seo/SEO";
 import { SignedImage } from "@/components/SignedImage";
+import ListingCardSkeleton from "@/components/listings/ListingCardSkeleton";
+import EmptyState from "@/components/EmptyState";
 
 interface Row {
   id: string;
@@ -53,9 +55,19 @@ const Auctions: React.FC = () => {
           <Gavel className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold">المزادات النشطة</h1>
         </div>
-        {loading && <p className="text-center text-muted-foreground py-12">جاري التحميل...</p>}
+        {loading && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <ListingCardSkeleton count={8} />
+          </div>
+        )}
         {!loading && rows.length === 0 && (
-          <p className="text-center text-muted-foreground py-12">لا توجد مزادات نشطة حالياً</p>
+          <EmptyState
+            icon={Gavel}
+            title="لا توجد مزادات نشطة حالياً"
+            description="تابع المنتجات المميزة أو اطّلع على صفقات اليوم لحين انطلاق مزاد جديد."
+            actionLabel="تصفّح صفقات اليوم"
+            actionTo="/daily-deals"
+          />
         )}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {rows.map((r) => (

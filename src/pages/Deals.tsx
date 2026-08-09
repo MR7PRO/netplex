@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck } from "lucide-react";
 import { SEO } from "@/components/seo/SEO";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/EmptyState";
 
 interface Deal {
   id: string;
@@ -46,9 +48,30 @@ const Deals: React.FC = () => {
           <ShieldCheck className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold">صفقاتي</h1>
         </div>
-        {loading && <p className="text-center text-muted-foreground py-12">جاري التحميل...</p>}
+        {loading && (
+          <div className="space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-lg border bg-card p-4 flex items-center justify-between gap-3">
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <div className="space-y-2 text-left">
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-5 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {!loading && deals.length === 0 && (
-          <p className="text-center text-muted-foreground py-12">لا توجد صفقات بعد</p>
+          <EmptyState
+            icon={ShieldCheck}
+            title="لا توجد صفقات بعد"
+            description="ابدأ بتصفّح المنتجات، وعند الاتفاق مع البائع افتح ضمان الاستلام لمتابعة الصفقة خطوة بخطوة."
+            actionLabel="تصفّح المنتجات"
+            actionTo="/search"
+          />
         )}
         <div className="space-y-3">
           {deals.map((d) => (
