@@ -57,6 +57,8 @@ import OpenDisputeDialog from "@/components/disputes/OpenDisputeDialog";
 import { ChatWithSellerButton } from "@/components/chat/ChatWithSellerButton";
 import { StickyMobileCTA } from "@/components/listings/StickyMobileCTA";
 import { SEO } from "@/components/seo/SEO";
+import VerifiedBadgeTooltip from "@/components/listings/VerifiedBadgeTooltip";
+import SellerResponsiveness from "@/components/listings/SellerResponsiveness";
 import type { CarouselApi } from "@/components/ui/carousel";
 
 interface Listing {
@@ -544,8 +546,13 @@ const ListingDetailsPage: React.FC = () => {
                   {listing.view_count || 0}
                 </span>
               </div>
-              <div className="mb-3">
+              <div className="mb-3 space-y-1.5">
                 <LiveViewers listingId={listing.id} />
+                <SellerResponsiveness
+                  lastActiveAt={listing.published_at}
+                  verified={seller?.verified}
+                  trustScore={seller?.trust_score}
+                />
               </div>
               {(() => {
                 const ld = listing as any;
@@ -786,12 +793,7 @@ const ListingDetailsPage: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold">{seller.shop_name || "بائع"}</h4>
-                        {seller.verified && (
-                          <span className="trust-badge-verified">
-                            <Shield className="h-3 w-3" />
-                            موثق
-                          </span>
-                        )}
+                        {seller.verified && <VerifiedBadgeTooltip size="sm" label="موثّق" />}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {getRegionLabel(seller.region)}

@@ -1,6 +1,7 @@
 import React from "react";
-import { BadgeCheck, TrendingUp, Scale } from "lucide-react";
+import { TrendingUp, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
+import VerifiedBadgeTooltip from "@/components/listings/VerifiedBadgeTooltip";
 
 interface ListingBadgesProps {
   verifiedSeller?: boolean;
@@ -19,13 +20,6 @@ export const ListingBadges: React.FC<ListingBadgesProps> = ({
 }) => {
   const badges = [
     {
-      show: verifiedSeller,
-      icon: BadgeCheck,
-      label: compact ? "" : "بائع موثق",
-      ariaLabel: "بائع موثق",
-      className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-    },
-    {
       show: fairPrice,
       icon: Scale,
       label: compact ? "" : "سعر عادل",
@@ -42,10 +36,13 @@ export const ListingBadges: React.FC<ListingBadgesProps> = ({
   ];
 
   const visibleBadges = badges.filter((b) => b.show);
-  if (visibleBadges.length === 0) return null;
+  if (visibleBadges.length === 0 && !verifiedSeller) return null;
 
   return (
     <div className={cn("flex flex-wrap gap-1", className)}>
+      {verifiedSeller && (
+        <VerifiedBadgeTooltip size="sm" label={compact ? "موثّق" : "بائع موثّق"} />
+      )}
       {visibleBadges.map((badge, index) => (
         <div
           key={index}

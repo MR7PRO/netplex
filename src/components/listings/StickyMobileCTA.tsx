@@ -1,5 +1,6 @@
 import React from "react";
-import { ShoppingCart, MessageCircle, Check } from "lucide-react";
+import { ShoppingCart, MessageCircle, Check, ShieldAlert } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/constants";
 import { haptic } from "@/lib/haptics";
@@ -29,6 +30,19 @@ export const StickyMobileCTA: React.FC<Props> = ({
       role="region"
       aria-label="السعر والإجراء الأساسي"
     >
+      {whatsappLink && (
+        <div className="border-b bg-amber-500/10">
+          <div className="container mx-auto px-3 md:px-4">
+            <p className="flex items-center justify-center gap-1.5 py-1 text-[11px] md:text-xs text-amber-700 dark:text-amber-400 text-center">
+              <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+              <span>لا تدفع أي مبلغ مقدماً — افحص المنتج وجهاً لوجه قبل الدفع.</span>
+              <Link to="/safety" className="underline underline-offset-2 shrink-0">
+                نصائح الأمان
+              </Link>
+            </p>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-3 md:px-4">
         <div className="flex items-center gap-3 py-2 md:py-3">
           <div className="flex flex-col leading-tight shrink-0">
