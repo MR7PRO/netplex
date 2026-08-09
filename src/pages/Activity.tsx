@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { Heart, Clock, HandCoins, AlertTriangle, ChevronLeft } from "lucide-react";
 import { format } from "date-fns";
+import EmptyState from "@/components/EmptyState";
 
 interface SavedRow {
   id: string;
@@ -116,7 +117,7 @@ const Activity: React.FC = () => {
                 {[...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-xl" />)}
               </div>
             ) : saved.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-muted-foreground">لا توجد منتجات محفوظة</CardContent></Card>
+              <EmptyState icon={Heart} title="لا توجد منتجات محفوظة" description="اضغط على القلب في أي منتج لحفظه ومتابعة سعره لاحقاً." actionLabel="تصفّح المنتجات" actionTo="/search" />
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {saved.map((s) => (
@@ -138,7 +139,7 @@ const Activity: React.FC = () => {
 
           <TabsContent value="recent">
             {recent.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-muted-foreground">لم تشاهد أي منتجات بعد</CardContent></Card>
+              <EmptyState icon={Clock} title="لم تشاهد أي منتجات بعد" description="المنتجات التي تزورها بتظهر هنا لترجع لها بسرعة." actionLabel="ابدأ التصفّح" actionTo="/categories" />
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {recent.map((r) => (
@@ -157,7 +158,7 @@ const Activity: React.FC = () => {
 
           <TabsContent value="offers">
             {offers.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-muted-foreground">لم تقدم أي عروض بعد</CardContent></Card>
+              <EmptyState icon={HandCoins} title="لم تقدّم أي عروض بعد" description="جرّب زر «اقترح سعرك» في صفحة المنتج للتفاوض مع البائع." actionLabel="ابحث عن منتج" actionTo="/search" />
             ) : (
               <div className="space-y-2">
                 {offers.map((o) => (
@@ -185,9 +186,7 @@ const Activity: React.FC = () => {
 
           <TabsContent value="disputes">
             {disputes.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-muted-foreground">
-                لا توجد شكاوى
-              </CardContent></Card>
+              <EmptyState icon={AlertTriangle} title="لا توجد شكاوى" description="إذا واجهت مشكلة في صفقة، افتح شكوى من صفحة المنتج وبنتابعها معك." actionLabel="صفقاتي" actionTo="/deals" />
             ) : (
               <div className="space-y-2">
                 {disputes.map((d) => (

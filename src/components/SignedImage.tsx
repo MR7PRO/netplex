@@ -9,11 +9,18 @@ interface SignedImageProps {
   className?: string;
   fallback?: React.ReactNode;
   showSkeleton?: boolean;
+  /** Intrinsic size hints to reserve space and prevent layout shift (CLS) */
+  width?: number;
+  height?: number;
+  loading?: "lazy" | "eager";
 }
 
 /**
  * A component that displays images from the private storage bucket
  * using signed URLs for secure access.
+ *
+ * Reserves space via width/height + aspect-ratio and shows a blurred
+ * placeholder that cross-fades into the loaded image (prevents CLS).
  */
 export const SignedImage: React.FC<SignedImageProps> = ({
   src,
@@ -21,10 +28,18 @@ export const SignedImage: React.FC<SignedImageProps> = ({
   className,
   fallback,
   showSkeleton = true,
+  width = 800,
+  height = 800,
+  loading = "lazy",
 }) => {
-  const { signedUrl, loading } = useSignedImageUrl(src);
+  const { signedUrl, loading: urlLoading } = useSignedImageUrl(src);
+  const [loaded, setLoaded] = React.useState(false);
 
-  if (loading && showSkeleton) {
+  React.useEffect(() => {
+    setLoaded(false);
+  }, [signedUrl]);
+
+  if (urlLoading && showSkeleton) {
     return <Skeleton className={cn("h-full w-full", className)} />;
   }
 
@@ -33,11 +48,32 @@ export const SignedImage: React.FC<SignedImageProps> = ({
   }
 
   return (
-    <img
-      src={signedUrl}
-      alt={alt}
-      className={className}
-    />
+    <span
+      className="relative block h-full w-full overflow-hidden"
+      style={{ aspectRatio: `${width} / ${height}` }}
+    >
+      {!loaded && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 bg-muted animate-pulse blur-[2px]"
+        />
+      )}
+      <img
+        src={signedUrl}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
+        className={cn(
+          "transition-opacity duration-300",
+          loaded ? "opacity-100" : "opacity-0",
+          className
+        )}
+      />
+    </span>
   );
 };
 
