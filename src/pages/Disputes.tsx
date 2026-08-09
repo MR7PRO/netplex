@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, AlertTriangle, ChevronLeft } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import { format } from "date-fns";
+import EmptyState from "@/components/EmptyState";
 
 interface DisputeRow {
   id: string;
@@ -65,9 +66,13 @@ const Disputes: React.FC = () => {
         {loading ? (
           <div className="py-12 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto" /></div>
         ) : rows.length === 0 ? (
-          <Card><CardContent className="py-12 text-center text-muted-foreground">
-            لا توجد شكاوى. يمكنك فتح شكوى من صفحة المنتج عند الحاجة.
-          </CardContent></Card>
+          <EmptyState
+            icon={AlertTriangle}
+            title="لا توجد شكاوى"
+            description="يمكنك فتح شكوى من صفحة المنتج عند وجود مشكلة في أي صفقة."
+            actionLabel="صفقاتي"
+            actionTo="/deals"
+          />
         ) : (
           <div className="space-y-3">
             {rows.map((r) => (
