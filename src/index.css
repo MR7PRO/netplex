@@ -106,9 +106,10 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 10%;
 
-    --border: 0 0% 22%;
-    --input: 0 0% 22%;
+    --border: 0 0% 32%;
+    --input: 0 0% 32%;
     --ring: 0 100% 55%;
+
 
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 95%;
