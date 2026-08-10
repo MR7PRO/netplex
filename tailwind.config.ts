@@ -17,6 +17,20 @@ export default {
         cairo: ["Cairo", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
+      // Unified Cairo type scale: 13 / 15 / 17 / 20 / 24 (+ display sizes)
+      fontSize: {
+        xs: ["0.8125rem", { lineHeight: "1.25rem" }],
+        sm: ["0.9375rem", { lineHeight: "1.5rem" }],
+        base: ["1.0625rem", { lineHeight: "1.75rem" }],
+        lg: ["1.25rem", { lineHeight: "1.875rem" }],
+        xl: ["1.5rem", { lineHeight: "2rem" }],
+        "2xl": ["1.75rem", { lineHeight: "2.25rem" }],
+        "3xl": ["2rem", { lineHeight: "2.5rem" }],
+        "4xl": ["2.5rem", { lineHeight: "3rem" }],
+        "5xl": ["3rem", { lineHeight: "3.25rem" }],
+        "6xl": ["3.75rem", { lineHeight: "1" }],
+      },
+
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
