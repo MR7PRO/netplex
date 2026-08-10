@@ -120,11 +120,11 @@ const SellerPage: React.FC = () => {
       <Layout>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <Skeleton className="h-48 w-full rounded-xl mb-6" />
+            <Skeleton className="h-48 w-full rounded-lg mb-6" />
             <Skeleton className="h-8 w-48 mb-4" />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-32 rounded-xl" />
+                <Skeleton key={i} className="h-32 rounded-lg" />
               ))}
             </div>
           </div>
@@ -309,7 +309,7 @@ const SellerPage: React.FC = () => {
           {loadingListings ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-64 rounded-xl" />
+                <Skeleton key={i} className="h-64 rounded-lg" />
               ))}
             </div>
           ) : listings && listings.length > 0 ? (
@@ -346,7 +346,7 @@ const SellerPage: React.FC = () => {
           {loadingReviews ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-24 rounded-xl" />
+                <Skeleton key={i} className="h-24 rounded-lg" />
               ))}
             </div>
           ) : reviews && reviews.length > 0 ? (

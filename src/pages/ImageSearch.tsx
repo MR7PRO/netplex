@@ -140,7 +140,7 @@ const ImageSearchPage: React.FC = () => {
             )}
 
             {analysis && !loading && (
-              <div className="rounded-xl border border-border bg-card p-4">
+              <div className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Sparkles className="h-4 w-4 text-primary" />
                   <span className="text-sm font-bold">شو شفنا في الصورة</span>

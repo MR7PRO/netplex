@@ -62,7 +62,7 @@ const CategoriesPage: React.FC = () => {
                 <Link
                   key={cat.id}
                   to={`/search?category=${cat.slug}`}
-                  className="group flex flex-col items-center p-6 rounded-xl bg-card border card-hover text-center"
+                  className="group flex flex-col items-center p-6 rounded-lg bg-card border card-hover text-center"
                 >
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                     <Icon className="h-8 w-8 text-primary" />

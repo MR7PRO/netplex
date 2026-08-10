@@ -174,12 +174,8 @@ const Index: React.FC = () => {
           },
         ]}
       />
-      {/* Sticky search — first thing on screen */}
-      <section className="sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b py-3">
-        <div className="container mx-auto px-4">
-          <HomeSearchBar />
-        </div>
-      </section>
+
+
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-12 md:py-20">
@@ -379,7 +375,7 @@ const Index: React.FC = () => {
               <Link
                 key={cat.slug}
                 to={`/search?category=${cat.slug}`}
-                className="group flex flex-col items-center p-4 md:p-6 rounded-xl bg-card border card-hover"
+                className="group flex flex-col items-center p-4 md:p-6 rounded-lg bg-card border card-hover"
               >
                 <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mb-2 md:mb-3 group-hover:bg-primary/20 transition-colors">
                   <cat.icon className="h-6 w-6 md:h-7 md:w-7 text-primary" />
@@ -396,7 +392,7 @@ const Index: React.FC = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 text-center">لماذا NetPlex؟</h2>
           <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-            <div className="p-5 md:p-6 rounded-xl bg-card border text-center">
+            <div className="p-5 md:p-6 rounded-lg bg-card border text-center">
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Shield className="h-6 w-6 md:h-7 md:w-7 text-primary" />
               </div>
@@ -405,7 +401,7 @@ const Index: React.FC = () => {
                 جميع المنتجات تمر بمراجعة قبل النشر لضمان جودة العروض
               </p>
             </div>
-            <div className="p-5 md:p-6 rounded-xl bg-card border text-center">
+            <div className="p-5 md:p-6 rounded-lg bg-card border text-center">
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Users className="h-6 w-6 md:h-7 md:w-7 text-primary" />
               </div>
@@ -414,7 +410,7 @@ const Index: React.FC = () => {
                 تواصل مباشر مع البائعين في منطقتك عبر واتساب أو الهاتف
               </p>
             </div>
-            <div className="p-5 md:p-6 rounded-xl bg-card border text-center">
+            <div className="p-5 md:p-6 rounded-lg bg-card border text-center">
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Zap className="h-6 w-6 md:h-7 md:w-7 text-primary" />
               </div>

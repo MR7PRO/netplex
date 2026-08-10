@@ -370,7 +370,7 @@ const ListingDetailsPage: React.FC = () => {
       <Layout>
         <div className="container mx-auto px-4 py-6">
           <div className="grid md:grid-cols-2 gap-8">
-            <Skeleton className="aspect-square rounded-xl" />
+            <Skeleton className="aspect-square rounded-lg" />
             <div className="space-y-4">
               <Skeleton className="h-8 w-3/4" />
               <Skeleton className="h-6 w-1/2" />
@@ -435,14 +435,14 @@ const ListingDetailsPage: React.FC = () => {
           <div className="md:sticky md:top-20">
 
             {imagesLoading ? (
-              <Skeleton className="aspect-square rounded-xl" />
+              <Skeleton className="aspect-square rounded-lg" />
             ) : signedImageUrls && signedImageUrls.length > 0 ? (
               <Carousel className="w-full relative" setApi={setCarouselApi}>
                 <CarouselContent>
                   {signedImageUrls.map((image, index) => (
                     <CarouselItem key={index}>
                       <div
-                        className="relative aspect-square rounded-xl overflow-hidden bg-muted cursor-zoom-in"
+                        className="relative aspect-square rounded-lg overflow-hidden bg-muted cursor-zoom-in"
                         onClick={() => { setZoomIndex(index); setZoomOpen(true); }}
                       >
                         <img
@@ -487,7 +487,7 @@ const ListingDetailsPage: React.FC = () => {
 
               </Carousel>
             ) : (
-              <div className="aspect-square rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
+              <div className="aspect-square rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
                 لا توجد صور
               </div>
             )}
@@ -785,7 +785,7 @@ const ListingDetailsPage: React.FC = () => {
             {/* Seller Info */}
             {seller && (
               <Link to={`/seller/${seller.id}`} className="block">
-                <div className="p-4 rounded-xl border bg-card hover:border-primary/50 transition-colors">
+                <div className="p-4 rounded-lg border bg-card hover:border-primary/50 transition-colors">
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
                       {seller.shop_name?.[0] || "B"}

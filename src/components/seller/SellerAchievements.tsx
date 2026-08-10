@@ -112,7 +112,7 @@ export const SellerAchievements: React.FC<Props> = ({ sellerId, verified, create
             <div
               key={b.key}
               className={cn(
-                "rounded-xl p-3 border transition-all",
+                "rounded-lg p-3 border transition-all",
                 b.earned
                   ? `${b.color} border-transparent shadow-sm`
                   : "bg-muted/30 text-muted-foreground border-dashed opacity-60"

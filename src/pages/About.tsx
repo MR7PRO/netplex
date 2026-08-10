@@ -30,21 +30,21 @@ const AboutPage: React.FC = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6 text-center">قيمنا</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl bg-card border text-center">
+            <div className="p-6 rounded-lg bg-card border text-center">
               <Shield className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold text-lg mb-2">الثقة والأمان</h3>
               <p className="text-sm text-muted-foreground">
                 جميع المنتجات تمر بمراجعة يدوية قبل النشر لضمان جودة المحتوى
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-card border text-center">
+            <div className="p-6 rounded-lg bg-card border text-center">
               <Heart className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold text-lg mb-2">خدمة المجتمع</h3>
               <p className="text-sm text-muted-foreground">
                 نسعى لتسهيل التجارة المحلية ودعم الاقتصاد الفلسطيني
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-card border text-center">
+            <div className="p-6 rounded-lg bg-card border text-center">
               <Zap className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold text-lg mb-2">السهولة والسرعة</h3>
               <p className="text-sm text-muted-foreground">

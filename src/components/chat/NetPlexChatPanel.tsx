@@ -279,7 +279,7 @@ export const NetPlexChatPanel: React.FC<NetPlexChatPanelProps> = ({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="اسأل عن الأسعار، المنتجات..."
-              className="flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[40px] max-h-[100px]"
+              className="flex-1 resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[40px] max-h-[100px]"
               rows={1}
               dir="rtl"
             />
@@ -287,7 +287,7 @@ export const NetPlexChatPanel: React.FC<NetPlexChatPanelProps> = ({
               size="icon"
               onClick={() => sendMessage(input)}
               disabled={!input.trim() || isLoading}
-              className="shrink-0 rounded-xl"
+              className="shrink-0 rounded-lg"
             >
               <Send className="h-4 w-4" />
             </Button>

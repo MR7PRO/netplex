@@ -51,7 +51,7 @@ export const ListingReviewsSection: React.FC<Props> = ({ listingId, sellerId }) 
       {isLoading ? (
         <div className="space-y-3">
           {[...Array(2)].map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" />
+            <Skeleton key={i} className="h-24 rounded-lg" />
           ))}
         </div>
       ) : (reviews || []).length === 0 ? (

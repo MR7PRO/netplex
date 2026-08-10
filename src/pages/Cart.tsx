@@ -117,7 +117,7 @@ const CartPage: React.FC = () => {
           <>
             {/* Login prompt for non-authenticated users */}
             {!user && (
-              <div className="mb-6 p-4 rounded-xl bg-muted/50 border flex items-center justify-between">
+              <div className="mb-6 p-4 rounded-lg bg-muted/50 border flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   سجل الدخول للتواصل مع البائعين عبر واتساب
                 </p>
@@ -133,7 +133,7 @@ const CartPage: React.FC = () => {
               {Object.entries(itemsBySeller).map(([sellerName, { items: sellerItems, seller_id }]) => {
                 const whatsapp = sellerWhatsapps[seller_id];
                 return (
-                  <div key={sellerName} className="rounded-xl border bg-card overflow-hidden">
+                  <div key={sellerName} className="rounded-lg border bg-card overflow-hidden">
                     <div className="bg-muted px-4 py-3 flex items-center justify-between">
                       <h3 className="font-medium">{sellerName}</h3>
                       {user && whatsapp && (
@@ -208,7 +208,7 @@ const CartPage: React.FC = () => {
             <Separator className="my-6" />
 
             {/* Summary */}
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-lg border bg-card p-4">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-muted-foreground">
                   المجموع ({items.length} منتج)
