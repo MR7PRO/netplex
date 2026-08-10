@@ -206,6 +206,13 @@ const Index: React.FC = () => {
               بيع واشتري إلكترونياتك بثقة، إعلانات مدققة، وأسعار أقرب للواقع.
             </p>
 
+            {/* Search bar inside hero — above the browse CTA */}
+            <div className="px-4 mb-6 md:mb-8">
+              <HomeSearchBar />
+            </div>
+
+
+
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
               <Button size="lg" className="btn-brand text-base md:text-lg px-6 md:px-8" asChild>
                 <Link to="/search">
