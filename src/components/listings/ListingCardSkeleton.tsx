@@ -9,7 +9,7 @@ export const ListingCardSkeleton: React.FC<Props> = ({ count = 1 }) => {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-xl border bg-card overflow-hidden">
+        <div key={i} className="rounded-lg border bg-card overflow-hidden">
           <Skeleton className="aspect-square w-full" />
           <div className="p-3 space-y-2">
             <Skeleton className="h-4 w-full" />

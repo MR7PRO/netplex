@@ -114,7 +114,7 @@ const Activity: React.FC = () => {
           <TabsContent value="saved">
             {loading ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-xl" />)}
+                {[...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-lg" />)}
               </div>
             ) : saved.length === 0 ? (
               <EmptyState icon={Heart} title="لا توجد منتجات محفوظة" description="اضغط على القلب في أي منتج لحفظه ومتابعة سعره لاحقاً." actionLabel="تصفّح المنتجات" actionTo="/search" />

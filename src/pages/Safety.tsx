@@ -95,7 +95,7 @@ const SafetyPage: React.FC = () => {
         </div>
 
         {/* Emergency */}
-        <div className="mt-10 p-6 rounded-xl bg-destructive/5 border border-destructive/20 text-center">
+        <div className="mt-10 p-6 rounded-lg bg-destructive/5 border border-destructive/20 text-center">
           <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-3" />
           <h3 className="text-lg font-semibold mb-2">تعرضت لمحاولة احتيال؟</h3>
           <p className="text-muted-foreground text-sm mb-4">

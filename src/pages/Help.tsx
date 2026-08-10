@@ -143,7 +143,7 @@ const HelpPage: React.FC = () => {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-10 text-center p-6 rounded-xl bg-secondary/50 border">
+        <div className="mt-10 text-center p-6 rounded-lg bg-secondary/50 border">
           <h3 className="text-lg font-semibold mb-2">لم تجد إجابتك؟</h3>
           <p className="text-muted-foreground mb-4">تواصل معنا مباشرة وسنساعدك</p>
           <Button className="btn-brand" asChild>

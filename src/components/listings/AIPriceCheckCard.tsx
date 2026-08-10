@@ -22,7 +22,7 @@ export const AIPriceCheckCard: React.FC<AIPriceCheckCardProps> = ({ price, brand
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-card">
+      <div className="flex items-center gap-2 p-3 rounded-lg border border-border bg-card">
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
         <span className="text-xs text-muted-foreground">جارٍ تحليل السعر...</span>
       </div>
@@ -38,7 +38,7 @@ export const AIPriceCheckCard: React.FC<AIPriceCheckCardProps> = ({ price, brand
   const Icon = cfg.icon;
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
+    <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
         <Bot className="h-4 w-4 text-primary" />
       </div>

@@ -23,7 +23,7 @@ const Shortcut: React.FC<{ to: string; label: string; icon: React.ElementType; t
 }) => (
   <Link
     to={to}
-    className="group flex flex-col items-center gap-2 min-w-[84px] md:min-w-0 p-3 rounded-xl bg-card border hover:border-primary/50 hover:shadow-md transition-all"
+    className="group flex flex-col items-center gap-2 min-w-[84px] md:min-w-0 p-3 rounded-lg bg-card border hover:border-primary/50 hover:shadow-md transition-all"
   >
     <div className={`h-11 w-11 rounded-full ${bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
       <Icon className={`h-5 w-5 ${tone}`} />
@@ -52,7 +52,7 @@ export const FeatureShortcuts: React.FC = () => {
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
-        className="group flex flex-col items-center gap-2 min-w-[84px] md:min-w-0 p-3 rounded-xl bg-card border hover:border-primary/50 hover:shadow-md transition-all"
+        className="group flex flex-col items-center gap-2 min-w-[84px] md:min-w-0 p-3 rounded-lg bg-card border hover:border-primary/50 hover:shadow-md transition-all"
       >
         <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
           {expanded ? (

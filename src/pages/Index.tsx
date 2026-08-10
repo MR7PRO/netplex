@@ -174,12 +174,8 @@ const Index: React.FC = () => {
           },
         ]}
       />
-      {/* Sticky search — first thing on screen */}
-      <section className="sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b py-3">
-        <div className="container mx-auto px-4">
-          <HomeSearchBar />
-        </div>
-      </section>
+
+
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/30 py-12 md:py-20">

@@ -42,7 +42,7 @@ export const CategoryChips: React.FC = () => {
   if (!categories?.length) return null;
 
   const baseClass =
-    "flex flex-col items-center justify-center gap-1.5 shrink-0 w-[76px] md:w-[88px] py-3 px-2 rounded-xl border border-border bg-card hover:border-primary hover:bg-primary/5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-h-[76px]";
+    "flex flex-col items-center justify-center gap-1.5 shrink-0 w-[76px] md:w-[88px] py-3 px-2 rounded-lg border border-border bg-card hover:border-primary hover:bg-primary/5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-h-[76px]";
 
   return (
     <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">

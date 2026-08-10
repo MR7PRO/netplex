@@ -193,10 +193,10 @@ const MessageThread: React.FC = () => {
             }}
             placeholder="اكتب رسالة..."
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring max-h-32"
+            className="flex-1 resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring max-h-32"
             dir="rtl"
           />
-          <Button size="icon" onClick={send} disabled={!input.trim() || sending} className="rounded-xl">
+          <Button size="icon" onClick={send} disabled={!input.trim() || sending} className="rounded-lg">
             <Send className="h-4 w-4" />
           </Button>
         </div>

@@ -410,7 +410,7 @@ const SearchPage: React.FC = () => {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-xl border bg-card overflow-hidden">
+              <div key={i} className="rounded-lg border bg-card overflow-hidden">
                 <Skeleton className="aspect-square" />
                 <div className="p-3 space-y-2">
                   <Skeleton className="h-4 w-full" />
@@ -440,8 +440,8 @@ const SearchPage: React.FC = () => {
                 to={`/listing/${listing.id}`}
                 className={
                   viewMode === "grid"
-                    ? "group rounded-xl border bg-card overflow-hidden card-hover relative"
-                    : "group rounded-xl border bg-card overflow-hidden card-hover relative flex gap-3"
+                    ? "group rounded-lg border bg-card overflow-hidden card-hover relative"
+                    : "group rounded-lg border bg-card overflow-hidden card-hover relative flex gap-3"
                 }
               >
                 {listing.featured && (
