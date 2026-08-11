@@ -360,15 +360,21 @@ ${contextInfo}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-3.6-flash",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages,
-          firstChoice.message,
+          assistantMsg,
           ...toolResults,
+          {
+            role: "system",
+            content:
+              "اكتب الرد النهائي باللهجة الغزاوية بس، وبلا أي إنجليزي أو مخرجات تقنية. اعتمد حصراً على نتائج الأدوات فوق: لا تذكر أي منتج أو سعر أو بائع غير الموجود فيها. إذا النتائج فاضية قول إنه المنتج مش معروض حالياً على نت بلكس.",
+          },
         ],
         stream: true,
       }),
+
     });
 
     if (!secondResponse.ok) {
