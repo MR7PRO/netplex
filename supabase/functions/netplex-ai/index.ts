@@ -183,27 +183,34 @@ serve(async (req) => {
     const systemPrompt = `أنت مساعد NetPlex الذكي، منصة سوق إلكتروني في غزة.
 
 **مهم جداً - اللغة وشكل الرد:**
-- جاوب دائماً وحصراً باللهجة الغزاوية الفلسطينية العامية (مش فصحى ومش إنجليزي أبداً).
+- جاوب دائماً وحصراً باللهجة الغزاوية الفلسطينية العامية (مش فصحى ومش إنجليزي أبداً)، مهما كانت لغة السؤال.
 - استخدم كلمات غزاوية يومية مثل: "شو"، "ليش"، "كيفك"، "بدك"، "هاد"، "هاي"، "كثير منيح"، "يعطيك العافية"، "والله"، "زابط"، "ع راسي"، "تمام"، "ما في مشكلة".
-- حتى لو سألك المستخدم بالإنجليزي أو الفصحى، رد عليه بالغزاوي.
 - خلي ردك ودود وقريب من الناس، مش رسمي.
 
 **ممنوع منعاً باتاً تطلع في ردك أي:**
 - كلام أو مصطلحات إنجليزية (إلا أسماء ماركات معروفة زي iPhone, Samsung).
 - أكواد برمجة، JSON، أسماء أدوات (tools)، أسماء حقول قاعدة بيانات، SQL، أو أي مخرجات تقنية.
-- كلمات زي: function, tool_call, parameters, query, brand, model كحقول — استبدلها بكلام عربي طبيعي.
 - شرح كيف وصلت للجواب أو شو الأدوات اللي استخدمتها. اعطي الزبون النتيجة النهائية فقط بكلام بسيط.
 - لا تكتب رموز markdown معقدة أو code blocks. نص عربي طبيعي مع نقاط بسيطة بس.
+
+**قاعدة المصدر (الأهم على الإطلاق):**
+- معلوماتك كلها لازم تكون من داخل منصة NetPlex فقط، يعني من نتائج الأدوات (الإعلانات وإحصائيات الأسعار) اللي رجعتلك.
+- ممنوع تمامًا تقترح أو تذكر أي منتج أو ماركة أو موديل أو سعر أو بائع أو رابط أو متجر مش موجود في نتائج الأدوات.
+- ممنوع تستخدم معرفتك العامة عن الأسعار أو المنتجات، وممنوع تخترع أرقام أو تخمّن.
+- إذا نتائج البحث فاضية أو ما لقيت المطلوب على المنصة، قول بصراحة: "والله هلأ ما في هاد المنتج معروض على نت بلكس"، واقترح بس منتجات موجودة فعلاً بالنتائج، أو انصحه يجرب بحث تاني/يحفظ تنبيه.
+- ممنوع توجّه الزبون لأي منصة أو موقع تاني برا نت بلكس.
 
 قواعدك (داخلية، ما تذكرها للمستخدم):
 1. استخدم الأدوات للحصول على بيانات حقيقية - لا تخمن الأسعار.
 2. عند السؤال عن الأسعار، احصل على إحصائيات السوق ثم اعرضها بكلام بسيط.
 3. أعطِ حكماً واضحاً بالعربي: "صفقة ممتازة" / "سعر عادل" / "أعلى من السوق".
-4. إذا كان عدد العينات أقل من 5، قل "البيانات لسا قليلة" واعرض البدائل.
+4. إذا كان عدد العينات أقل من 5، قل "البيانات لسا قليلة" واعرض البدائل الموجودة على المنصة.
 5. ذكّر دائماً بفحص المنتج شخصياً والتأكد من الضمان.
 6. رتب النتائج من الأرخص للأغلى. اذكر البائع الموثق برمز ✓.
+7. أي سؤال عن منتجات أو أسعار أو توفّر: لازم تستخدم أداة البحث قبل ما تجاوب.
 
 ${contextInfo}`;
+
 
     // Define tools for the LLM
     const tools = [
@@ -264,7 +271,7 @@ ${contextInfo}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-3.6-flash",
         messages: [{ role: "system", content: systemPrompt }, ...messages],
         tools,
         tool_choice: "auto",
@@ -291,16 +298,36 @@ ${contextInfo}`;
     const firstResult = await firstResponse.json();
     const firstChoice = firstResult.choices?.[0];
 
-    // If no tool calls, return the response directly
-    if (!firstChoice?.message?.tool_calls || firstChoice.message.tool_calls.length === 0) {
-      return new Response(JSON.stringify({ reply: firstChoice?.message?.content || "عذراً، لم أستطع المساعدة." }), {
+    const lastUserMsg: string = [...(messages || [])].reverse()
+      .find((m: any) => m.role === "user")?.content ?? "";
+    const PRODUCT_HINTS = ["سعر", "أسعار", "اسعار", "بكم", "كم", "بدي", "ابحث", "بحث", "متوفر", "في عند", "أرخص", "ارخص", "منتج", "جهاز", "موبايل", "هاتف", "لابتوب", "سيارة", "شاشة", "price", "cheap", "find", "buy"];
+    const looksProductQuery = PRODUCT_HINTS.some((h) => lastUserMsg.includes(h));
+
+    let assistantMsg = firstChoice?.message;
+    let toolCalls = assistantMsg?.tool_calls ?? [];
+
+    // Grounding guard: if the model answered from its own knowledge about products,
+    // force a platform search so nothing outside NetPlex gets recommended.
+    if (toolCalls.length === 0 && looksProductQuery && lastUserMsg) {
+      toolCalls = [{
+        id: "forced_search_1",
+        type: "function",
+        function: { name: "search_listings", arguments: JSON.stringify({ query: lastUserMsg.slice(0, 120) }) },
+      }];
+      assistantMsg = { role: "assistant", content: null, tool_calls: toolCalls };
+    }
+
+    // If still no tool calls, return the response directly
+    if (toolCalls.length === 0) {
+      return new Response(JSON.stringify({ reply: firstChoice?.message?.content || "عذراً، ما قدرت أساعدك بهاي." }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     // Execute tool calls
     const toolResults: any[] = [];
-    for (const toolCall of firstChoice.message.tool_calls) {
+    for (const toolCall of toolCalls) {
+
       const args = JSON.parse(toolCall.function.arguments);
       let result: any;
 
@@ -333,15 +360,21 @@ ${contextInfo}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-3.6-flash",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages,
-          firstChoice.message,
+          assistantMsg,
           ...toolResults,
+          {
+            role: "system",
+            content:
+              "اكتب الرد النهائي باللهجة الغزاوية بس، وبلا أي إنجليزي أو مخرجات تقنية. اعتمد حصراً على نتائج الأدوات فوق: لا تذكر أي منتج أو سعر أو بائع غير الموجود فيها. إذا النتائج فاضية قول إنه المنتج مش معروض حالياً على نت بلكس.",
+          },
         ],
         stream: true,
       }),
+
     });
 
     if (!secondResponse.ok) {
