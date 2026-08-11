@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
@@ -125,7 +125,7 @@ const Auth: React.FC = () => {
             <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mx-auto mb-4">
               <span className="text-primary-foreground font-bold text-2xl">N</span>
             </div>
-            <CardTitle className="text-2xl">مرحباً بك في نت بلكس</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none tracking-tight">تسجيل الدخول أو إنشاء حساب في نت بلكس</h1>
             <CardDescription>سجل دخولك أو أنشئ حساب جديد</CardDescription>
           </CardHeader>
           <CardContent>

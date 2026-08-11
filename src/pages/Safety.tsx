@@ -82,7 +82,7 @@ const SafetyPage: React.FC = () => {
                       ) : (
                         <XCircle className="h-4 w-4 text-destructive" />
                       )}
-                      <h3 className="font-semibold">{tip.title}</h3>
+                      <h2 className="font-semibold">{tip.title}</h2>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {tip.description}
@@ -97,7 +97,7 @@ const SafetyPage: React.FC = () => {
         {/* Emergency */}
         <div className="mt-10 p-6 rounded-lg bg-destructive/5 border border-destructive/20 text-center">
           <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-3" />
-          <h3 className="text-lg font-semibold mb-2">تعرضت لمحاولة احتيال؟</h3>
+          <h2 className="text-lg font-semibold mb-2">تعرضت لمحاولة احتيال؟</h2>
           <p className="text-muted-foreground text-sm mb-4">
             بلّغ فوراً عن الإعلان من خلال صفحة المنتج أو تواصل معنا مباشرة
           </p>

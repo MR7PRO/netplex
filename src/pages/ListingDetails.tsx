@@ -794,7 +794,7 @@ const ListingDetailsPage: React.FC = () => {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold">{seller.shop_name || "بائع"}</h4>
+                        <h2 className="font-semibold text-base">{seller.shop_name || "بائع"}</h2>
                         {seller.verified && <VerifiedBadgeTooltip size="sm" label="موثّق" />}
                       </div>
                       <p className="text-sm text-muted-foreground">
