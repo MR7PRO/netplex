@@ -298,16 +298,36 @@ ${contextInfo}`;
     const firstResult = await firstResponse.json();
     const firstChoice = firstResult.choices?.[0];
 
-    // If no tool calls, return the response directly
-    if (!firstChoice?.message?.tool_calls || firstChoice.message.tool_calls.length === 0) {
-      return new Response(JSON.stringify({ reply: firstChoice?.message?.content || "عذراً، لم أستطع المساعدة." }), {
+    const lastUserMsg: string = [...(messages || [])].reverse()
+      .find((m: any) => m.role === "user")?.content ?? "";
+    const PRODUCT_HINTS = ["سعر", "أسعار", "اسعار", "بكم", "كم", "بدي", "ابحث", "بحث", "متوفر", "في عند", "أرخص", "ارخص", "منتج", "جهاز", "موبايل", "هاتف", "لابتوب", "سيارة", "شاشة", "price", "cheap", "find", "buy"];
+    const looksProductQuery = PRODUCT_HINTS.some((h) => lastUserMsg.includes(h));
+
+    let assistantMsg = firstChoice?.message;
+    let toolCalls = assistantMsg?.tool_calls ?? [];
+
+    // Grounding guard: if the model answered from its own knowledge about products,
+    // force a platform search so nothing outside NetPlex gets recommended.
+    if (toolCalls.length === 0 && looksProductQuery && lastUserMsg) {
+      toolCalls = [{
+        id: "forced_search_1",
+        type: "function",
+        function: { name: "search_listings", arguments: JSON.stringify({ query: lastUserMsg.slice(0, 120) }) },
+      }];
+      assistantMsg = { role: "assistant", content: null, tool_calls: toolCalls };
+    }
+
+    // If still no tool calls, return the response directly
+    if (toolCalls.length === 0) {
+      return new Response(JSON.stringify({ reply: firstChoice?.message?.content || "عذراً، ما قدرت أساعدك بهاي." }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     // Execute tool calls
     const toolResults: any[] = [];
-    for (const toolCall of firstChoice.message.tool_calls) {
+    for (const toolCall of toolCalls) {
+
       const args = JSON.parse(toolCall.function.arguments);
       let result: any;
 
