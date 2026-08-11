@@ -18,8 +18,20 @@ interface Payload {
   tag?: string;
 }
 
+const INTERNAL_SECRET = Deno.env.get("PUSH_INTERNAL_SECRET") || "";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // Internal-only endpoint: callers must present the shared secret used by the
+  // database notification trigger. No public/user-facing access.
+  const provided = req.headers.get("x-internal-secret") || "";
+  if (!INTERNAL_SECRET || provided !== INTERNAL_SECRET) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   try {
     const body = (await req.json()) as Payload;
