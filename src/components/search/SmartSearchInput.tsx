@@ -1,3 +1,4 @@
+import { buildIlikeOrFilter } from "@/lib/searchFilter";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Clock, TrendingUp, X } from "lucide-react";
@@ -73,11 +74,17 @@ export const SmartSearchInput: React.FC<SmartSearchInputProps> = ({
       return;
     }
     setLoading(true);
+    const orFilter = buildIlikeOrFilter(["title", "brand", "model"], query);
+    if (!orFilter) {
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
     const { data } = await supabase
       .from("listings")
       .select("id, title, price_ils")
       .eq("status", "available")
-      .or(`title.ilike.%${query}%,brand.ilike.%${query}%,model.ilike.%${query}%`)
+      .or(orFilter)
       .order("view_count", { ascending: false })
       .limit(6);
 

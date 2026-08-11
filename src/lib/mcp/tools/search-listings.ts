@@ -1,3 +1,4 @@
+import { buildIlikeOrFilter } from "@/lib/searchFilter";
 import { createClient } from "@supabase/supabase-js";
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
@@ -35,8 +36,8 @@ export default defineTool({
       .limit(input.limit ?? 20);
 
     if (input.query) {
-      const term = `%${input.query}%`;
-      q = q.or(`title.ilike.${term},brand.ilike.${term},model.ilike.${term}`);
+      const orFilter = buildIlikeOrFilter(["title", "brand", "model"], input.query);
+      if (orFilter) q = q.or(orFilter);
     }
     if (input.region) q = q.eq("region", input.region);
     if (input.brand) q = q.ilike("brand", input.brand);
