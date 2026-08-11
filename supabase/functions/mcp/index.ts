@@ -9,6 +9,9 @@ import { defineMcp } from "npm:@lovable.dev/mcp-js@0.20.0";
 import { createClient } from "npm:@supabase/supabase-js@^2.91.1";
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.20.0";
 import { z } from "npm:zod@^3.25.76";
+function sanitizeSearchTerm(input, maxLength = 80) {
+  return (input ?? "").replace(/[,().*%_\\"'`\[\]{}:]/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
 function client() {
   return createClient(
     process.env.SUPABASE_URL,
@@ -34,8 +37,8 @@ var search_listings_default = defineTool({
     const supabase = client();
     let q = supabase.from("listings").select("id,title,price_ils,region,brand,model,condition,category_id,seller_id,view_count,created_at").eq("status", "available").order("created_at", { ascending: false }).limit(input.limit ?? 20);
     if (input.query) {
-      const term = `%${input.query}%`;
-      q = q.or(`title.ilike.${term},brand.ilike.${term},model.ilike.${term}`);
+      const term = sanitizeSearchTerm(input.query);
+      if (term) q = q.or(`title.ilike.%${term}%,brand.ilike.%${term}%,model.ilike.%${term}%`);
     }
     if (input.region) q = q.eq("region", input.region);
     if (input.brand) q = q.ilike("brand", input.brand);

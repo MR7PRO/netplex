@@ -1,3 +1,4 @@
+import { buildIlikeOrFilter } from "@/lib/searchFilter";
 import React, { useState, useEffect, useMemo } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { CompareBar } from "@/components/compare/CompareBar";
@@ -193,7 +194,8 @@ const SearchPage: React.FC = () => {
 
       // Apply text search (Arabic/English)
       if (query) {
-        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%,brand.ilike.%${query}%,model.ilike.%${query}%`);
+        const orFilter = buildIlikeOrFilter(["title", "description", "brand", "model"], query);
+        if (orFilter) queryBuilder = queryBuilder.or(orFilter);
       }
       
       // Apply category filter by ID

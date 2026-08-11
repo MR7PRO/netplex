@@ -158,7 +158,9 @@ const ListingDetailsPage: React.FC = () => {
       setLoading(true);
       const { data: listingData, error } = await supabase
         .from("listings")
-        .select("*")
+        .select(
+          "id, seller_id, submission_id, title, description, category_id, brand, model, condition, price_ils, region, images, status, featured, view_count, save_count, whatsapp_click_count, published_at, created_at, discount_percent, discount_end_at, stock_quantity"
+        )
         .eq("id", id)
         .single();
 

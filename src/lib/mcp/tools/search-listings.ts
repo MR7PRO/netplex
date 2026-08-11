@@ -2,6 +2,12 @@ import { createClient } from "@supabase/supabase-js";
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 
+// Strip PostgREST filter-structural characters to prevent filter injection.
+function sanitizeSearchTerm(input: string, maxLength = 80): string {
+  return (input ?? "").replace(/[,().*%_\\"'`\[\]{}:]/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+
 function client() {
   return createClient(
     process.env.SUPABASE_URL!,
@@ -35,8 +41,8 @@ export default defineTool({
       .limit(input.limit ?? 20);
 
     if (input.query) {
-      const term = `%${input.query}%`;
-      q = q.or(`title.ilike.${term},brand.ilike.${term},model.ilike.${term}`);
+      const term = sanitizeSearchTerm(input.query);
+      if (term) q = q.or(`title.ilike.%${term}%,brand.ilike.%${term}%,model.ilike.%${term}%`);
     }
     if (input.region) q = q.eq("region", input.region);
     if (input.brand) q = q.ilike("brand", input.brand);

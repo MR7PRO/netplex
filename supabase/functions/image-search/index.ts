@@ -1,6 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+const SEARCH_SPECIALS = /[,().*%_\\"'`\[\]{}:]/g;
+function sanitizeSearchTerm(input: string, maxLength = 80): string {
+  return (input ?? "").replace(SEARCH_SPECIALS, " ").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -96,9 +102,11 @@ serve(async (req) => {
     if (terms.length > 0) {
       const orExpr = terms
         .slice(0, 8)
+        .map((t) => sanitizeSearchTerm(String(t)))
+        .filter((t) => t.length > 1)
         .map((t) => `title.ilike.%${t}%,brand.ilike.%${t}%,model.ilike.%${t}%`)
         .join(",");
-      query = query.or(orExpr);
+      if (orExpr) query = query.or(orExpr);
     }
 
     const { data: listings, error: searchErr } = await query;
