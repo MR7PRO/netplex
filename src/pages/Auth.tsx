@@ -125,7 +125,9 @@ const Auth: React.FC = () => {
             <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mx-auto mb-4">
               <span className="text-primary-foreground font-bold text-2xl">N</span>
             </div>
-            <CardTitle className="text-2xl">مرحباً بك في نت بلكس</CardTitle>
+            <CardTitle asChild>
+              <h1 className="text-2xl font-semibold leading-none tracking-tight">تسجيل الدخول أو إنشاء حساب في نت بلكس</h1>
+            </CardTitle>
             <CardDescription>سجل دخولك أو أنشئ حساب جديد</CardDescription>
           </CardHeader>
           <CardContent>

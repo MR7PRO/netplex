@@ -194,6 +194,9 @@ const Index: React.FC = () => {
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">
               متجر <span className="text-foreground">نت</span> <span className="text-primary">بلكس</span>
+              <span className="block mt-2 text-lg md:text-2xl lg:text-3xl font-semibold text-muted-foreground">
+                سوق غزة الموثوق لبيع وشراء الإلكترونيات
+              </span>
             </h1>
             <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-4 md:mb-6">
               سوق غزة… بسعره الحقيقي
