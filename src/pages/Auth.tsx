@@ -63,26 +63,22 @@ const Auth: React.FC = () => {
     const inviteCode = (formData.get("invite_code") as string)?.trim();
     
     try {
-      // If invite code provided, validate it first
+      // If invite code provided, validate it server-side (no direct table access)
       if (inviteCode) {
-        const { data: invite, error: inviteErr } = await supabase
-          .from("admin_invites")
-          .select("*")
-          .eq("invite_code", inviteCode)
-          .maybeSingle();
+        const { data: check, error: inviteErr } = await supabase.rpc("validate_invite_code", {
+          p_code: inviteCode,
+        });
+        const result = (check ?? {}) as { valid?: boolean; reason?: string };
 
-        if (inviteErr || !invite) {
-          toast({ title: "كود الدعوة غير صالح", variant: "destructive" });
-          setLoading(false);
-          return;
-        }
-        if (invite.used) {
-          toast({ title: "كود الدعوة مستخدم بالفعل", variant: "destructive" });
-          setLoading(false);
-          return;
-        }
-        if (new Date(invite.expires_at) < new Date()) {
-          toast({ title: "كود الدعوة منتهي الصلاحية", variant: "destructive" });
+        if (inviteErr || !result.valid) {
+          const messages: Record<string, string> = {
+            used: "كود الدعوة مستخدم بالفعل",
+            expired: "كود الدعوة منتهي الصلاحية",
+          };
+          toast({
+            title: messages[result.reason ?? ""] ?? "كود الدعوة غير صالح",
+            variant: "destructive",
+          });
           setLoading(false);
           return;
         }
@@ -95,12 +91,12 @@ const Auth: React.FC = () => {
         formData.get("phone") as string
       );
 
-      // If invite code, redeem it after signup
+      // If invite code, redeem it after signup (user identity comes from the session)
       if (inviteCode) {
-        const { data: { user: newUser } } = await supabase.auth.getUser();
-        if (newUser) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
           const res = await supabase.functions.invoke("redeem-invite", {
-            body: { invite_code: inviteCode, user_id: newUser.id },
+            body: { invite_code: inviteCode },
           });
           if (res.error || res.data?.error) {
             console.error("Invite redeem error:", res.error || res.data?.error);
