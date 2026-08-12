@@ -361,6 +361,17 @@ ${contextInfo}`;
 
   } catch (e) {
     console.error("netplex-ai error:", e);
+    const status = (e as any)?.status;
+    if (status === 429) {
+      return new Response(JSON.stringify({ error: "تم تجاوز الحد المسموح، حاول بعد قليل." }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (status === 402) {
+      return new Response(JSON.stringify({ error: "يرجى شحن الرصيد للاستمرار." }), {
+        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "حدث خطأ" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
