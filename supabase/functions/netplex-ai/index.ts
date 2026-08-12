@@ -263,131 +263,134 @@ ${contextInfo}`;
       },
     ];
 
-    // First LLM call - intent parsing with tool calling
-    const firstResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3.6-flash",
-        messages: [{ role: "system", content: systemPrompt }, ...messages],
-        tools,
-        tool_choice: "auto",
-      }),
-    });
-
-    if (!firstResponse.ok) {
-      const status = firstResponse.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "تم تجاوز الحد المسموح، حاول بعد قليل." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+    const callGateway = async (body: any) => {
+      const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ model: "google/gemini-3.6-flash", ...body }),
+      });
+      if (!resp.ok) {
+        const t = await resp.text();
+        console.error("AI error:", resp.status, t);
+        const err: any = new Error("AI gateway error");
+        err.status = resp.status;
+        throw err;
       }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "يرجى شحن الرصيد للاستمرار." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const t = await firstResponse.text();
-      console.error("AI error:", status, t);
-      throw new Error("AI gateway error");
-    }
+      return await resp.json();
+    };
 
-    const firstResult = await firstResponse.json();
-    const firstChoice = firstResult.choices?.[0];
+    const runTool = async (toolCall: any) => {
+      let args: any = {};
+      try { args = JSON.parse(toolCall.function.arguments || "{}"); } catch { /* ignore */ }
+      switch (toolCall.function.name) {
+        case "search_listings":
+          return await searchListings(supabase, args.query, args.region, args.condition);
+        case "get_price_stats":
+          return await getPriceStats(supabase, args.brand, args.model, args.condition);
+        case "suggest_category":
+          return await suggestCategory(supabase, args.title, args.description);
+        default:
+          return { error: "Unknown tool" };
+      }
+    };
 
     const lastUserMsg: string = [...(messages || [])].reverse()
       .find((m: any) => m.role === "user")?.content ?? "";
     const PRODUCT_HINTS = ["سعر", "أسعار", "اسعار", "بكم", "كم", "بدي", "ابحث", "بحث", "متوفر", "في عند", "أرخص", "ارخص", "منتج", "جهاز", "موبايل", "هاتف", "لابتوب", "سيارة", "شاشة", "price", "cheap", "find", "buy"];
     const looksProductQuery = PRODUCT_HINTS.some((h) => lastUserMsg.includes(h));
 
-    let assistantMsg = firstChoice?.message;
-    let toolCalls = assistantMsg?.tool_calls ?? [];
+    const finalGuard = {
+      role: "system",
+      content:
+        "اكتب الرد النهائي باللهجة الغزاوية بس، وبلا أي إنجليزي أو مخرجات تقنية. اعتمد حصراً على نتائج الأدوات فوق: لا تذكر أي منتج أو سعر أو بائع غير الموجود فيها. إذا النتائج فاضية قول إنه المنتج مش معروض حالياً على نت بلكس.",
+    };
 
-    // Grounding guard: if the model answered from its own knowledge about products,
-    // force a platform search so nothing outside NetPlex gets recommended.
-    if (toolCalls.length === 0 && looksProductQuery && lastUserMsg) {
-      toolCalls = [{
-        id: "forced_search_1",
-        type: "function",
-        function: { name: "search_listings", arguments: JSON.stringify({ query: lastUserMsg.slice(0, 120) }) },
-      }];
-      assistantMsg = { role: "assistant", content: null, tool_calls: toolCalls };
-    }
+    const convo: any[] = [{ role: "system", content: systemPrompt }, ...(messages || [])];
+    const collected: any[] = [];
+    let reply = "";
 
-    // If still no tool calls, return the response directly
-    if (toolCalls.length === 0) {
-      return new Response(JSON.stringify({ reply: firstChoice?.message?.content || "عذراً، ما قدرت أساعدك بهاي." }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    // Agentic loop (non-streaming) so a tool-call turn never reaches the client as an empty answer.
+    for (let step = 0; step < 4; step++) {
+      const result = await callGateway({ messages: convo, tools, tool_choice: "auto" });
+      const msg = result.choices?.[0]?.message;
+      let toolCalls = msg?.tool_calls ?? [];
 
-    // Execute tool calls
-    const toolResults: any[] = [];
-    for (const toolCall of toolCalls) {
-
-      const args = JSON.parse(toolCall.function.arguments);
-      let result: any;
-
-      switch (toolCall.function.name) {
-        case "search_listings":
-          result = await searchListings(supabase, args.query, args.region, args.condition);
-          break;
-        case "get_price_stats":
-          result = await getPriceStats(supabase, args.brand, args.model, args.condition);
-          break;
-        case "suggest_category":
-          result = await suggestCategory(supabase, args.title, args.description);
-          break;
-        default:
-          result = { error: "Unknown tool" };
+      // Grounding guard: force a platform search on the first turn for product questions.
+      if (step === 0 && toolCalls.length === 0 && looksProductQuery && lastUserMsg) {
+        toolCalls = [{
+          id: "forced_search_1",
+          type: "function",
+          function: { name: "search_listings", arguments: JSON.stringify({ query: lastUserMsg.slice(0, 120) }) },
+        }];
+        convo.push({ role: "assistant", content: null, tool_calls: toolCalls });
+      } else if (toolCalls.length > 0) {
+        convo.push(msg);
       }
 
-      toolResults.push({
-        role: "tool",
-        tool_call_id: toolCall.id,
-        content: JSON.stringify(result),
-      });
+      if (toolCalls.length === 0) {
+        reply = (msg?.content || "").trim();
+        break;
+      }
+
+      for (const toolCall of toolCalls) {
+        const toolResult = await runTool(toolCall);
+        collected.push({ tool: toolCall.function.name, args: toolCall.function.arguments, result: toolResult });
+        convo.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          content: JSON.stringify(toolResult),
+        });
+      }
+      convo.push(finalGuard);
     }
 
-    // Second LLM call - format the response with tool results (streaming)
-    const secondResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3.6-flash",
+    // Gemini sometimes keeps requesting tools instead of answering (and ignores tool_choice:"none").
+    // Final fallback: a plain text-only call with the gathered platform data inlined, no tools at all.
+    if (!reply) {
+      const dataSummary = collected.length
+        ? JSON.stringify(collected).slice(0, 12000)
+        : "[]";
+      const forced = await callGateway({
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
-          assistantMsg,
-          ...toolResults,
+          ...(messages || []),
           {
             role: "system",
             content:
-              "اكتب الرد النهائي باللهجة الغزاوية بس، وبلا أي إنجليزي أو مخرجات تقنية. اعتمد حصراً على نتائج الأدوات فوق: لا تذكر أي منتج أو سعر أو بائع غير الموجود فيها. إذا النتائج فاضية قول إنه المنتج مش معروض حالياً على نت بلكس.",
+              `هاي كل البيانات المتوفرة من منصة نت بلكس لسؤال الزبون (نتائج البحث وإحصائيات الأسعار):\n${dataSummary}\n\n` +
+              finalGuard.content +
+              " جاوب الآن جواب نهائي مكتوب للزبون مباشرة، وما تطلب أي بحث إضافي.",
           },
         ],
-        stream: true,
-      }),
-
-    });
-
-    if (!secondResponse.ok) {
-      const t = await secondResponse.text();
-      console.error("AI second call error:", secondResponse.status, t);
-      throw new Error("AI response formatting error");
+      });
+      reply = (forced.choices?.[0]?.message?.content || "").trim();
+      if (!reply) console.error("empty forced reply:", JSON.stringify(forced.choices?.[0] ?? {}).slice(0, 600));
     }
 
-    return new Response(secondResponse.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-    });
+
+
+
+    return new Response(
+      JSON.stringify({ reply: reply || "والله ما لقيت معلومات كافية عن هاد الشي على نت بلكس. جرب تسألني بطريقة تانية." }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+
   } catch (e) {
     console.error("netplex-ai error:", e);
+    const status = (e as any)?.status;
+    if (status === 429) {
+      return new Response(JSON.stringify({ error: "تم تجاوز الحد المسموح، حاول بعد قليل." }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (status === 402) {
+      return new Response(JSON.stringify({ error: "يرجى شحن الرصيد للاستمرار." }), {
+        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "حدث خطأ" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
