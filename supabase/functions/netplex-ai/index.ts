@@ -350,9 +350,11 @@ ${contextInfo}`;
     // If the model kept calling tools, force a plain text answer.
     if (!reply) {
       if (usedTools) convo.push(finalGuard);
-      const forced = await callGateway({ messages: convo, tool_choice: "none" });
+      const forced = await callGateway({ messages: convo, tools, tool_choice: "none" });
       reply = (forced.choices?.[0]?.message?.content || "").trim();
+      if (!reply) console.error("empty forced reply:", JSON.stringify(forced.choices?.[0] ?? {}).slice(0, 800));
     }
+
 
     return new Response(
       JSON.stringify({ reply: reply || "والله ما لقيت معلومات كافية عن هاد الشي على نت بلكس. جرب تسألني بطريقة تانية." }),
