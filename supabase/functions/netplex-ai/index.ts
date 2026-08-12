@@ -309,11 +309,11 @@ ${contextInfo}`;
     };
 
     const convo: any[] = [{ role: "system", content: systemPrompt }, ...(messages || [])];
-    let usedTools = false;
+    const collected: any[] = [];
     let reply = "";
 
     // Agentic loop (non-streaming) so a tool-call turn never reaches the client as an empty answer.
-    for (let step = 0; step < 3; step++) {
+    for (let step = 0; step < 4; step++) {
       const result = await callGateway({ messages: convo, tools, tool_choice: "auto" });
       const msg = result.choices?.[0]?.message;
       let toolCalls = msg?.tool_calls ?? [];
@@ -335,9 +335,9 @@ ${contextInfo}`;
         break;
       }
 
-      usedTools = true;
       for (const toolCall of toolCalls) {
         const toolResult = await runTool(toolCall);
+        collected.push({ tool: toolCall.function.name, args: toolCall.function.arguments, result: toolResult });
         convo.push({
           role: "tool",
           tool_call_id: toolCall.id,
@@ -347,13 +347,30 @@ ${contextInfo}`;
       convo.push(finalGuard);
     }
 
-    // If the model kept calling tools, force a plain text answer.
+    // Gemini sometimes keeps requesting tools instead of answering (and ignores tool_choice:"none").
+    // Final fallback: a plain text-only call with the gathered platform data inlined, no tools at all.
     if (!reply) {
-      if (usedTools) convo.push(finalGuard);
-      const forced = await callGateway({ messages: convo, tools, tool_choice: "none" });
+      const dataSummary = collected.length
+        ? JSON.stringify(collected).slice(0, 12000)
+        : "[]";
+      const forced = await callGateway({
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...(messages || []),
+          {
+            role: "system",
+            content:
+              `هاي كل البيانات المتوفرة من منصة نت بلكس لسؤال الزبون (نتائج البحث وإحصائيات الأسعار):\n${dataSummary}\n\n` +
+              finalGuard.content +
+              " جاوب الآن جواب نهائي مكتوب للزبون مباشرة، وما تطلب أي بحث إضافي.",
+          },
+        ],
+      });
       reply = (forced.choices?.[0]?.message?.content || "").trim();
-      if (!reply) console.error("empty forced reply:", JSON.stringify(forced.choices?.[0] ?? {}).slice(0, 800));
+      if (!reply) console.error("empty forced reply:", JSON.stringify(forced.choices?.[0] ?? {}).slice(0, 600));
     }
+
+
 
 
     return new Response(
