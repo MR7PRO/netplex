@@ -1345,11 +1345,60 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_sub_admin: { Args: { _user_id: string }; Returns: boolean }
+      listing_brand_models: {
+        Args: never
+        Returns: {
+          brand: string
+          model: string
+        }[]
+      }
       place_bid: {
         Args: { p_amount: number; p_auction_id: string }
         Returns: Json
       }
       redeem_referral_code: { Args: { p_code: string }; Returns: Json }
+      search_listings_ranked: {
+        Args: {
+          p_brand?: string
+          p_category_slug?: string
+          p_conditions?: string[]
+          p_limit?: number
+          p_max_price?: number
+          p_min_price?: number
+          p_model?: string
+          p_offset?: number
+          p_query?: string
+          p_region?: string
+          p_sort?: string
+        }
+        Returns: {
+          brand: string
+          category_name_ar: string
+          category_slug: string
+          condition: Database["public"]["Enums"]["item_condition"]
+          created_at: string
+          description: string
+          featured: boolean
+          id: string
+          images: string[]
+          median_price: number
+          model: string
+          price_ils: number
+          published_at: string
+          rank: number
+          region: string
+          relevance: number
+          save_count: number
+          seller_id: string
+          seller_shop_name: string
+          seller_trust_score: number
+          seller_verified: boolean
+          title: string
+          total_count: number
+          view_count: number
+          whatsapp_click_count: number
+        }[]
+      }
       validate_invite_code: { Args: { p_code: string }; Returns: Json }
     }
     Enums: {

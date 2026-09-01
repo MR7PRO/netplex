@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788251439656,
+      "tag": "0000_search_engine_v2_ranked_rpc",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788251488463,
+      "tag": "0001_search_rpc_extensions_search_path",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788251551498,
+      "tag": "0002_search_rpc_fix_median_type",
+      "breakpoints": true
+    }
+  ]
+}
