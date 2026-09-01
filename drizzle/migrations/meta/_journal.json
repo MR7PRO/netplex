@@ -8,6 +8,13 @@
       "when": 1788251439656,
       "tag": "0000_search_engine_v2_ranked_rpc",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788251488463,
+      "tag": "0001_search_rpc_extensions_search_path",
+      "breakpoints": true
     }
   ]
 }
