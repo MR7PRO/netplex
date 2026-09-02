@@ -417,6 +417,23 @@ const SearchPage: React.FC = () => {
             ))}
           </div>
         )}
+
+        {/* Pagination: infinite scroll sentinel + manual fallback */}
+        {!loading && rankedListings.length > 0 && (
+          <div ref={sentinelRef} className="flex flex-col items-center justify-center py-8 gap-2">
+            {isFetchingNextPage ? (
+              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> جاري تحميل المزيد...
+              </span>
+            ) : hasNextPage ? (
+              <Button variant="outline" onClick={() => fetchNextPage()} className="min-h-[44px]">
+                حمّل المزيد ({total - rankedListings.length} متبقية)
+              </Button>
+            ) : (
+              <span className="text-xs text-muted-foreground">وصلت لنهاية النتائج</span>
+            )}
+          </div>
+        )}
       </div>
       <CompareBar />
       <AskNetPlexButton />
