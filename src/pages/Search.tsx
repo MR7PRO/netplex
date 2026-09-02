@@ -1,11 +1,9 @@
-import { buildIlikeOrFilter } from "@/lib/searchFilter";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { CompareBar } from "@/components/compare/CompareBar";
-import { useCompare, type CompareListing } from "@/contexts/CompareContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Star, Camera } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Camera, Loader2, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -29,41 +27,11 @@ import { ViewModeToggle, type ViewMode } from "@/components/search/ViewModeToggl
 import { NearMeChip } from "@/components/search/NearMeChip";
 import { useUserRegion } from "@/hooks/useUserRegion";
 import { ListingBadges } from "@/components/listings/ListingBadges";
-import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
-import { useMedianPrices } from "@/hooks/useMedianPrices";
+import { calculateListingRank, RankingResult } from "@/lib/ranking";
+import { useSearchListings, useBrandModels, MAX_PRICE, type RankedListing } from "@/hooks/useSearchListings";
 import { SEO } from "@/components/seo/SEO";
-import type { Database } from "@/integrations/supabase/types";
 
-interface Listing {
-  id: string;
-  title: string;
-  description: string | null;
-  price_ils: number;
-  condition: string | null;
-  region: string;
-  images: string[];
-  view_count: number | null;
-  save_count: number | null;
-  whatsapp_click_count: number | null;
-  featured: boolean | null;
-  created_at: string | null;
-  published_at: string | null;
-  brand: string | null;
-  model: string | null;
-  seller: {
-    id: string;
-    shop_name: string | null;
-    verified: boolean | null;
-    trust_score: number | null;
-  } | null;
-  category: {
-    name_ar: string;
-    slug: string;
-  } | null;
-  // Computed fields
-  rank?: number;
-  rankingResult?: RankingResult;
-}
+type Listing = RankedListing & { rankingResult: RankingResult };
 
 interface Category {
   id: string;
@@ -86,11 +54,7 @@ const SearchPage: React.FC = () => {
   const { addItem: addCompare, removeItem: removeCompare, isComparing, isFull: compareFull } = useCompare();
   const [searchParams, setSearchParams] = useSearchParams();
   const { region: userRegion } = useUserRegion();
-  const [listings, setListings] = useState<Listing[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
-  const [models, setModels] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window === "undefined") return "grid";
@@ -101,9 +65,6 @@ const SearchPage: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(VIEW_MODE_KEY, viewMode);
   }, [viewMode]);
-
-  // Median prices for fair price calculation
-  const { data: medianPrices } = useMedianPrices();
 
   // Query state
   const [query, setQuery] = useState(searchParams.get("q") || "");
@@ -116,7 +77,7 @@ const SearchPage: React.FC = () => {
     conditions: searchParams.get("condition")?.split(",").filter(Boolean) || [],
     priceRange: [
       parseInt(searchParams.get("minPrice") || "0"),
-      parseInt(searchParams.get("maxPrice") || "50000"),
+      parseInt(searchParams.get("maxPrice") || String(MAX_PRICE)),
     ],
     brand: searchParams.get("brand") || "",
     model: searchParams.get("model") || "",
@@ -134,167 +95,72 @@ const SearchPage: React.FC = () => {
     fetchCategories();
   }, []);
 
-  // Fetch brands and models for filters
-  useEffect(() => {
-    const fetchBrandsModels = async () => {
-      const { data } = await supabase
-        .from("listings")
-        .select("brand, model")
-        .eq("status", "available")
-        .not("brand", "is", null);
-      
-      if (data) {
-        const uniqueBrands = [...new Set(data.map(d => d.brand).filter(Boolean) as string[])].sort();
-        setBrands(uniqueBrands);
-        
-        // If a brand is selected, filter models to that brand
-        if (filters.brand) {
-          const brandModels = data
-            .filter(d => d.brand === filters.brand && d.model)
-            .map(d => d.model as string);
-          setModels([...new Set(brandModels)].sort());
-        } else {
-          const allModels = [...new Set(data.map(d => d.model).filter(Boolean) as string[])].sort();
-          setModels(allModels);
-        }
-      }
-    };
-    fetchBrandsModels();
-  }, [filters.brand]);
+  // Brand/model facets (server-side distinct)
+  const { data: brandModels } = useBrandModels();
+  const brands = useMemo(
+    () => [...new Set((brandModels ?? []).map((d) => d.brand).filter(Boolean) as string[])].sort(),
+    [brandModels]
+  );
+  const models = useMemo(() => {
+    const rows = (brandModels ?? []).filter((d) => d.model && (!filters.brand || d.brand === filters.brand));
+    return [...new Set(rows.map((d) => d.model as string))].sort();
+  }, [brandModels, filters.brand]);
 
-  // Fetch listings
-  useEffect(() => {
-    const fetchListings = async () => {
-      setLoading(true);
+  // Server-side ranked + paginated search
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useSearchListings({ query, filters, sortBy });
 
-      // Resolve category slug to ID for proper filtering
-      let categoryId: string | null = null;
-      if (filters.category) {
-        const matched = categories.find((c) => c.slug === filters.category);
-        if (matched) {
-          categoryId = matched.id;
-        } else {
-          // slug doesn't match any category — show no results
-          setListings([]);
-          setLoading(false);
-          return;
-        }
-      }
-      
-      let queryBuilder = supabase
-        .from("listings")
-        .select(`
-          id, title, description, price_ils, condition, region, images, 
-          view_count, save_count, whatsapp_click_count, featured, created_at, published_at,
-          brand, model,
-          seller:sellers!inner(id, shop_name, verified, trust_score),
-          category:categories(name_ar, slug)
-        `)
-        .eq("status", "available");
+  const total = data?.pages[0]?.total ?? 0;
+  const loading = isLoading || (isFetching && !isFetchingNextPage && !data);
 
-      // Apply text search (Arabic/English)
-      if (query) {
-        const orFilter = buildIlikeOrFilter(["title", "description", "brand", "model"], query);
-        if (orFilter) queryBuilder = queryBuilder.or(orFilter);
-      }
-      
-      // Apply category filter by ID
-      if (categoryId) {
-        queryBuilder = queryBuilder.eq("category_id", categoryId);
-      }
-      if (filters.region) {
-        queryBuilder = queryBuilder.eq("region", filters.region);
-      }
-      if (filters.conditions.length > 0) {
-        queryBuilder = queryBuilder.in("condition", filters.conditions as Database["public"]["Enums"]["item_condition"][]);
-      }
-      if (filters.brand) {
-        queryBuilder = queryBuilder.eq("brand", filters.brand);
-      }
-      if (filters.model) {
-        queryBuilder = queryBuilder.eq("model", filters.model);
-      }
-      queryBuilder = queryBuilder
-        .gte("price_ils", filters.priceRange[0])
-        .lte("price_ils", filters.priceRange[1]);
-
-      // Apply DB-level sorting for simple sorts
-      switch (sortBy) {
-        case "price-low":
-          queryBuilder = queryBuilder.order("price_ils", { ascending: true });
-          break;
-        case "price-high":
-          queryBuilder = queryBuilder.order("price_ils", { ascending: false });
-          break;
-        case "newest":
-          queryBuilder = queryBuilder.order("published_at", { ascending: false, nullsFirst: false });
-          break;
-        case "most-viewed":
-          queryBuilder = queryBuilder.order("view_count", { ascending: false, nullsFirst: false });
-          break;
-        case "most-saved":
-          queryBuilder = queryBuilder.order("save_count", { ascending: false, nullsFirst: false });
-          break;
-        default:
-          // best-match will be sorted client-side
-          queryBuilder = queryBuilder.order("published_at", { ascending: false });
-      }
-
-      const { data, error } = await queryBuilder.limit(50);
-      
-      if (error) {
-        console.error("Error fetching listings:", error);
-        setListings([]);
-      } else {
-        setListings((data || []) as unknown as Listing[]);
-      }
-      setLoading(false);
-    };
-
-    fetchListings();
-  }, [query, filters, sortBy, categories]);
-
-  // Apply ranking algorithm
-  const rankedListings = useMemo(() => {
-    if (!listings.length) return [];
-    
-    const withRanking = listings.map(listing => {
-      const medianKey = getMedianPriceKey(listing.brand, listing.model);
-      const medianPrice = medianKey && medianPrices ? medianPrices[medianKey] : null;
-      
-      const rankingResult = calculateListingRank({
-        sellerTrustScore: listing.seller?.trust_score || 50,
-        sellerVerified: listing.seller?.verified || false,
+  // Badges only for rows on screen, using server-provided median price
+  const rankedListings = useMemo<Listing[]>(() => {
+    const rows = data?.pages.flatMap((p) => p.items) ?? [];
+    return rows.map((listing) => ({
+      ...listing,
+      rankingResult: calculateListingRank({
+        sellerTrustScore: listing.seller_trust_score ?? 50,
+        sellerVerified: listing.seller_verified ?? false,
         title: listing.title,
         description: listing.description,
-        images: listing.images || [],
+        images: listing.images ?? [],
         brand: listing.brand,
         model: listing.model,
         condition: listing.condition,
         publishedAt: listing.published_at,
         createdAt: listing.created_at,
-        viewCount: listing.view_count || 0,
-        saveCount: listing.save_count || 0,
-        whatsappClickCount: listing.whatsapp_click_count || 0,
+        viewCount: listing.view_count ?? 0,
+        saveCount: listing.save_count ?? 0,
+        whatsappClickCount: listing.whatsapp_click_count ?? 0,
         price: listing.price_ils,
-        medianPrice,
-        featured: listing.featured || false,
-      });
-      
-      return {
-        ...listing,
-        rank: rankingResult.score,
-        rankingResult,
-      };
-    });
-    
-    // Sort by ranking score for "best-match"
-    if (sortBy === "best-match") {
-      withRanking.sort((a, b) => (b.rank || 0) - (a.rank || 0));
-    }
-    
-    return withRanking;
-  }, [listings, medianPrices, sortBy]);
+        medianPrice: listing.median_price,
+        featured: listing.featured ?? false,
+      }),
+    }));
+  }, [data]);
+
+  // Infinite scroll sentinel
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNextPage) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage();
+      },
+      { rootMargin: "400px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Update URL params
   const applyFilters = () => {
@@ -468,9 +334,9 @@ const SearchPage: React.FC = () => {
                         brand: listing.brand,
                         model: listing.model,
                         image: listing.images?.[0] || null,
-                        sellerVerified: listing.seller?.verified || false,
-                        sellerTrustScore: listing.seller?.trust_score,
-                        sellerName: listing.seller?.shop_name,
+                        sellerVerified: listing.seller_verified || false,
+                        sellerTrustScore: listing.seller_trust_score,
+                        sellerName: listing.seller_shop_name,
                       });
                     }
                   }}
@@ -549,6 +415,23 @@ const SearchPage: React.FC = () => {
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Pagination: infinite scroll sentinel + manual fallback */}
+        {!loading && rankedListings.length > 0 && (
+          <div ref={sentinelRef} className="flex flex-col items-center justify-center py-8 gap-2">
+            {isFetchingNextPage ? (
+              <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> جاري تحميل المزيد...
+              </span>
+            ) : hasNextPage ? (
+              <Button variant="outline" onClick={() => fetchNextPage()} className="min-h-[44px]">
+                حمّل المزيد ({total - rankedListings.length} متبقية)
+              </Button>
+            ) : (
+              <span className="text-xs text-muted-foreground">وصلت لنهاية النتائج</span>
+            )}
           </div>
         )}
       </div>
