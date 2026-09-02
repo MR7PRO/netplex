@@ -334,9 +334,9 @@ const SearchPage: React.FC = () => {
                         brand: listing.brand,
                         model: listing.model,
                         image: listing.images?.[0] || null,
-                        sellerVerified: listing.seller?.verified || false,
-                        sellerTrustScore: listing.seller?.trust_score,
-                        sellerName: listing.seller?.shop_name,
+                        sellerVerified: listing.seller_verified || false,
+                        sellerTrustScore: listing.seller_trust_score,
+                        sellerName: listing.seller_shop_name,
                       });
                     }
                   }}
