@@ -1,11 +1,9 @@
-import { buildIlikeOrFilter } from "@/lib/searchFilter";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { AskNetPlexButton } from "@/components/chat/AskNetPlexButton";
 import { CompareBar } from "@/components/compare/CompareBar";
-import { useCompare, type CompareListing } from "@/contexts/CompareContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Star, Camera } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search as SearchIcon, MapPin, Heart, Eye, GitCompareArrows, Camera, Loader2, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -29,41 +27,11 @@ import { ViewModeToggle, type ViewMode } from "@/components/search/ViewModeToggl
 import { NearMeChip } from "@/components/search/NearMeChip";
 import { useUserRegion } from "@/hooks/useUserRegion";
 import { ListingBadges } from "@/components/listings/ListingBadges";
-import { calculateListingRank, getMedianPriceKey, RankingResult } from "@/lib/ranking";
-import { useMedianPrices } from "@/hooks/useMedianPrices";
+import { calculateListingRank, RankingResult } from "@/lib/ranking";
+import { useSearchListings, useBrandModels, MAX_PRICE, type RankedListing } from "@/hooks/useSearchListings";
 import { SEO } from "@/components/seo/SEO";
-import type { Database } from "@/integrations/supabase/types";
 
-interface Listing {
-  id: string;
-  title: string;
-  description: string | null;
-  price_ils: number;
-  condition: string | null;
-  region: string;
-  images: string[];
-  view_count: number | null;
-  save_count: number | null;
-  whatsapp_click_count: number | null;
-  featured: boolean | null;
-  created_at: string | null;
-  published_at: string | null;
-  brand: string | null;
-  model: string | null;
-  seller: {
-    id: string;
-    shop_name: string | null;
-    verified: boolean | null;
-    trust_score: number | null;
-  } | null;
-  category: {
-    name_ar: string;
-    slug: string;
-  } | null;
-  // Computed fields
-  rank?: number;
-  rankingResult?: RankingResult;
-}
+type Listing = RankedListing & { rankingResult: RankingResult };
 
 interface Category {
   id: string;
