@@ -1305,6 +1305,7 @@ export type Database = {
       }
     }
     Functions: {
+      ar_norm: { Args: { t: string }; Returns: string }
       calculate_listing_rank: {
         Args: {
           p_created_at: string
