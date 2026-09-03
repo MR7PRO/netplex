@@ -9,7 +9,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { EnvErrorBoundary } from "@/components/EnvErrorBoundary";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
+import { lazyWithRetry as lazy } from "@/lib/lazyWithRetry";
 
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/Index"));
