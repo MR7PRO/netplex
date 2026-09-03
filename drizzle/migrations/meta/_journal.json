@@ -29,6 +29,13 @@
       "when": 1788373026713,
       "tag": "0003_search_rpc_arabic_normalization_typo_tolerance",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788428250757,
+      "tag": "0004_deals_center_v2_guards_and_notifications",
+      "breakpoints": true
     }
   ]
 }
