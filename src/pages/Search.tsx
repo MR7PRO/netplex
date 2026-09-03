@@ -170,7 +170,7 @@ const SearchPage: React.FC = () => {
     if (filters.region) params.set("region", filters.region);
     if (filters.conditions.length > 0) params.set("condition", filters.conditions.join(","));
     if (filters.priceRange[0] > 0) params.set("minPrice", filters.priceRange[0].toString());
-    if (filters.priceRange[1] < 50000) params.set("maxPrice", filters.priceRange[1].toString());
+    if (filters.priceRange[1] < MAX_PRICE) params.set("maxPrice", filters.priceRange[1].toString());
     if (filters.brand) params.set("brand", filters.brand);
     if (filters.model) params.set("model", filters.model);
     if (sortBy !== "best-match") params.set("sort", sortBy);
@@ -184,7 +184,7 @@ const SearchPage: React.FC = () => {
       category: "",
       region: "",
       conditions: [],
-      priceRange: [0, 50000],
+      priceRange: [0, MAX_PRICE],
       brand: "",
       model: "",
     });
@@ -268,10 +268,13 @@ const SearchPage: React.FC = () => {
         </div>
 
         {/* Results count */}
-        <div className="mb-4">
-          <p className="text-muted-foreground">
-            {loading ? "جاري البحث..." : `${rankedListings.length} نتيجة`}
+        <div className="mb-4 flex items-center gap-2">
+          <p className="text-muted-foreground" aria-live="polite">
+            {loading ? "جاري البحث..." : isError ? "تعذّر تحميل النتائج" : `${total} نتيجة`}
           </p>
+          {isFetching && !loading && !isFetchingNextPage && (
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden />
+          )}
         </div>
 
         {/* Listings Grid */}
@@ -288,6 +291,14 @@ const SearchPage: React.FC = () => {
               </div>
             ))}
           </div>
+        ) : isError ? (
+          <EmptyState
+            icon={AlertTriangle}
+            title="حدث خطأ أثناء البحث"
+            description="تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى."
+            actionLabel="إعادة المحاولة"
+            onAction={() => refetch()}
+          />
         ) : rankedListings.length === 0 ? (
           <EmptyState
             icon={SearchIcon}
