@@ -361,6 +361,7 @@ export type Database = {
           amount_ils: number | null
           buyer_id: string
           created_at: string
+          deal_id: string | null
           description: string
           id: string
           listing_id: string
@@ -376,6 +377,7 @@ export type Database = {
           amount_ils?: number | null
           buyer_id: string
           created_at?: string
+          deal_id?: string | null
           description: string
           id?: string
           listing_id: string
@@ -391,6 +393,7 @@ export type Database = {
           amount_ils?: number | null
           buyer_id?: string
           created_at?: string
+          deal_id?: string | null
           description?: string
           id?: string
           listing_id?: string
@@ -401,7 +404,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "disputes_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       internal_config: {
         Row: {
