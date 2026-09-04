@@ -13,9 +13,11 @@ import { useNavigate } from "react-router-dom";
 interface Props {
   listingId: string;
   sellerId: string;
+  dealId?: string | null;
+  onOpened?: (disputeId: string) => void;
 }
 
-const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId }) => {
+const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId, dealId, onOpened }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
