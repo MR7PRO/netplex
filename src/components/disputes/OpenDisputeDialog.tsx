@@ -13,9 +13,11 @@ import { useNavigate } from "react-router-dom";
 interface Props {
   listingId: string;
   sellerId: string;
+  dealId?: string | null;
+  onOpened?: (disputeId: string) => void;
 }
 
-const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId }) => {
+const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId, dealId, onOpened }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -40,6 +42,7 @@ const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId }) => {
         listing_id: listingId,
         buyer_id: user.id,
         seller_id: sellerId,
+        deal_id: dealId ?? null,
         title: title.trim(),
         description: description.trim(),
         amount_ils: amount ? Number(amount) : null,
@@ -53,7 +56,10 @@ const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId }) => {
     }
     toast({ title: "تم فتح الشكوى", description: "سيتواصل الأدمن معك قريباً" });
     setOpen(false);
-    if (data?.id) navigate(`/disputes/${data.id}`);
+    if (data?.id) {
+      onOpened?.(data.id);
+      navigate(`/disputes/${data.id}`);
+    }
   };
 
   return (
