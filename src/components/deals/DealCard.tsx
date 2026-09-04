@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ShoppingBag, Store } from "lucide-react";
-import SignedImage from "@/components/SignedImage";
+import { SignedImage } from "@/components/SignedImage";
 import {
   type Deal,
   type DealRole,
@@ -31,7 +31,7 @@ const DealCard: React.FC<{ deal: DealWithListing; role: DealRole }> = ({ deal, r
         <CardContent className="p-3 sm:p-4 flex items-center gap-3">
           <div className="h-16 w-16 rounded-lg overflow-hidden bg-muted shrink-0">
             {img ? (
-              <SignedImage path={img} alt={deal.listings?.title || "منتج"} className="h-full w-full object-cover" />
+              <SignedImage src={img} width={64} height={64} alt={deal.listings?.title || "منتج"} className="h-full w-full object-cover" />
             ) : (
               <div className="h-full w-full flex items-center justify-center text-muted-foreground">
                 <ShoppingBag className="h-6 w-6" />
