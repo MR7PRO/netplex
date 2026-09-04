@@ -42,6 +42,7 @@ const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId, dealId, onOpe
         listing_id: listingId,
         buyer_id: user.id,
         seller_id: sellerId,
+        deal_id: dealId ?? null,
         title: title.trim(),
         description: description.trim(),
         amount_ils: amount ? Number(amount) : null,
@@ -55,7 +56,10 @@ const OpenDisputeDialog: React.FC<Props> = ({ listingId, sellerId, dealId, onOpe
     }
     toast({ title: "تم فتح الشكوى", description: "سيتواصل الأدمن معك قريباً" });
     setOpen(false);
-    if (data?.id) navigate(`/disputes/${data.id}`);
+    if (data?.id) {
+      onOpened?.(data.id);
+      navigate(`/disputes/${data.id}`);
+    }
   };
 
   return (
