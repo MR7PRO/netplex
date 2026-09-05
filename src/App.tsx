@@ -43,6 +43,7 @@ const Install = lazy(() => import("./pages/Install"));
 const ImageSearch = lazy(() => import("./pages/ImageSearch"));
 const Auctions = lazy(() => import("./pages/Auctions"));
 const Deals = lazy(() => import("./pages/Deals"));
+const DealDetail = lazy(() => import("./pages/DealDetail"));
 
 // Admin pages
 const AdminOverview = lazy(() => import("./pages/admin/Overview"));
@@ -117,6 +118,7 @@ const App = () => (
                     <Route path="/image-search" element={<ImageSearch />} />
                     <Route path="/auctions" element={<Auctions />} />
                     <Route path="/deals" element={<Deals />} />
+                    <Route path="/deals/:dealId" element={<DealDetail />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
