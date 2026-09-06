@@ -1342,6 +1342,33 @@ export type Database = {
           sample_count: number
         }[]
       }
+      get_recommendations: {
+        Args: { p_limit?: number; p_region?: string; p_viewed_ids?: string[] }
+        Returns: {
+          brand: string
+          category_id: string
+          condition: Database["public"]["Enums"]["item_condition"]
+          created_at: string
+          discount_end_at: string
+          discount_percent: number
+          featured: boolean
+          id: string
+          images: string[]
+          model: string
+          price_ils: number
+          published_at: string
+          reason: string
+          reason_value: string
+          region: string
+          save_count: number
+          score: number
+          seller_id: string
+          seller_verified: boolean
+          stock_quantity: number
+          title: string
+          view_count: number
+        }[]
+      }
       get_seller_id: { Args: { _user_id: string }; Returns: string }
       get_seller_whatsapp: { Args: { p_seller_id: string }; Returns: string }
       has_role: {

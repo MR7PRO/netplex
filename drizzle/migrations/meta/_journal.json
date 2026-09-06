@@ -36,6 +36,13 @@
       "when": 1788428250757,
       "tag": "0004_deals_center_v2_guards_and_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788702980391,
+      "tag": "0005_personalized_recommendations_rpc",
+      "breakpoints": true
     }
   ]
 }
