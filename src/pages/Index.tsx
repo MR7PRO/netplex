@@ -8,6 +8,7 @@ import { CategoryChips } from "@/components/home/CategoryChips";
 import { RecentlyViewedSection } from "@/components/home/RecentlyViewedSection";
 import { HeroRotator } from "@/components/home/HeroRotator";
 import { VerifiedSellersSection } from "@/components/home/VerifiedSellersSection";
+import { RecommendedSection } from "@/components/home/RecommendedSection";
 import { FeatureShortcuts } from "@/components/home/FeatureShortcuts";
 import { HomeSearchBar } from "@/components/home/HomeSearchBar";
 import { SEO } from "@/components/seo/SEO";
@@ -254,6 +255,9 @@ const Index: React.FC = () => {
 
       {/* Verified Sellers */}
       <VerifiedSellersSection />
+
+      {/* Personalized recommendations */}
+      <RecommendedSection />
 
       {/* Featured Listings - Carousel with Arrows */}
       {(featuredListings && featuredListings.length > 0) && (
