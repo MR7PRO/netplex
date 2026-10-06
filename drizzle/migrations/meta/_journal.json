@@ -43,6 +43,20 @@
       "when": 1788702980391,
       "tag": "0005_personalized_recommendations_rpc",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791284463453,
+      "tag": "0006_phase4_recommendations_region_fix",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791284618461,
+      "tag": "0007_search_region_key_match",
+      "breakpoints": true
     }
   ]
 }

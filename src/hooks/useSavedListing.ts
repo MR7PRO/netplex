@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { haptic } from "@/lib/haptics";
@@ -11,6 +12,7 @@ export function useSavedListing(listingId?: string) {
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const qc = useQueryClient();
 
   useEffect(() => {
     if (!user || !listingId) {
@@ -68,7 +70,9 @@ export function useSavedListing(listingId?: string) {
       }
     }
     setLoading(false);
-  }, [user, listingId, isSaved, loading]);
+    // Saved listings feed the personalized recommendations.
+    qc.invalidateQueries({ queryKey: ["recommendations"] });
+  }, [user, listingId, isSaved, loading, qc]);
 
   return { isSaved, loading, toggle };
 }

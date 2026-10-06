@@ -10,7 +10,8 @@ export type RecommendationReason =
   | "verified_seller"
   | "good_price"
   | "fresh"
-  | "trending";
+  | "trending"
+  | "none";
 
 export interface RecommendedListing {
   id: string;
@@ -38,6 +39,13 @@ export interface RecommendedListing {
 const MAX_PER_SELLER = 2;
 const MAX_PER_CATEGORY = 4;
 const MAX_PER_PRICE_BAND = 4;
+const MAX_PER_MODEL = 2;
+
+function modelKey(c: RecommendedListing): string | null {
+  const b = c.brand?.trim().toLowerCase();
+  const m = c.model?.trim().toLowerCase();
+  return b && m ? `${b}|${m}` : null;
+}
 
 function priceBand(price: number): string {
   if (price < 200) return "xs";
@@ -61,6 +69,7 @@ export function diversifyRecommendations(
   const sellerCount = new Map<string, number>();
   const catCount = new Map<string, number>();
   const bandCount = new Map<string, number>();
+  const modelCount = new Map<string, number>();
 
   for (const c of candidates) {
     if (picked.length >= limit) break;
@@ -69,13 +78,16 @@ export function diversifyRecommendations(
     const s = sellerCount.get(c.seller_id) ?? 0;
     const k = catCount.get(cat) ?? 0;
     const b = bandCount.get(band) ?? 0;
-    if (s >= MAX_PER_SELLER || k >= MAX_PER_CATEGORY || b >= MAX_PER_PRICE_BAND) {
+    const mk = modelKey(c);
+    const mc = mk ? modelCount.get(mk) ?? 0 : 0;
+    if (s >= MAX_PER_SELLER || k >= MAX_PER_CATEGORY || b >= MAX_PER_PRICE_BAND || mc >= MAX_PER_MODEL) {
       skipped.push(c);
       continue;
     }
     sellerCount.set(c.seller_id, s + 1);
     catCount.set(cat, k + 1);
     bandCount.set(band, b + 1);
+    if (mk) modelCount.set(mk, mc + 1);
     picked.push(c);
   }
 
@@ -83,7 +95,11 @@ export function diversifyRecommendations(
     if (picked.length >= limit) break;
     const s = sellerCount.get(c.seller_id) ?? 0;
     if (s >= MAX_PER_SELLER + 1) continue; // hard cap on same-seller repetition
+    const mk = modelKey(c);
+    const mc = mk ? modelCount.get(mk) ?? 0 : 0;
+    if (mc >= MAX_PER_MODEL) continue; // never repeat the same model 3+ times
     sellerCount.set(c.seller_id, s + 1);
+    if (mk) modelCount.set(mk, mc + 1);
     picked.push(c);
   }
 
@@ -103,7 +119,7 @@ export function recommendationReasonLabel(
     case "viewed_category":
       return value ? `لأنك تصفّحت ${value}` : "من قسم يهمّك";
     case "popular_in_region":
-      return value ? `رائج في ${value}` : "رائج في منطقتك";
+      return value ? `متوفر في منطقتك (${value})` : "متوفر في منطقتك";
     case "verified_seller":
       return "من بائع موثّق";
     case "good_price":
@@ -112,6 +128,8 @@ export function recommendationReasonLabel(
       return "أُضيف حديثاً";
     case "trending":
       return "رائج الآن";
+    case "none":
+      return null;
     default:
       return null;
   }
