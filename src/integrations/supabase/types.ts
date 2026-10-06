@@ -1396,6 +1396,7 @@ export type Database = {
         Returns: Json
       }
       redeem_referral_code: { Args: { p_code: string }; Returns: Json }
+      region_key: { Args: { t: string }; Returns: string }
       search_listings_ranked: {
         Args: {
           p_brand?: string
