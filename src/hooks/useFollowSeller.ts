@@ -79,6 +79,7 @@ export function useFollowSeller(sellerId: string | undefined) {
       brandToast.success(isFollowing ? "تم إلغاء المتابعة" : "تمت المتابعة");
       haptic("success");
       qc.invalidateQueries({ queryKey: ["followed-sellers-feed"] });
+      qc.invalidateQueries({ queryKey: ["recommendations"] });
     },
     onSettled: () => {
       qc.invalidateQueries({ queryKey: followKey });
