@@ -16,4 +16,4 @@
 4. **Dev-only console warnings:** `forwardRef` warnings from `react-helmet-async`/`next-themes` wrappers in `App`. Not production-breaking.
 5. **No TODO/FIXME** markers in `src` or `supabase/functions`; no stray `console.log` in `src`.
 6. **Bundle:** build passes, with a large-chunk warning on the main bundle. Possible future improvement, not a blocker.
-7. **Not verifiable here:** authenticated personalization with real history (the signed-in preview account has no saved items, follows, or views). That path was checked at the SQL level using viewed IDs.
+7. **Authenticated personalization verified (2026-10-07):** with a temporary save and follow on the signed-in account, the RPC returned `viewed_brand`, `followed_seller`, `viewed_category` and regional reasons. The saved item was excluded, and the test rows were removed afterwards. The signed-in homepage section and the region search (`/search?region=khan-younis`) render on mobile.
