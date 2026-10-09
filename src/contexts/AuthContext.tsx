@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if seller
       const { data: sellerData } = await supabase
         .from("sellers")
-        .select("*")
+        .select("id, user_id, type, shop_name, verified, trust_score, region, bio, created_at, updated_at, logo_url, cover_url")
         .eq("user_id", userId)
         .maybeSingle();
 

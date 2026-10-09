@@ -175,7 +175,7 @@ const ListingDetailsPage: React.FC = () => {
       // Fetch seller
       const { data: sellerData } = await supabase
         .from("sellers")
-        .select("*")
+        .select("id, user_id, type, shop_name, verified, trust_score, region, bio, created_at, updated_at, logo_url, cover_url")
         .eq("id", listingData.seller_id)
         .single();
 

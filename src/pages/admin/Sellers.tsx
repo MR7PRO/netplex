@@ -59,7 +59,7 @@ export default function AdminSellers() {
     // Fetch sellers
     const { data: sellersData, error } = await supabase
       .from("sellers")
-      .select("id, user_id, shop_name, region, type, verified, trust_score, created_at, whatsapp, bio")
+      .select("id, user_id, shop_name, region, type, verified, trust_score, created_at, bio")
       .order("created_at", { ascending: false });
 
     if (!error && sellersData) {
