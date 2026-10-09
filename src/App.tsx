@@ -85,7 +85,7 @@ const App = () => (
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/listing/:id" element={<ListingDetails />} />
-                    <Route path="/sell/new" element={<SellerSubmission />} />
+                    <Route path="/sell/new" element={<ProtectedRoute><SellerSubmission /></ProtectedRoute>} />
                     <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={["admin", "sub_admin"]}><SellerDashboard /></ProtectedRoute>} />
                     <Route path="/seller/my-store" element={<ProtectedRoute allowedRoles={["admin", "sub_admin"]}><MyStore /></ProtectedRoute>} />
                     <Route path="/seller/:id" element={<SellerPage />} />
@@ -99,16 +99,16 @@ const App = () => (
                     <Route path="/admin/permissions" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPermissions /></ProtectedRoute>} />
                     <Route path="/admin/verifications" element={<ProtectedRoute allowedRoles={["admin"]}><AdminVerifications /></ProtectedRoute>} />
                     <Route path="/admin/disputes" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDisputes /></ProtectedRoute>} />
-                    <Route path="/disputes" element={<Disputes />} />
-                    <Route path="/disputes/:id" element={<DisputeDetail />} />
-                    <Route path="/activity" element={<Activity />} />
-                    <Route path="/messages" element={<Messages />} />
-                    <Route path="/messages/:id" element={<MessageThread />} />
+                    <Route path="/disputes" element={<ProtectedRoute><Disputes /></ProtectedRoute>} />
+                    <Route path="/disputes/:id" element={<ProtectedRoute><DisputeDetail /></ProtectedRoute>} />
+                    <Route path="/activity" element={<ProtectedRoute><Activity /></ProtectedRoute>} />
+                    <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+                    <Route path="/messages/:id" element={<ProtectedRoute><MessageThread /></ProtectedRoute>} />
                     <Route path="/daily-deals" element={<DailyDeals />} />
-                    <Route path="/following" element={<FollowingFeed />} />
+                    <Route path="/following" element={<ProtectedRoute><FollowingFeed /></ProtectedRoute>} />
                     <Route path="/cart" element={<Cart />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/safety" element={<Safety />} />
                     <Route path="/terms" element={<Terms />} />
@@ -117,8 +117,8 @@ const App = () => (
                     <Route path="/install" element={<Install />} />
                     <Route path="/image-search" element={<ImageSearch />} />
                     <Route path="/auctions" element={<Auctions />} />
-                    <Route path="/deals" element={<Deals />} />
-                    <Route path="/deals/:dealId" element={<DealDetail />} />
+                    <Route path="/deals" element={<ProtectedRoute><Deals /></ProtectedRoute>} />
+                    <Route path="/deals/:dealId" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

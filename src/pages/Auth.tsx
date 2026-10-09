@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,9 @@ const Auth: React.FC = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signIn, signUp, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
+  const returnTo = from && from.startsWith("/") && !from.startsWith("//") ? from : "/";
   const { toast } = useToast();
 
   const handleGoogleSignIn = async () => {
@@ -44,7 +47,7 @@ const Auth: React.FC = () => {
         formData.get("password") as string
       );
       toast({ title: "تم تسجيل الدخول بنجاح" });
-      navigate("/");
+      navigate(returnTo, { replace: true });
     } catch (error: unknown) {
       toast({ 
         title: "خطأ في تسجيل الدخول", 
