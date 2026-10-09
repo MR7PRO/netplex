@@ -126,21 +126,22 @@ const MyStorePage: React.FC = () => {
       if (!seller) return;
       setLoading(true);
 
-      const [listingsRes, catsRes, sellerRes] = await Promise.all([
+      const [listingsRes, catsRes, sellerRes, waRes] = await Promise.all([
         supabase.from("listings").select("*").eq("seller_id", seller.id).order("published_at", { ascending: false }),
         supabase.from("categories").select("id, name_ar").order("sort_order"),
-        supabase.from("sellers").select("id, shop_name, region, whatsapp, bio, type").eq("id", seller.id).maybeSingle(),
+        supabase.from("sellers").select("id, shop_name, region, bio, type").eq("id", seller.id).maybeSingle(),
+        supabase.rpc("get_seller_whatsapp", { p_seller_id: seller.id }),
       ]);
 
       const listingsData = (listingsRes.data || []) as Listing[];
       setListings(listingsData);
       setCategories(catsRes.data || []);
       if (sellerRes.data) {
-        setSellerInfo(sellerRes.data as SellerInfo);
+        setSellerInfo({ ...sellerRes.data, whatsapp: (waRes.data as string | null) ?? null } as SellerInfo);
         setStoreForm({
           shop_name: sellerRes.data.shop_name || "",
           region: sellerRes.data.region || "",
-          whatsapp: sellerRes.data.whatsapp || "",
+          whatsapp: (waRes.data as string | null) || "",
           bio: sellerRes.data.bio || "",
         });
       }

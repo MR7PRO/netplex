@@ -57,6 +57,13 @@
       "when": 1791284618461,
       "tag": "0007_search_region_key_match",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791550393609,
+      "tag": "0008_phase5_protect_account_columns",
+      "breakpoints": true
     }
   ]
 }

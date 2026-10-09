@@ -19,6 +19,10 @@ export const getAuthErrorMessage = (error: unknown): string => {
     'Auth session missing!': 'انتهت جلسة تسجيل الدخول، يرجى تسجيل الدخول مجدداً',
   };
   
+  if (/weak|pwned|easy to guess/i.test(message)) return 'كلمة المرور ضعيفة أو مسرّبة، اختر كلمة أقوى';
+  if (/failed to fetch|network/i.test(message)) return 'تعذر الاتصال، تأكد من الإنترنت وحاول مجدداً';
+  if (/refresh token/i.test(message)) return 'انتهت جلسة تسجيل الدخول، يرجى تسجيل الدخول مجدداً';
+
   // Return mapped message or generic error for unknown messages
   return errorMap[message] || 'حدث خطأ، يرجى المحاولة لاحقاً';
 };

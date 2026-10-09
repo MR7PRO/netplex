@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+
+// Device-local keys that hold the previous user's private browsing state.
+const PRIVATE_LOCAL_KEYS = ["netplex_recently_viewed"];
 
 interface Profile {
   id: string;
@@ -18,7 +22,7 @@ interface Seller {
   verified: boolean;
   trust_score: number;
   region: string;
-  whatsapp: string | null;
+  whatsapp?: string | null;
 }
 
 type AppRole = "admin" | "moderator" | "user" | "sub_admin";
@@ -57,6 +61,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const [userRole, setUserRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const lastUserIdRef = React.useRef<string | null>(null);
+
+  /** Wipe every trace of the previous user: cached queries, realtime channels, local private state. */
+  const clearPrivateState = () => {
+    queryClient.clear();
+    supabase.removeAllChannels();
+    try { PRIVATE_LOCAL_KEYS.forEach((k) => localStorage.removeItem(k)); } catch { /* ignore */ }
+    setProfile(null);
+    setSeller(null);
+    setIsAdmin(false);
+    setUserRole(null);
+  };
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -85,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if seller
       const { data: sellerData } = await supabase
         .from("sellers")
-        .select("*")
+        .select("id, user_id, type, shop_name, verified, trust_score, region, bio, created_at, updated_at, logo_url, cover_url")
         .eq("user_id", userId)
         .maybeSingle();
 
@@ -104,36 +121,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Set up auth state listener BEFORE checking session
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    let active = true;
 
-        if (session?.user) {
-          // Use setTimeout to avoid potential race conditions
-          setTimeout(() => fetchProfile(session.user.id), 0);
-        } else {
-          setProfile(null);
-          setSeller(null);
-          setIsAdmin(false);
-          setUserRole(null);
-        }
-        setLoading(false);
+    // Resolve the session AND the user's role before releasing `loading`,
+    // so protected pages never render (or redirect) on a half-known identity.
+    const applySession = async (next: Session | null) => {
+      const nextId = next?.user?.id ?? null;
+      if (lastUserIdRef.current && lastUserIdRef.current !== nextId) {
+        // Signed out, or a different account signed in on this device.
+        clearPrivateState();
       }
-    );
+      lastUserIdRef.current = nextId;
+      setSession(next);
+      setUser(next?.user ?? null);
+      if (next?.user) {
+        await fetchProfile(next.user.id);
+      }
+      if (active) setLoading(false);
+    };
 
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
+      // Token refreshes keep the same user — no need to refetch or clear.
+      if (event === "TOKEN_REFRESHED" && next?.user?.id === lastUserIdRef.current) {
+        setSession(next);
+        return;
       }
-      setLoading(false);
+      // Defer DB calls out of the auth callback to avoid deadlocks.
+      setTimeout(() => { void applySession(next); }, 0);
     });
 
-    return () => subscription.unsubscribe();
+    supabase.auth.getSession().then(({ data: { session: initial } }) => {
+      void applySession(initial);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const signUp = async (email: string, password: string, name: string, phone?: string) => {
@@ -165,13 +190,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    // Clear local state even if the server call fails (e.g. expired refresh token).
+    lastUserIdRef.current = null;
+    clearPrivateState();
     setUser(null);
     setSession(null);
-    setProfile(null);
-    setSeller(null);
-    setIsAdmin(false);
-    setUserRole(null);
+    if (error) throw error;
   };
 
   return (
