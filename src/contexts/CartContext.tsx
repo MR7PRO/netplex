@@ -1,4 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+
+/** Cart is stored per account so a different person on the same device never sees it. */
+export const cartStorageKey = (userId: string | null | undefined) =>
+  `netplex-cart:${userId ?? "guest"}`;
+
+const readCart = (key: string): CartItem[] => {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+};
 
 interface CartItem {
   id: string;
@@ -30,14 +44,23 @@ export const useCart = () => {
 };
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem("netplex-cart");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user, loading } = useAuth();
+  const key = cartStorageKey(user?.id);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  // Swap carts whenever the signed-in account changes (sign-in, sign-out, switch).
+  useEffect(() => {
+    if (loading) return;
+    try { localStorage.removeItem("netplex-cart"); } catch { /* legacy shared key */ }
+    setItems(readCart(key));
+    setLoadedKey(key);
+  }, [key, loading]);
 
   useEffect(() => {
-    localStorage.setItem("netplex-cart", JSON.stringify(items));
-  }, [items]);
+    if (loadedKey !== key) return; // never write one account's cart under another's key
+    localStorage.setItem(key, JSON.stringify(items));
+  }, [items, key, loadedKey]);
 
   const addItem = (item: CartItem) => {
     setItems((prev) => {

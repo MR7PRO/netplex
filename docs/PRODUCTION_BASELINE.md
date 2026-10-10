@@ -17,3 +17,9 @@
 5. **No TODO/FIXME** markers in `src` or `supabase/functions`; no stray `console.log` in `src`.
 6. **Bundle:** build passes, with a large-chunk warning on the main bundle. Possible future improvement, not a blocker.
 7. **Authenticated personalization verified (2026-10-07):** with a temporary save and follow on the signed-in account, the RPC returned `viewed_brand`, `followed_seller`, `viewed_category` and regional reasons. The saved item was excluded, and the test rows were removed afterwards. The signed-in homepage section and the region search (`/search?region=khan-younis`) render on mobile.
+
+## Phase 5 security closure (2026-10-10)
+- Fixed: protected-column guards on sellers/profiles were SECURITY DEFINER and never enforced; now SECURITY INVOKER (migration 0009). New ID-verification requests are forced to `pending`.
+- Fixed: cart is now per account; guest cart cleared on sign-out.
+- Verified live: admin opens /admin directly; signed-out private routes redirect to /auth; cart hidden after sign-out; phone column and ID files unreadable to non-owners.
+- Open: live non-admin attack test needs a non-admin test account.
