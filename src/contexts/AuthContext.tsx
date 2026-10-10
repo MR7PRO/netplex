@@ -68,7 +68,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const clearPrivateState = () => {
     queryClient.clear();
     supabase.removeAllChannels();
-    try { PRIVATE_LOCAL_KEYS.forEach((k) => localStorage.removeItem(k)); } catch { /* ignore */ }
+    try {
+      PRIVATE_LOCAL_KEYS.forEach((k) => localStorage.removeItem(k));
+      // Guest cart must not follow into the next account on this device.
+      localStorage.removeItem("netplex-cart:guest");
+    } catch { /* ignore */ }
     setProfile(null);
     setSeller(null);
     setIsAdmin(false);
