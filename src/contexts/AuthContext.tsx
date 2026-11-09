@@ -63,6 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
   const lastUserIdRef = React.useRef<string | null>(null);
+  const sessionRevisionRef = React.useRef(0);
 
   /** Wipe every trace of the previous user: cached queries, realtime channels, local private state. */
   const clearPrivateState = () => {
@@ -80,6 +81,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const fetchProfile = async (userId: string) => {
+    const revision = sessionRevisionRef.current;
+    const isCurrent = () => revision === sessionRevisionRef.current && lastUserIdRef.current === userId;
     try {
       // Fetch profile
       const { data: profileData } = await supabase
@@ -88,20 +91,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq("id", userId)
         .maybeSingle();
 
-      if (profileData) {
-        setProfile(profileData as Profile);
-      }
-
       // Fetch role from user_roles table
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
         .maybeSingle();
-
-      const role = (roleData?.role as AppRole) ?? "user";
-      setUserRole(role);
-      setIsAdmin(role === "admin");
 
       // Check if seller
       const { data: sellerData } = await supabase
@@ -110,9 +105,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (sellerData) {
-        setSeller(sellerData as Seller);
-      }
+      // An earlier account's delayed response must never restore its identity.
+      if (!isCurrent()) return;
+      const role = (roleData?.role as AppRole) ?? "user";
+      setProfile(profileData as Profile | null);
+      setUserRole(role);
+      setIsAdmin(role === "admin");
+      setSeller(sellerData as Seller | null);
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
@@ -129,9 +128,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Resolve the session AND the user's role before releasing `loading`,
     // so protected pages never render (or redirect) on a half-known identity.
-    const applySession = async (next: Session | null) => {
+    const applySession = async (next: Session | null, revision: number) => {
+      if (!active || revision !== sessionRevisionRef.current) return;
       const nextId = next?.user?.id ?? null;
-      if (lastUserIdRef.current && lastUserIdRef.current !== nextId) {
+      setLoading(true);
+      if (lastUserIdRef.current !== nextId) {
         // Signed out, or a different account signed in on this device.
         clearPrivateState();
       }
@@ -141,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (next?.user) {
         await fetchProfile(next.user.id);
       }
-      if (active) setLoading(false);
+      if (active && revision === sessionRevisionRef.current) setLoading(false);
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
@@ -150,16 +151,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(next);
         return;
       }
+      // Invalidate in-flight identity requests before the deferred callback runs.
+      const revision = ++sessionRevisionRef.current;
+      setLoading(true);
       // Defer DB calls out of the auth callback to avoid deadlocks.
-      setTimeout(() => { void applySession(next); }, 0);
+      setTimeout(() => { void applySession(next, revision); }, 0);
     });
 
+    const initialRevision = sessionRevisionRef.current;
     supabase.auth.getSession().then(({ data: { session: initial } }) => {
-      void applySession(initial);
+      void applySession(initial, initialRevision);
     });
 
     return () => {
       active = false;
+      sessionRevisionRef.current++;
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -193,12 +199,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    // Clear local state even if the server call fails (e.g. expired refresh token).
+    // Hide private data and invalidate pending identity requests immediately.
+    sessionRevisionRef.current++;
     lastUserIdRef.current = null;
     clearPrivateState();
     setUser(null);
     setSession(null);
+    setLoading(false);
+    const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
 

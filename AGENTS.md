@@ -10,3 +10,4 @@
 - Private pages are wrapped in `ProtectedRoute` in `App.tsx`; AuthContext releases `loading` only after role is fetched and clears query cache/realtime/local private keys on sign-out or account switch. — Why: no flash redirects or cross-account data leaks.
 - Column-guard trigger functions must be SECURITY INVOKER; inside SECURITY DEFINER `current_user` is the owner and the guard silently never fires. — Why: proven bypass fixed in migration 0009.
 - The inquiry cart is stored per account (`cartStorageKey(userId)`); the guest cart is wiped on sign-out/account switch. — Why: no cart leakage between people sharing a device.
+- Identity requests are revision-gated and private routes stay loading during session changes; cart values are hidden until their account key is loaded. — Why: delayed responses and pre-effect renders must not expose an earlier account.

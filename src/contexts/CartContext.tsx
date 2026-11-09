@@ -48,6 +48,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const key = cartStorageKey(user?.id);
   const [loadedKey, setLoadedKey] = useState<string | null>(null);
   const [items, setItems] = useState<CartItem[]>([]);
+  // Effects run after render: never expose a previous cart during that frame.
+  const visibleItems = !loading && loadedKey === key ? items : [];
 
   // Swap carts whenever the signed-in account changes (sign-in, sign-out, switch).
   useEffect(() => {
@@ -63,6 +65,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [items, key, loadedKey]);
 
   const addItem = (item: CartItem) => {
+    if (loading || loadedKey !== key) return;
     setItems((prev) => {
       if (prev.some((i) => i.id === item.id)) return prev;
       return [...prev, item];
@@ -70,22 +73,24 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const removeItem = (id: string) => {
+    if (loading || loadedKey !== key) return;
     setItems((prev) => prev.filter((i) => i.id !== id));
   };
 
   const clearCart = () => {
+    if (loading || loadedKey !== key) return;
     setItems([]);
   };
 
-  const isInCart = (id: string) => items.some((i) => i.id === id);
+  const isInCart = (id: string) => visibleItems.some((i) => i.id === id);
 
-  const itemCount = items.length;
-  const totalPrice = items.reduce((sum, item) => sum + item.price_ils, 0);
+  const itemCount = visibleItems.length;
+  const totalPrice = visibleItems.reduce((sum, item) => sum + item.price_ils, 0);
 
   return (
     <CartContext.Provider
       value={{
-        items,
+        items: visibleItems,
         addItem,
         removeItem,
         clearCart,
