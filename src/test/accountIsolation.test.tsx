@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React from "react";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,7 +8,6 @@ const mocks = vi.hoisted(() => ({
   listener: null as null | ((event: string, session: unknown) => void),
   lookup: vi.fn(),
   removeAllChannels: vi.fn(),
-  auth: { user: { id: "account-a" }, loading: false } as { user: { id: string } | null; loading: boolean },
 }));
 
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {
