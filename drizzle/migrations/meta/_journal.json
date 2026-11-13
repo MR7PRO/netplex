@@ -71,6 +71,13 @@
       "when": 1791618921908,
       "tag": "0009_phase5_fix_guard_execution_context",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794574111360,
+      "tag": "0010_tighten_public_read_policies",
+      "breakpoints": true
     }
   ]
 }
