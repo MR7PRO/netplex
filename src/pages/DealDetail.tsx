@@ -193,6 +193,7 @@ const DealDetail: React.FC = () => {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-6 max-w-3xl space-y-4">
+          <h1 className="sr-only">تفاصيل صفقة ضمان الاستلام</h1>
           <Skeleton className="h-8 w-40" />
           <Skeleton className="h-28 w-full rounded-lg" />
           <Skeleton className="h-48 w-full rounded-lg" />
@@ -206,6 +207,7 @@ const DealDetail: React.FC = () => {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-10 max-w-3xl">
+          <h1 className="sr-only">تفاصيل صفقة ضمان الاستلام</h1>
           <EmptyState
             icon={ShieldCheck}
             title="الصفقة غير موجودة"

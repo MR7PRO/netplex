@@ -9,7 +9,7 @@ const AboutPage: React.FC = () => {
       <SEO title="عن NetPlex — سوق غزة الموثوق" description="تعرّف على رؤية NetPlex كمنصة مُدارة لبيع وشراء الإلكترونيات والسلع في قطاع غزة بثقة وأمان." path="/about" />
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">عن نت بلكس</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">عن نت بلكس: سوق غزة الموثوق للإلكترونيات</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             سوق إلكتروني فلسطيني يهدف لربط البائعين والمشترين في قطاع غزة بطريقة آمنة وموثوقة
           </p>

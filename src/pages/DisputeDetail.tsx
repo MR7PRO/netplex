@@ -123,10 +123,10 @@ const DisputeDetail: React.FC = () => {
   if (!user) return <Navigate to="/auth" replace />;
 
   if (loading) {
-    return <Layout><div className="py-20 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto" /></div></Layout>;
+    return <Layout><div className="py-20 text-center"><h1 className="sr-only">تفاصيل الشكوى</h1><Loader2 className="h-6 w-6 animate-spin mx-auto" /></div></Layout>;
   }
   if (!dispute) {
-    return <Layout><div className="py-20 text-center text-muted-foreground">الشكوى غير موجودة</div></Layout>;
+    return <Layout><div className="py-20 text-center text-muted-foreground"><h1 className="text-lg font-semibold">الشكوى غير موجودة</h1></div></Layout>;
   }
 
   const isParticipant = dispute.buyer_id === user.id || isAdmin || dispute.seller_id; // RLS handles real check
@@ -139,10 +139,10 @@ const DisputeDetail: React.FC = () => {
           <CardHeader>
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <AlertTriangle className="h-5 w-5 text-primary" />
-                  {dispute.title}
-                </CardTitle>
+                <h1 className="flex items-center gap-2 text-lg font-semibold leading-none tracking-tight">
+                  <AlertTriangle className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <span>شكوى: {dispute.title || "تفاصيل الشكوى"}</span>
+                </h1>
                 <p className="text-xs text-muted-foreground mt-1">
                   فُتحت في {format(new Date(dispute.created_at), "yyyy-MM-dd HH:mm")}
                   {dispute.amount_ils ? ` • المبلغ ₪${dispute.amount_ils}` : ""}

@@ -2,7 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 
 const SITE_URL = "https://netplex.lovable.app";
-const DEFAULT_OG_IMAGE = `${SITE_URL}/favicon.png`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 interface SEOProps {
   title: string;

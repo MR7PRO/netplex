@@ -139,11 +139,11 @@ const MessageThread: React.FC = () => {
     <Layout>
       <div className="container max-w-3xl mx-auto px-4 py-4 flex flex-col h-[calc(100vh-8rem)]" dir="rtl">
         <div className="flex items-center gap-2 pb-3 border-b mb-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/messages")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/messages")} aria-label="العودة إلى الرسائل">
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold truncate">{otherName}</h2>
+            <h1 className="font-semibold truncate">محادثة مع {otherName || "مستخدم"}</h1>
             {listingTitle && conv?.listing_id && (
               <Link to={`/listing/${conv.listing_id}`} className="text-xs text-primary truncate block">
                 حول: {listingTitle}

@@ -371,6 +371,7 @@ const ListingDetailsPage: React.FC = () => {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-6">
+          <h1 className="sr-only">تفاصيل المنتج</h1>
           <div className="grid md:grid-cols-2 gap-8">
             <Skeleton className="aspect-square rounded-lg" />
             <div className="space-y-4">
@@ -533,7 +534,7 @@ const ListingDetailsPage: React.FC = () => {
               {listing.featured && (
                 <Badge className="mb-2 bg-primary text-primary-foreground">منتج مميز</Badge>
               )}
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">{listing.title}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">{listing.title?.trim() || "تفاصيل المنتج"}</h1>
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
