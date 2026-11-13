@@ -120,7 +120,7 @@ const ImageSearchPage: React.FC = () => {
         {preview && (
           <div className="space-y-6">
             <div className="relative rounded-2xl overflow-hidden border border-border max-w-sm mx-auto">
-              <img src={preview} alt="بحث" className="w-full h-64 object-cover" />
+              <img src={preview} alt="الصورة اللي اخترتها للبحث عن منتج مشابه" className="w-full h-64 object-cover" />
               <Button
                 type="button"
                 variant="destructive"

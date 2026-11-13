@@ -74,7 +74,7 @@ const VerificationItem: React.FC<{ row: VerificationRow; onChanged: () => void }
 
         {signedUrl && (
           <a href={signedUrl} target="_blank" rel="noopener noreferrer">
-            <img src={signedUrl} alt="ID" className="w-full max-h-80 object-contain rounded border" />
+            <img src={signedUrl} alt="صورة وثيقة الهوية المرفوعة من البائع للمراجعة" className="w-full max-h-80 object-contain rounded border" />
           </a>
         )}
 

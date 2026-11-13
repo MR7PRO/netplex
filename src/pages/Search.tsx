@@ -216,7 +216,7 @@ const SearchPage: React.FC = () => {
             />
 
             <Button asChild variant="outline" size="icon" title="بحث بالصورة" className="shrink-0">
-              <Link to="/image-search"><Camera className="h-4 w-4" /></Link>
+              <Link to="/image-search" aria-label="البحث بالصورة" title="البحث بالصورة"><Camera className="h-4 w-4" aria-hidden="true" /></Link>
             </Button>
 
 

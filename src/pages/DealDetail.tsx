@@ -246,7 +246,7 @@ const DealDetail: React.FC = () => {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <Button asChild variant="ghost" size="icon" aria-label="العودة إلى صفقاتي">
-              <Link to="/deals"><ArrowRight className="h-5 w-5" /></Link>
+              <Link to="/deals" aria-label="العودة إلى صفقاتي"><ArrowRight className="h-5 w-5" aria-hidden="true" /></Link>
             </Button>
             <div className="min-w-0">
               <h1 className="text-xl font-bold flex items-center gap-2">
