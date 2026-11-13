@@ -149,6 +149,16 @@ async function suggestCategory(supabase: any, title: string, description?: strin
   };
 }
 
+
+async function requireUser(req: Request): Promise<string | null> {
+  const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (!token) return null;
+  const c = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: `Bearer ${token}` } } });
+  const { data, error } = await c.auth.getClaims(token);
+  return error || !data?.claims?.sub ? null : data.claims.sub as string;
+}
+const unauthorized = (h: Record<string,string>) => new Response(JSON.stringify({ error: "لازم تسجل دخول أول" }), { status: 401, headers: { ...h, "Content-Type": "application/json" } });
+
 // ---- Main Handler ----
 
 serve(async (req) => {
@@ -156,8 +166,14 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (!(await requireUser(req))) return unauthorized(corsHeaders);
   try {
-    const { messages, listingContext } = await req.json();
+    const body = await req.json();
+    const listingContext = body?.listingContext;
+    const messages = (Array.isArray(body?.messages) ? body.messages : [])
+      .filter((m: any) => (m?.role === "user" || m?.role === "assistant") && typeof m?.content === "string")
+      .slice(-20)
+      .map((m: any) => ({ role: m.role, content: m.content.slice(0, 4000) }));
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");

@@ -13,9 +13,20 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+
+async function requireUser(req: Request): Promise<string | null> {
+  const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (!token) return null;
+  const c = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: `Bearer ${token}` } } });
+  const { data, error } = await c.auth.getClaims(token);
+  return error || !data?.claims?.sub ? null : data.claims.sub as string;
+}
+const unauthorized = (h: Record<string,string>) => new Response(JSON.stringify({ error: "لازم تسجل دخول أول" }), { status: 401, headers: { ...h, "Content-Type": "application/json" } });
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  if (!(await requireUser(req))) return unauthorized(corsHeaders);
   try {
     const { imageDataUrl } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

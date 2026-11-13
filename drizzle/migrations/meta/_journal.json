@@ -78,6 +78,13 @@
       "when": 1794574111360,
       "tag": "0010_tighten_public_read_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794575071994,
+      "tag": "0011_close_selected_security_gaps",
+      "breakpoints": true
     }
   ]
 }
